@@ -1,0 +1,39 @@
+{
+  "name": "oleoduc",
+  "version": "0.0.1",
+  "description": "Stream with ease",
+  "engines": {
+    "node": ">= 10"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive --exit --timeout 1000 test/",
+    "test:coverage": "nyc --reporter=html --report-dir .coverage mocha --recursive --exit --timeout 500 test/",
+    "lint": "eslint index.js test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bguerout/oleoduc.git"
+  },
+  "author": "Benoît Guérout",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bguerout/oleoduc/issues"
+  },
+  "homepage": "https://github.com/bguerout/oleoduc#readme",
+  "dependencies": {
+    "multipipe": "4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "7.2.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "3.1.3",
+    "mocha": "7.2.0",
+    "nyc": "15.1.0",
+    "prettier": "2.0.5"
+  },
+  "prettier": {
+    "printWidth": 120
+  }
+}
