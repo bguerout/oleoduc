@@ -1,0 +1,49 @@
+const assert = require("assert");
+const { Readable } = require("stream");
+const { filterObject } = require("../index");
+
+const createStream = () => {
+  return new Readable({
+    objectMode: true,
+    read() {},
+  });
+};
+
+describe(__filename, () => {
+  it("should filter (ignore empty)", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("first");
+    source.push("");
+    source.push(null);
+
+    source
+      .pipe(
+        filterObject((value) => {
+          return value !== null && value !== undefined && Object.keys(value).length > 0;
+        })
+      )
+      .on("data", (d) => chunks.push(d))
+      .on("end", () => {
+        assert.deepStrictEqual(chunks, ["first"]);
+        done();
+      });
+  });
+
+  it("should filter (ignore first line)", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("first");
+    source.push("second");
+    source.push(null);
+
+    let lines = 0;
+    source
+      .pipe(filterObject(() => lines++ !== 0))
+      .on("data", (d) => chunks.push(d))
+      .on("end", () => {
+        assert.deepStrictEqual(chunks, ["second"]);
+        done();
+      });
+  });
+});
