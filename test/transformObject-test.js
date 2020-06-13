@@ -12,12 +12,12 @@ const createStream = () => {
 describe(__filename, () => {
   it("should transformObject", (done) => {
     let chunks = [];
-    let stream = createStream();
-    stream.push("andré");
-    stream.push("bruno");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push(null);
 
-    stream
+    source
       .pipe(transformObject((data) => data.substring(0, 1)))
       .pipe(writeObject((data) => chunks.push(data)))
       .on("finish", () => {
@@ -28,12 +28,12 @@ describe(__filename, () => {
 
   it("should transformObject (async)", (done) => {
     let chunks = [];
-    let stream = createStream();
-    stream.push("andré");
-    stream.push("bruno");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push(null);
 
-    stream
+    source
       .pipe(
         transformObject(async (data) => {
           return new Promise((resolve) => {
@@ -57,13 +57,13 @@ describe(__filename, () => {
 
   it("should transformObject and writeObject (async + parallel)", (done) => {
     let chunks = [];
-    let stream = createStream();
-    stream.push("andré");
-    stream.push("bruno");
-    stream.push("robert");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
 
-    stream
+    source
       .pipe(
         transformObject(
           async (data) => {
@@ -92,11 +92,11 @@ describe(__filename, () => {
   });
 
   it("should transformObject and handle synchronous error", (done) => {
-    let stream = createStream();
-    stream.push("andré");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push(null);
 
-    stream
+    source
       .pipe(
         transformObject(() => {
           throw new Error("An error occurred");
@@ -114,12 +114,12 @@ describe(__filename, () => {
   });
 
   it("should transformObject and handle asynchronous error", (done) => {
-    let stream = createStream();
-    stream.push("andré");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push(null);
     let errorHasBeenThrown = false;
 
-    stream
+    source
       .pipe(
         transformObject(() => {
           return Promise.reject(new Error("An error occurred"));

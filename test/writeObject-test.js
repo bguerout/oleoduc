@@ -11,12 +11,12 @@ const createStream = () => {
 
 describe(__filename, () => {
   it("should writeObject", (done) => {
-    let stream = createStream();
-    stream.push("andré");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push(null);
     let acc = [];
 
-    stream
+    source
       .pipe(
         writeObject((data) => {
           acc.push(data);
@@ -29,11 +29,11 @@ describe(__filename, () => {
   });
 
   it("should writeObject and handle synchronous error", (done) => {
-    let stream = createStream();
-    stream.push("andré");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push(null);
 
-    stream
+    source
       .pipe(
         writeObject(() => {
           throw new Error("An error occurred");
@@ -50,12 +50,12 @@ describe(__filename, () => {
   });
 
   it("should writeObject and handle asynchronous error", (done) => {
-    let stream = createStream();
-    stream.push("andré");
-    stream.push(null);
+    let source = createStream();
+    source.push("andré");
+    source.push(null);
     let errorHasBeenThrown = false;
 
-    stream
+    source
       .pipe(
         writeObject(() => {
           return Promise.reject(new Error("An error occurred"));
