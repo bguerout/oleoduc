@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { pipeline, writeObject, jsonStream } = require("../index");
+const { oleoduc, writeObject, jsonStream } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -11,13 +11,13 @@ const createStream = () => {
 
 describe(__filename, () => {
   it("can jsonStream", async () => {
-    let source = createStream();
-    source.push({ name: "andré" });
-    source.push(null);
+    let sourceStream = createStream();
+    sourceStream.push({ name: "andré" });
+    sourceStream.push(null);
     let json = "";
 
-    await pipeline(
-      source,
+    await oleoduc(
+      sourceStream,
       jsonStream(),
       writeObject((data) => (json += data))
     );
