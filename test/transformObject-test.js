@@ -117,7 +117,6 @@ describe(__filename, () => {
     let source = createStream();
     source.push("andré");
     source.push(null);
-    let errorHasBeenThrown = false;
 
     source
       .pipe(
@@ -128,10 +127,53 @@ describe(__filename, () => {
       .on("data", () => ({}))
       .on("error", (e) => {
         assert.strictEqual(e.message, "An error occurred");
-        errorHasBeenThrown = true;
+        done();
       })
       .on("finish", () => {
-        assert.strictEqual(errorHasBeenThrown, true);
+        assert.fail();
+        done();
+      });
+  });
+
+  it("should transformObject (parallel options)", (done) => {
+    let timeoutPerBatch = 10;
+    let tasksPerBatch = 2;
+    let acc = [];
+
+    let start = Date.now();
+    let source = createStream();
+    //first
+    source.push(1);
+    source.push(2);
+    //second
+    source.push(3);
+    source.push(4);
+    //third
+    source.push(5);
+    source.push(6);
+
+    source.push(null);
+
+    source
+      .pipe(
+        transformObject(
+          (number) => {
+            return new Promise((resolve) => {
+              setTimeout(() => resolve({ number, timestamp: Date.now() }), timeoutPerBatch);
+            });
+          },
+          { parallel: tasksPerBatch }
+        )
+      )
+      .pipe(writeObject((data) => acc.push(data)))
+      .on("data", () => ({}))
+      .on("error", () => {
+        assert.fail();
+        done();
+      })
+      .on("finish", () => {
+        let timeElapsed = acc.find((r) => r.number === 6).timestamp - start;
+        assert.ok(timeElapsed > 30); // 2 tasks per batch with 10ms of timeout
         done();
       });
   });
