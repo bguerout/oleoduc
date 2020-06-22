@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { transformObject, oleoduc, combine, writeObject } = require("../index");
+const { transformObject, oleoduc, writeObject } = require("../index");
 const { delay } = require("./testUtils");
 
 const createStream = () => {
@@ -28,7 +28,7 @@ describe(__filename, () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can create oleoduc async streams", async () => {
+  it("can create oleoduc from streams (async)", async () => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -49,10 +49,10 @@ describe(__filename, () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can use oleoduc with combined streams", async () => {
+  it("can create oleoduc with nested oleoduc", async () => {
     let chunks = [];
     let source = createStream();
-    let combined = combine(
+    let nested = oleoduc(
       source,
       transformObject((d) => d.substring(0, 1))
     );
@@ -61,13 +61,30 @@ describe(__filename, () => {
     source.push(null);
 
     await oleoduc(
-      combined,
+      nested,
       writeObject((d) => chunks.push(d))
     );
     assert.deepStrictEqual(chunks, ["f"]);
   });
 
-  it("oleoduc should propagate error", (done) => {
+  it("can pipe an oleoduc stream", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
+
+    oleoduc(source)
+      .pipe(transformObject((data) => data.substring(0, 1)))
+      .pipe(writeObject((data) => chunks.push(data)))
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+        done();
+      });
+  });
+
+  it("oleoduc should propagate emitted error", (done) => {
     let source = createStream();
 
     oleoduc(
@@ -86,7 +103,7 @@ describe(__filename, () => {
     source.emit("error", "emitted");
   });
 
-  it("oleoduc should propagate error (thrown)", (done) => {
+  it("oleoduc should propagate thrown error", (done) => {
     let source = createStream();
     source.push("first");
     source.push(null);
