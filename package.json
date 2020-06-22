@@ -7,7 +7,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive --exit --timeout 1000 test/",
+    "test": "mocha --recursive --exit --timeout 250 test/",
     "test:coverage": "nyc --reporter=html --report-dir .coverage mocha --recursive --exit --timeout 500 test/",
     "lint": "eslint index.js test/"
   },
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/bguerout/oleoduc#readme",
   "dependencies": {
+    "cyclist": "1.0.1",
     "multipipe": "4.0.0",
     "parallel-transform": "1.2.0"
   },

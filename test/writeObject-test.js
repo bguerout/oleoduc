@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { writeObject, oleoduc } = require("../index");
+const { writeObject } = require("../index");
+const { delay } = require("./testUtils");
 
 const createStream = () => {
   return new Readable({
@@ -28,75 +29,87 @@ describe(__filename, () => {
       });
   });
 
-  it("should writeObject (parallel options)", async () => {
+  it("should writeObject (parallel options)", (done) => {
+    let timeoutPerBatch = 10;
+    let tasksPerBatch = 2;
+    let acc = [];
+
+    let start = Date.now();
     let source = createStream();
+    //first
     source.push(1);
     source.push(2);
+    //second
     source.push(3);
+    source.push(4);
+    //third
+    source.push(5);
+    source.push(6);
+
     source.push(null);
-    let acc = [];
-    let start = Date.now();
 
-    await oleoduc(
-      source,
-      writeObject(
-        () => {
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              acc.push(Date.now());
-              resolve();
-            }, 250);
-          });
-        },
-        { parallel: 3 }
+    source
+      .pipe(
+        writeObject(
+          (number) => {
+            return delay(() => acc.push({ number, timestamp: Date.now() }), timeoutPerBatch);
+          },
+          { parallel: tasksPerBatch }
+        )
       )
-    );
-
-    let timeElapsed = start - acc.pop();
-    //first and second chunks are run immediately, third is run 100ms later)
-    assert.ok(timeElapsed < 200);
+      .on("finish", () => {
+        let timeElapsed = acc.find((r) => r.number === 6).timestamp - start;
+        assert.ok(timeElapsed > 30); // 2 tasks per batch with 10ms of timeout
+        done();
+      });
   });
 
-  it("should writeObject and handle synchronous error", async () => {
+  it("should writeObject and handle synchronous error", (done) => {
     let source = createStream();
-    source.push("generate an error");
+    source.push(1);
     source.push(null);
 
-    try {
-      await oleoduc(
-        source,
+    source
+      .pipe(
         writeObject(
-          (data) => {
-            throw new Error(data);
+          () => {
+            throw new Error("sync error");
           },
           { parallel: 1 }
         )
-      );
-      assert.fail();
-    } catch (e) {
-      assert.strictEqual(e.message, "An error occurred when handling chunks");
-    }
+      )
+      .on("error", (e) => {
+        assert.strictEqual(e.message, "sync error");
+        done();
+      })
+      .on("finish", () => {
+        assert.fail();
+        done();
+      });
   });
 
-  it("should writeObject and handle asynchronous error (first chunk)", async () => {
+  it("should writeObject and handle asynchronous error (first chunk)", (done) => {
     let source = createStream();
     source.push("andré");
     source.push(null);
 
-    try {
-      await oleoduc(
-        source,
+    source
+      .pipe(
         writeObject(() => {
-          return Promise.reject(new Error("An error occurred"));
+          return Promise.reject(new Error("first chunk"));
         })
-      );
-      assert.fail();
-    } catch (e) {
-      assert.strictEqual(e.message, "An error occurred when handling chunks");
-    }
+      )
+      .on("error", (e) => {
+        assert.strictEqual(e.message, "first chunk");
+        done();
+      })
+      .on("finish", () => {
+        assert.fail();
+        done();
+      });
   });
 
-  it("should writeObject and handle asynchronous error", async () => {
+  it("should writeObject and handle asynchronous error", (done) => {
     let source = createStream();
     source.push(1);
     source.push(2);
@@ -104,14 +117,13 @@ describe(__filename, () => {
     source.push(null);
     let acc = [];
 
-    try {
-      await oleoduc(
-        source,
+    source
+      .pipe(
         writeObject(
           (data) => {
             return new Promise((resolve, reject) => {
               if (data === 2) {
-                reject(new Error("Async error"));
+                reject(new Error("async error"));
               } else {
                 acc.push(data);
                 resolve();
@@ -120,11 +132,15 @@ describe(__filename, () => {
           },
           { parallel: 1 }
         )
-      );
-      assert.fail();
-    } catch (e) {
-      assert.strictEqual(e.message, "An error occurred when handling chunks");
-      assert.deepStrictEqual(acc, [1]);
-    }
+      )
+      .on("error", (e) => {
+        assert.strictEqual(e.message, "async error");
+        assert.deepStrictEqual(acc, [1]);
+        done();
+      })
+      .on("finish", () => {
+        assert.fail();
+        done();
+      });
   });
 });

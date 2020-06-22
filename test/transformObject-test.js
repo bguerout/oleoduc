@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
 const { transformObject, writeObject } = require("../index");
+const { delay } = require("./testUtils");
 
 const createStream = () => {
   return new Readable({
@@ -77,10 +78,7 @@ describe(__filename, () => {
       .pipe(
         writeObject(
           (data) => {
-            return new Promise((resolve) => {
-              chunks.push(data);
-              return setTimeout(() => resolve(), 10);
-            });
+            return delay(() => chunks.push(data), 10);
           },
           { parallel: 2 }
         )
@@ -158,9 +156,7 @@ describe(__filename, () => {
       .pipe(
         transformObject(
           (number) => {
-            return new Promise((resolve) => {
-              setTimeout(() => resolve({ number, timestamp: Date.now() }), timeoutPerBatch);
-            });
+            return delay(() => ({ number, timestamp: Date.now() }), timeoutPerBatch);
           },
           { parallel: tasksPerBatch }
         )

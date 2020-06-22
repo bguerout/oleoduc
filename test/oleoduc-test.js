@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
 const { transformObject, oleoduc, combine, writeObject } = require("../index");
+const { delay } = require("./testUtils");
 
 const createStream = () => {
   return new Readable({
@@ -27,6 +28,27 @@ describe(__filename, () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
+  it("can create oleoduc async streams", async () => {
+    let chunks = [];
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
+
+    await oleoduc(
+      source,
+      transformObject((data) => {
+        return delay(() => data.substring(0, 1), 2);
+      }),
+      writeObject((data) => {
+        return delay(() => chunks.push(data), 2);
+      })
+    );
+
+    assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+  });
+
   it("can use oleoduc with combined streams", async () => {
     let chunks = [];
     let source = createStream();
@@ -45,7 +67,7 @@ describe(__filename, () => {
     assert.deepStrictEqual(chunks, ["f"]);
   });
 
-  it("oleoduc should propagate error (error from source)", (done) => {
+  it("oleoduc should propagate error", (done) => {
     let source = createStream();
 
     oleoduc(
@@ -62,5 +84,25 @@ describe(__filename, () => {
 
     source.push("first");
     source.emit("error", "emitted");
+  });
+
+  it("oleoduc should propagate error (thrown)", (done) => {
+    let source = createStream();
+    source.push("first");
+    source.push(null);
+
+    oleoduc(
+      source,
+      writeObject(() => {
+        throw new Error();
+      })
+    )
+      .then(() => {
+        assert.fail();
+        done();
+      })
+      .catch(() => {
+        done();
+      });
   });
 });
