@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/bguerout/oleoduc#readme",
   "dependencies": {
-    "multipipe": "4.0.0"
+    "cyclist": "1.0.1",
+    "multipipe": "4.0.0",
+    "parallel-transform": "1.2.0"
   },
   "devDependencies": {
     "eslint": "7.2.0",
