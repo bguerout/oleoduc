@@ -10,7 +10,7 @@ const createStream = () => {
 };
 
 describe(__filename, () => {
-  it("can jsonStream", async () => {
+  it("can stream as a json array", async () => {
     let sourceStream = createStream();
     sourceStream.push({ name: "andré" });
     sourceStream.push(null);
@@ -23,5 +23,49 @@ describe(__filename, () => {
     );
 
     assert.deepStrictEqual(JSON.parse(json), [{ name: "andré" }]);
+  });
+
+  it("when no results should stream an empty json array", async () => {
+    let sourceStream = createStream();
+    sourceStream.push(null);
+    let json = "";
+
+    await oleoduc(
+      sourceStream,
+      jsonStream(),
+      writeObject((data) => (json += data))
+    );
+
+    assert.deepStrictEqual(JSON.parse(json), []);
+  });
+
+  it("can stream and wrapped json array", async () => {
+    let sourceStream = createStream();
+    sourceStream.push({ name: "andré" });
+    sourceStream.push(null);
+    let json = "";
+
+    await oleoduc(
+      sourceStream,
+      jsonStream({ arrayPropertyName: "results" }),
+      writeObject((data) => (json += data))
+    );
+
+    assert.deepStrictEqual(JSON.parse(json), { results: [{ name: "andré" }] });
+  });
+
+  it("can stream and wrapped json array into a preexisting object", async () => {
+    let sourceStream = createStream();
+    sourceStream.push({ name: "andré" });
+    sourceStream.push(null);
+    let json = "";
+
+    await oleoduc(
+      sourceStream,
+      jsonStream({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }),
+      writeObject((data) => (json += data))
+    );
+
+    assert.deepStrictEqual(JSON.parse(json), { preexisting: true, results: [{ name: "andré" }] });
   });
 });
