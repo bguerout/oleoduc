@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { oleoduc, writeObject, jsonStream } = require("../index");
+const { multipipe, writeObject, jsonStream } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -16,7 +16,7 @@ describe(__filename, () => {
     sourceStream.push(null);
     let json = "";
 
-    await oleoduc(
+    await multipipe(
       sourceStream,
       jsonStream(),
       writeObject((data) => (json += data))
@@ -30,7 +30,7 @@ describe(__filename, () => {
     sourceStream.push(null);
     let json = "";
 
-    await oleoduc(
+    await multipipe(
       sourceStream,
       jsonStream(),
       writeObject((data) => (json += data))
@@ -45,7 +45,7 @@ describe(__filename, () => {
     sourceStream.push(null);
     let json = "";
 
-    await oleoduc(
+    await multipipe(
       sourceStream,
       jsonStream({ arrayPropertyName: "results" }),
       writeObject((data) => (json += data))
@@ -60,7 +60,7 @@ describe(__filename, () => {
     sourceStream.push(null);
     let json = "";
 
-    await oleoduc(
+    await multipipe(
       sourceStream,
       jsonStream({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }),
       writeObject((data) => (json += data))

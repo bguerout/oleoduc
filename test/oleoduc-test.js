@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { transformObject, oleoduc, writeObject } = require("../index");
+const { transformObject, multipipe, writeObject } = require("../index");
 const { delay } = require("./testUtils");
 
 const createStream = () => {
@@ -19,7 +19,7 @@ describe(__filename, () => {
     source.push("robert");
     source.push(null);
 
-    await oleoduc(
+    await multipipe(
       source,
       transformObject((data) => data.substring(0, 1)),
       writeObject((data) => chunks.push(data))
@@ -36,7 +36,7 @@ describe(__filename, () => {
     source.push("robert");
     source.push(null);
 
-    await oleoduc(
+    await multipipe(
       source,
       transformObject((data) => {
         return delay(() => data.substring(0, 1), 2);
@@ -52,7 +52,7 @@ describe(__filename, () => {
   it("can create oleoduc with nested oleoduc", async () => {
     let chunks = [];
     let source = createStream();
-    let nested = oleoduc(
+    let nested = multipipe(
       source,
       transformObject((d) => d.substring(0, 1))
     );
@@ -60,7 +60,7 @@ describe(__filename, () => {
     source.push("first");
     source.push(null);
 
-    await oleoduc(
+    await multipipe(
       nested,
       writeObject((d) => chunks.push(d))
     );
@@ -75,7 +75,7 @@ describe(__filename, () => {
     source.push("robert");
     source.push(null);
 
-    oleoduc(source)
+    multipipe(source)
       .pipe(transformObject((data) => data.substring(0, 1)))
       .pipe(writeObject((data) => chunks.push(data)))
       .on("finish", () => {
@@ -87,7 +87,7 @@ describe(__filename, () => {
   it("oleoduc should propagate emitted error", (done) => {
     let source = createStream();
 
-    oleoduc(
+    multipipe(
       source,
       writeObject(() => ({}))
     )
@@ -108,7 +108,7 @@ describe(__filename, () => {
     source.push("first");
     source.push(null);
 
-    oleoduc(
+    multipipe(
       source,
       writeObject(() => {
         throw new Error();

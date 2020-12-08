@@ -1,7 +1,7 @@
 const transformObject = require("./lib/transformObject.js");
 
 module.exports = {
-  oleoduc: require("multipipe"),
+  multipipe: require("multipipe"),
   transformObject,
   filterObject: (filter) => transformObject((data) => data, { filter }),
   writeObject: require("./lib/writeObject.js"),

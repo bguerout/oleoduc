@@ -11,11 +11,6 @@ npm install oleoduc
 # or
 yarn add oleoduc
 ```
-then import it
-
-```js
-const { oleoduc } = require("oleoduc");
-```
 
 Below examples assume the following stream as source
 
@@ -29,9 +24,9 @@ stream.push(null);
 ### Reading a stream, transforming data and writing them
 
 ```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformObject, writeObject  } = require("oleoduc");
 
-await oleoduc(
+await multipipe(
   stream,
   transformObject((data) => data * 2),
   writeObject((data) => console.log(data))
@@ -44,9 +39,9 @@ await oleoduc(
 ### Handling objects
 
 ```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformObject, writeObject  } = require("oleoduc");
 
-await oleoduc(
+await multipipe(
   stream,
   // Transforming integer into an object
   transformObject((data) => ({ field: data })),
@@ -60,9 +55,9 @@ await oleoduc(
 ### Filtering data
 
 ```js
-const { oleoduc, filterObject, writeObject  } = require("oleoduc");
+const { multipipe, filterObject, writeObject  } = require("oleoduc");
 
-await oleoduc(
+await multipipe(
   stream,
   filterObject((data) => data > 15),
   writeObject((data) => console.log(data))
@@ -74,9 +69,9 @@ await oleoduc(
 ### Handling data in parallel
 
 ```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformObject, writeObject  } = require("oleoduc");
 
-await oleoduc(
+await multipipe(
   stream,
   transformObject((data) => data * 10, { parallel: 5 }),
   writeObject((data) => console.log(data), { parallel: 2 })
