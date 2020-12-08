@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { multipipe, writeObject, jsonStream } = require("../index");
+const { multipipe, writeData, jsonStream } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -19,7 +19,7 @@ describe(__filename, () => {
     await multipipe(
       sourceStream,
       jsonStream(),
-      writeObject((data) => (json += data))
+      writeData((data) => (json += data))
     );
 
     assert.deepStrictEqual(JSON.parse(json), [{ name: "andré" }]);
@@ -33,7 +33,7 @@ describe(__filename, () => {
     await multipipe(
       sourceStream,
       jsonStream(),
-      writeObject((data) => (json += data))
+      writeData((data) => (json += data))
     );
 
     assert.deepStrictEqual(JSON.parse(json), []);
@@ -48,7 +48,7 @@ describe(__filename, () => {
     await multipipe(
       sourceStream,
       jsonStream({ arrayPropertyName: "results" }),
-      writeObject((data) => (json += data))
+      writeData((data) => (json += data))
     );
 
     assert.deepStrictEqual(JSON.parse(json), { results: [{ name: "andré" }] });
@@ -63,7 +63,7 @@ describe(__filename, () => {
     await multipipe(
       sourceStream,
       jsonStream({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }),
-      writeObject((data) => (json += data))
+      writeData((data) => (json += data))
     );
 
     assert.deepStrictEqual(JSON.parse(json), { preexisting: true, results: [{ name: "andré" }] });

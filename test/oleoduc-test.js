@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { transformObject, multipipe, writeObject } = require("../index");
+const { multipipe, transformData, writeData } = require("../index");
 const { delay } = require("./testUtils");
 
 const createStream = () => {
@@ -21,8 +21,8 @@ describe(__filename, () => {
 
     await multipipe(
       source,
-      transformObject((data) => data.substring(0, 1)),
-      writeObject((data) => chunks.push(data))
+      transformData((data) => data.substring(0, 1)),
+      writeData((data) => chunks.push(data))
     );
 
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
@@ -38,10 +38,10 @@ describe(__filename, () => {
 
     await multipipe(
       source,
-      transformObject((data) => {
+      transformData((data) => {
         return delay(() => data.substring(0, 1), 2);
       }),
-      writeObject((data) => {
+      writeData((data) => {
         return delay(() => chunks.push(data), 2);
       })
     );
@@ -54,7 +54,7 @@ describe(__filename, () => {
     let source = createStream();
     let nested = multipipe(
       source,
-      transformObject((d) => d.substring(0, 1))
+      transformData((d) => d.substring(0, 1))
     );
 
     source.push("first");
@@ -62,7 +62,7 @@ describe(__filename, () => {
 
     await multipipe(
       nested,
-      writeObject((d) => chunks.push(d))
+      writeData((d) => chunks.push(d))
     );
     assert.deepStrictEqual(chunks, ["f"]);
   });
@@ -76,8 +76,8 @@ describe(__filename, () => {
     source.push(null);
 
     multipipe(source)
-      .pipe(transformObject((data) => data.substring(0, 1)))
-      .pipe(writeObject((data) => chunks.push(data)))
+      .pipe(transformData((data) => data.substring(0, 1)))
+      .pipe(writeData((data) => chunks.push(data)))
       .on("finish", () => {
         assert.deepStrictEqual(chunks, ["a", "b", "r"]);
         done();
@@ -89,7 +89,7 @@ describe(__filename, () => {
 
     multipipe(
       source,
-      writeObject(() => ({}))
+      writeData(() => ({}))
     )
       .then(() => {
         assert.fail();
@@ -110,7 +110,7 @@ describe(__filename, () => {
 
     multipipe(
       source,
-      writeObject(() => {
+      writeData(() => {
         throw new Error();
       })
     )

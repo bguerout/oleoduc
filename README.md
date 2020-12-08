@@ -24,12 +24,12 @@ stream.push(null);
 ### Reading a stream, transforming data and writing them
 
 ```js
-const { multipipe, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformData, writeData  } = require("oleoduc");
 
 await multipipe(
   stream,
-  transformObject((data) => data * 2),
-  writeObject((data) => console.log(data))
+  transformData((data) => data * 2),
+  writeData((data) => console.log(data))
 );
 // Output:
 //  20
@@ -39,13 +39,13 @@ await multipipe(
 ### Handling objects
 
 ```js
-const { multipipe, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformData, writeData  } = require("oleoduc");
 
 await multipipe(
   stream,
   // Transforming integer into an object
-  transformObject((data) => ({ field: data })),
-  writeObject((obj) => console.log(obj))
+  transformData((data) => ({ field: data })),
+  writeData((obj) => console.log(obj))
 );
 // Output:
 //  { field: 10 }
@@ -55,12 +55,12 @@ await multipipe(
 ### Filtering data
 
 ```js
-const { multipipe, filterObject, writeObject  } = require("oleoduc");
+const { multipipe, filterObject, writeData  } = require("oleoduc");
 
 await multipipe(
   stream,
   filterObject((data) => data > 15),
-  writeObject((data) => console.log(data))
+  writeData((data) => console.log(data))
 );
 // Output:
 //  20
@@ -69,12 +69,12 @@ await multipipe(
 ### Handling data in parallel
 
 ```js
-const { multipipe, transformObject, writeObject  } = require("oleoduc");
+const { multipipe, transformData, writeData  } = require("oleoduc");
 
 await multipipe(
   stream,
-  transformObject((data) => data * 10, { parallel: 5 }),
-  writeObject((data) => console.log(data), { parallel: 2 })
+  transformData((data) => data * 10, { parallel: 5 }),
+  writeData((data) => console.log(data), { parallel: 2 })
 );
 ```
 Parallelism is handled by [parallel-transform](https://www.npmjs.com/package/parallel-transform)
@@ -82,11 +82,11 @@ Parallelism is handled by [parallel-transform](https://www.npmjs.com/package/par
 ### Piping
 
 ```js
-const { transformObject, writeObject  } = require("oleoduc");
+const { transformData, writeData  } = require("oleoduc");
 
 stream
-  .pipe(transformObject((data) => data * 10))
-  .pipe(writeObject((data) => console.log(data)))
+  .pipe(transformData((data) => data * 10))
+  .pipe(writeData((data) => console.log(data)))
   .on("finish", () => console.log("done"));
 // Output:
 //  10

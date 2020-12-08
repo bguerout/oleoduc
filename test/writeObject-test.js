@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { writeObject } = require("../index");
 const { delay } = require("./testUtils");
+const { writeData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -11,7 +11,7 @@ const createStream = () => {
 };
 
 describe(__filename, () => {
-  it("should writeObject", (done) => {
+  it("should writeData", (done) => {
     let source = createStream();
     source.push("andré");
     source.push(null);
@@ -19,7 +19,7 @@ describe(__filename, () => {
 
     source
       .pipe(
-        writeObject((data) => {
+        writeData((data) => {
           acc.push(data);
         })
       )
@@ -29,7 +29,7 @@ describe(__filename, () => {
       });
   });
 
-  it("should writeObject (parallel options)", (done) => {
+  it("should writeData (parallel options)", (done) => {
     let timeoutPerBatch = 10;
     let tasksPerBatch = 2;
     let acc = [];
@@ -50,7 +50,7 @@ describe(__filename, () => {
 
     source
       .pipe(
-        writeObject(
+        writeData(
           (number) => {
             return delay(() => acc.push({ number, timestamp: Date.now() }), timeoutPerBatch);
           },
@@ -64,14 +64,14 @@ describe(__filename, () => {
       });
   });
 
-  it("should writeObject and handle synchronous error", (done) => {
+  it("should writeData and handle synchronous error", (done) => {
     let source = createStream();
     source.push(1);
     source.push(null);
 
     source
       .pipe(
-        writeObject(
+        writeData(
           () => {
             throw new Error("sync error");
           },
@@ -88,14 +88,14 @@ describe(__filename, () => {
       });
   });
 
-  it("should writeObject and handle asynchronous error (first chunk)", (done) => {
+  it("should writeData and handle asynchronous error (first chunk)", (done) => {
     let source = createStream();
     source.push("andré");
     source.push(null);
 
     source
       .pipe(
-        writeObject(() => {
+        writeData(() => {
           return Promise.reject(new Error("first chunk"));
         })
       )
@@ -109,7 +109,7 @@ describe(__filename, () => {
       });
   });
 
-  it("should writeObject and handle asynchronous error", (done) => {
+  it("should writeData and handle asynchronous error", (done) => {
     let source = createStream();
     source.push(1);
     source.push(2);
@@ -119,7 +119,7 @@ describe(__filename, () => {
 
     source
       .pipe(
-        writeObject(
+        writeData(
           (data) => {
             return new Promise((resolve, reject) => {
               if (data === 2) {
