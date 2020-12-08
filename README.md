@@ -1,5 +1,10 @@
 # oleoduc
-Stream with ease
+
+Oleoduc is a tiny layer over [multipipe](https://www.npmjs.com/package/multipipe)
+
+Its brings utility functions to manipulate data when processing them.
+
+## How to use
 
 ```sh
 npm install oleoduc
@@ -11,7 +16,6 @@ then import it
 ```js
 const { oleoduc } = require("oleoduc");
 ```
-## How to use
 
 Below examples assume the following stream as source
 
@@ -29,12 +33,12 @@ const { oleoduc, transformObject, writeObject  } = require("oleoduc");
 
 await oleoduc(
   stream,
-  transformObject((data) => data * 10),
+  transformObject((data) => data * 2),
   writeObject((data) => console.log(data))
 );
 // Output:
-//  10
 //  20
+//  40
 ```
 
 ### Handling objects
@@ -60,7 +64,7 @@ const { oleoduc, filterObject, writeObject  } = require("oleoduc");
 
 await oleoduc(
   stream,
-  filterObject((data) => data > 11),
+  filterObject((data) => data > 15),
   writeObject((data) => console.log(data))
 );
 // Output:
@@ -78,6 +82,7 @@ await oleoduc(
   writeObject((data) => console.log(data), { parallel: 2 })
 );
 ```
+Parallelism is handled by [parallel-transform](https://www.npmjs.com/package/parallel-transform)
 
 ### Piping
 
