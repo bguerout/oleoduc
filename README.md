@@ -4,6 +4,7 @@ oleoduc provides utilities to manipulate data when they flow through an _oleoduc
 
 - `transformData` to transform data (eg. convert raw data into a json)
 - `filterData` to select/exclude the data processed
+- `jsonStream` to stream a json array
 - `writeData` allows data to be written somewhere (last step)
 
 These functions can be used on any stream or inside a pipeline:
@@ -64,15 +65,63 @@ stream.push(null);
 ```js
 const { oleoduc, transformData, writeData } = require("oleoduc");
 
+// Input:
+// 1
+// 2
+
 oleoduc(
   stream,
-  // Transforming integer into an object
   transformData((data) => ({ field: data })),
   writeData((obj) => console.log(obj))
 );
+
 // Output:
 //  { field: 10 }
 //  { field: 20 }
+```
+
+### Stream a json array
+
+```js
+const { oleoduc, jsonStream } = require("oleoduc");
+const { createWriteStream } = require("fs");
+
+// Input:
+// 1
+// 2
+
+await oleoduc(
+  stream,
+  transformData((data) => ({ field: data })),
+  jsonStream(),
+  createWriteStream(file)
+);
+
+// Output
+// [{ field: 10 }, { field: 20 }]
+
+```
+
+### Stream a json array wrapped into an object
+
+```js
+const { oleoduc, jsonStream } = require("oleoduc");
+const { createWriteStream } = require("fs");
+
+// Input:
+// 1
+// 2
+
+await oleoduc(
+  stream,
+  transformData((data) => ({ field: data })),
+  jsonStream({ arrayWrapper: { other: "data" }, arrayPropertyName: "results" }),
+  createWriteStream(file)
+);
+
+// Output
+// { other: "data", results: [{ field: 10 }, { field: 20 }] }
+
 ```
 
 ### Handle errors
@@ -110,18 +159,23 @@ try {
 ```js
 const { oleoduc, filterObject, writeData } = require("oleoduc");
 
+// Input:
+// 1
+// 2
+
 await oleoduc(
   stream,
   filterObject((data) => data > 15),
   writeData((data) => console.log(data))
 );
+
 // Output:
 //  20
 ```
 
 ### Async
 
-- All utilities can return a promise.
+All utilities can return a promise.
 
 ```js
 const { oleoduc, transformData, writeData } = require("oleoduc");
