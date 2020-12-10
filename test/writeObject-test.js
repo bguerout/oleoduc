@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { delay } = require("./testUtils");
 const { writeData } = require("../index");
 
 const createStream = () => {
@@ -25,41 +24,6 @@ describe(__filename, () => {
       )
       .on("finish", () => {
         assert.deepStrictEqual(acc, ["andré"]);
-        done();
-      });
-  });
-
-  it("should writeData (parallel options)", (done) => {
-    let timeoutPerBatch = 10;
-    let tasksPerBatch = 2;
-    let acc = [];
-
-    let start = Date.now();
-    let source = createStream();
-    //first
-    source.push(1);
-    source.push(2);
-    //second
-    source.push(3);
-    source.push(4);
-    //third
-    source.push(5);
-    source.push(6);
-
-    source.push(null);
-
-    source
-      .pipe(
-        writeData(
-          (number) => {
-            return delay(() => acc.push({ number, timestamp: Date.now() }), timeoutPerBatch);
-          },
-          { parallel: tasksPerBatch }
-        )
-      )
-      .on("finish", () => {
-        let timeElapsed = acc.find((r) => r.number === 6).timestamp - start;
-        assert.ok(timeElapsed > 30); // 2 tasks per batch with 10ms of timeout
         done();
       });
   });
