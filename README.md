@@ -1,21 +1,54 @@
 # oleoduc
 
-Oleoduc is a tiny layer over [multipipe](https://www.npmjs.com/package/multipipe)
+oleoduc provides utilities to manipulate data when they flow through an _oleoduc_ (french synonym of pipeline) :
 
-Its brings utility functions to manipulate data when processing them.
+- `transformData` to transform data (eg. convert raw data into a json)
+- `filterData` to select/exclude the data processed
+- `writeData` allows data to be written somewhere (last step)
 
-## How to use
+These functions can be used on any stream or inside a pipeline:
+
+```js
+const { transformData, writeData } = require("oleoduc");
+
+stream
+  .pipe(transformData((data) => data.toString()))
+  .pipe(writeData((data) => console.log(data)))
+  .on("finish", () => console.log("done"))
+```
+
+```js
+const { pipeline } = require('stream');
+const { transformData, writeData } = require("oleoduc");
+
+pipeline(
+  transformData((data) => data.toString()),
+  writeData((data) => console.log(data)),
+)
+```
+
+Using `pipe` or `pipeline` can be sometimes painful, oleoduc provides a utility function named `oleoduc`
+(based on [multipipe](https://www.npmjs.com/package/multipipe)). This function allows composition of streams and better
+error handling.
+
+```js
+const { oleoduc, transformData, writeData } = require("oleoduc");
+
+oleoduc(
+  transformData((data) => data.toString()),
+  writeData((data) => console.log(data)),
+)
+```
+
+## Install
 
 ```sh
 npm install oleoduc
 # or
 yarn add oleoduc
 ```
-then import it
 
-```js
-const { oleoduc } = require("oleoduc");
-```
+## Common use cases
 
 Below examples assume the following stream as source
 
@@ -26,75 +59,117 @@ stream.push(2);
 stream.push(null);
 ```
 
-### Reading a stream, transforming data and writing them
+### Transform data into objects
 
 ```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
+const { oleoduc, transformData, writeData } = require("oleoduc");
 
-await oleoduc(
-  stream,
-  transformObject((data) => data * 2),
-  writeObject((data) => console.log(data))
-);
-// Output:
-//  20
-//  40
-```
-
-### Handling objects
-
-```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
-
-await oleoduc(
+oleoduc(
   stream,
   // Transforming integer into an object
-  transformObject((data) => ({ field: data })),
-  writeObject((obj) => console.log(obj))
+  transformData((data) => ({ field: data })),
+  writeData((obj) => console.log(obj))
 );
 // Output:
 //  { field: 10 }
 //  { field: 20 }
 ```
 
+### Handle errors
+
+```js
+const { oleoduc, writeData } = require("oleoduc");
+
+//Using pipe
+oleoduc(
+  stream,
+  writeData((obj) => throw new Error())
+)
+  .on("error", (e) => {
+    //Handle error
+  })
+  .on("finish", () => {
+    assert.fail();
+    done();
+  });
+
+
+//Using async/await
+try {
+  await oleoduc(
+    stream,
+    writeData((obj) => throw new Error())
+  );
+} catch (e) {
+  //Handle error
+}
+```
+
 ### Filtering data
 
 ```js
-const { oleoduc, filterObject, writeObject  } = require("oleoduc");
+const { oleoduc, filterObject, writeData } = require("oleoduc");
 
 await oleoduc(
   stream,
   filterObject((data) => data > 15),
-  writeObject((data) => console.log(data))
+  writeData((data) => console.log(data))
 );
 // Output:
 //  20
+```
+
+### Async
+
+- All utilities can return a promise.
+
+```js
+const { oleoduc, transformData, writeData } = require("oleoduc");
+
+await oleoduc(
+  stream,
+  transformData((data) => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(data), 1000);
+    });
+  }),
+  filterObject(async (data) => {
+    let value = await retrieveValue();
+    return value > data;
+  }),
+  writeData((obj) => console.log(obj))
+);
 ```
 
 ### Handling data in parallel
 
 ```js
-const { oleoduc, transformObject, writeObject  } = require("oleoduc");
+const { oleoduc, transformData, writeData } = require("oleoduc");
 
 await oleoduc(
   stream,
-  transformObject((data) => data * 10, { parallel: 5 }),
-  writeObject((data) => console.log(data), { parallel: 2 })
+  writeData((data) => save(data), { parallel: 2 })
 );
 ```
+
 Parallelism is handled by [parallel-transform](https://www.npmjs.com/package/parallel-transform)
 
-### Piping
+### Stream composition
+
+You can split your stream in multiple fragments
 
 ```js
-const { transformObject, writeObject  } = require("oleoduc");
+const { transformData, writeData } = require("oleoduc");
 
-stream
-  .pipe(transformObject((data) => data * 10))
-  .pipe(writeObject((data) => console.log(data)))
-  .on("finish", () => console.log("done"));
-// Output:
-//  10
-//  20
-//  done
+let getTransformedStream = (source) => {
+  return oleoduc(
+    source,
+    transformData((data) => data * 10)
+  )
+};
+
+await oleoduc(
+  getTransformedStream(stream),
+  writeData((data) => console.log(data), { parallel: 2 })
+);
 ```

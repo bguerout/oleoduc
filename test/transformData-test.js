@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { transformObject, writeObject } = require("../index");
+const { transformData, writeData } = require("../index");
 const { delay } = require("./testUtils");
 
 const createStream = () => {
@@ -11,7 +11,7 @@ const createStream = () => {
 };
 
 describe(__filename, () => {
-  it("should transformObject", (done) => {
+  it("should transformData", (done) => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -19,15 +19,15 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(transformObject((data) => data.substring(0, 1)))
-      .pipe(writeObject((data) => chunks.push(data)))
+      .pipe(transformData((data) => data.substring(0, 1)))
+      .pipe(writeData((data) => chunks.push(data)))
       .on("finish", () => {
         assert.deepStrictEqual(chunks, ["a", "b"]);
         done();
       });
   });
 
-  it("should transformObject (async)", (done) => {
+  it("should transformData (async)", (done) => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -36,14 +36,14 @@ describe(__filename, () => {
 
     source
       .pipe(
-        transformObject(async (data) => {
+        transformData(async (data) => {
           return new Promise((resolve) => {
             resolve(data.substring(0, 1));
           });
         })
       )
       .pipe(
-        writeObject(async (data) => {
+        writeData(async (data) => {
           return new Promise((resolve) => {
             chunks.push(data);
             resolve();
@@ -56,7 +56,7 @@ describe(__filename, () => {
       });
   });
 
-  it("should transformObject and writeObject (async + parallel)", (done) => {
+  it("should transformData and writeData (async + parallel)", (done) => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -66,7 +66,7 @@ describe(__filename, () => {
 
     source
       .pipe(
-        transformObject(
+        transformData(
           async (data) => {
             return new Promise((resolve) => {
               resolve(data.substring(0, 1));
@@ -76,7 +76,7 @@ describe(__filename, () => {
         )
       )
       .pipe(
-        writeObject(
+        writeData(
           (data) => {
             return delay(() => chunks.push(data), 10);
           },
@@ -89,14 +89,14 @@ describe(__filename, () => {
       });
   });
 
-  it("should transformObject and handle synchronous error", (done) => {
+  it("should transformData and handle synchronous error", (done) => {
     let source = createStream();
     source.push("andré");
     source.push(null);
 
     source
       .pipe(
-        transformObject(() => {
+        transformData(() => {
           throw new Error("An error occurred");
         })
       )
@@ -111,14 +111,14 @@ describe(__filename, () => {
       });
   });
 
-  it("should transformObject and handle asynchronous error", (done) => {
+  it("should transformData and handle asynchronous error", (done) => {
     let source = createStream();
     source.push("andré");
     source.push(null);
 
     source
       .pipe(
-        transformObject(() => {
+        transformData(() => {
           return Promise.reject(new Error("An error occurred"));
         })
       )
@@ -133,7 +133,7 @@ describe(__filename, () => {
       });
   });
 
-  it("should transformObject (parallel options)", (done) => {
+  it("should transformData (parallel options)", (done) => {
     let timeoutPerBatch = 10;
     let tasksPerBatch = 2;
     let acc = [];
@@ -154,14 +154,14 @@ describe(__filename, () => {
 
     source
       .pipe(
-        transformObject(
+        transformData(
           (number) => {
             return delay(() => ({ number, timestamp: Date.now() }), timeoutPerBatch);
           },
           { parallel: tasksPerBatch }
         )
       )
-      .pipe(writeObject((data) => acc.push(data)))
+      .pipe(writeData((data) => acc.push(data)))
       .on("data", () => ({}))
       .on("error", () => {
         assert.fail();

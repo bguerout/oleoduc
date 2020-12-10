@@ -1,9 +1,9 @@
-const transformObject = require("./lib/transformObject.js");
+const transformData = require("./lib/transformData.js");
 
 module.exports = {
   oleoduc: require("multipipe"),
-  transformObject,
-  filterObject: (filter) => transformObject((data) => data, { filter }),
-  writeObject: require("./lib/writeObject.js"),
+  transformData,
+  filterObject: (filter) => transformData((data) => data, { filter }),
+  writeData: require("./lib/writeData.js"),
   jsonStream: require("./lib/jsonStream.js"),
 };
