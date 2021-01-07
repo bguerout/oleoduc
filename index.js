@@ -4,6 +4,8 @@ module.exports = {
   oleoduc: require("multipipe"),
   transformData,
   filterObject: (filter) => transformData((data) => data, { filter }),
-  writeData: require("./lib/writeData.js"),
   jsonStream: require("./lib/jsonStream.js"),
+  csvStream: require("./lib/csvStream.js"),
+  stdoutStream: require("./lib/stdoutStream.js"),
+  writeData: require("./lib/writeData.js"),
 };
