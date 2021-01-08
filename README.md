@@ -1,10 +1,11 @@
 # oleoduc
 
-oleoduc provides utilities to manipulate data when they flow through an _oleoduc_ (french synonym of pipeline) :
+oleoduc (french synonym of pipeline) provides utilities 
+to manipulate data during a stream processing :
 
 - `transformData` to transform data (eg. convert raw data into a json)
 - `filterData` to select/exclude the data processed
-- `jsonStream` to stream a json array
+- `jsonStream` to convert data into a json array
 - `writeData` allows data to be written somewhere (last step)
 
 These functions can be used on any stream or inside a pipeline:
@@ -49,89 +50,79 @@ npm install oleoduc
 yarn add oleoduc
 ```
 
-## Common use cases
-
-Below examples assume the following stream as source
-
-```js
-let stream = createStream();
-stream.push(1);
-stream.push(2);
-stream.push(null);
-```
+## Examples
 
 ### Transform data into objects
 
 ```js
 const { oleoduc, transformData, writeData } = require("oleoduc");
 
-// Input:
+// Source:
 // 1
 // 2
 
 oleoduc(
-  stream,
+  source,
   transformData((data) => ({ field: data })),
   writeData((obj) => console.log(obj))
 );
 
 // Output:
-//  { field: 10 }
-//  { field: 20 }
+//  { field: 1 }
+//  { field: 2 }
 ```
 
-### Stream a json array
+### Stream data as if it where a json array
 
 ```js
 const { oleoduc, jsonStream } = require("oleoduc");
 const { createWriteStream } = require("fs");
 
-// Input:
-// 1
-// 2
+// Source:
+// { field: 1 }
+// { field: 22 }
 
 await oleoduc(
-  stream,
-  transformData((data) => ({ field: data })),
+  source,
   jsonStream(),
   createWriteStream(file)
 );
 
 // Output
-// [{ field: 10 }, { field: 20 }]
+// [{ field: 1 }, { field: 2 }]
 
 ```
 
-### Stream a json array wrapped into an object
+### Stream data as if it where a json array wrapped into an object
 
 ```js
 const { oleoduc, jsonStream } = require("oleoduc");
 const { createWriteStream } = require("fs");
 
-// Input:
-// 1
-// 2
+// Source:
+// { field: 1 }
+// { field: 2 }
 
 await oleoduc(
-  stream,
-  transformData((data) => ({ field: data })),
+  source,
   jsonStream({ arrayWrapper: { other: "data" }, arrayPropertyName: "results" }),
   createWriteStream(file)
 );
 
 // Output
-// { other: "data", results: [{ field: 10 }, { field: 20 }] }
+// { other: "data", results: [{ field: 1 }, { field: 2 }] }
 
 ```
 
 ### Handle errors
 
+Using pipe
+
 ```js
 const { oleoduc, writeData } = require("oleoduc");
 
-//Using pipe
 oleoduc(
-  stream,
+  source,
   writeData((obj) => throw new Error())
 )
   .on("error", (e) => {
@@ -142,11 +133,15 @@ oleoduc(
     done();
   });
 
+```
 
-//Using async/await
+Using async/await
+
+```js
+
 try {
   await oleoduc(
-    stream,
+    source,
     writeData((obj) => throw new Error())
   );
 } catch (e) {
@@ -157,20 +152,20 @@ try {
 ### Filtering data
 
 ```js
-const { oleoduc, filterObject, writeData } = require("oleoduc");
+const { oleoduc, filterData, writeData } = require("oleoduc");
 
-// Input:
+// Source:
 // 1
 // 2
 
 await oleoduc(
-  stream,
-  filterObject((data) => data > 15),
+  source,
+  filterData((data) => data > 1),
   writeData((data) => console.log(data))
 );
 
 // Output:
-//  20
+//  2
 ```
 
 ### Async
@@ -181,13 +176,13 @@ All utilities can return a promise.
 const { oleoduc, transformData, writeData } = require("oleoduc");
 
 await oleoduc(
-  stream,
+  source,
   transformData((data) => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(data), 1000);
     });
   }),
-  filterObject(async (data) => {
+  filterData(async (data) => {
     let value = await retrieveValue();
     return value > data;
   }),
@@ -201,7 +196,7 @@ await oleoduc(
 const { oleoduc, transformData, writeData } = require("oleoduc");
 
 await oleoduc(
-  stream,
+  source,
   writeData((data) => save(data), { parallel: 2 })
 );
 ```
@@ -215,7 +210,7 @@ You can split your stream in multiple fragments
 ```js
 const { transformData, writeData } = require("oleoduc");
 
-let getTransformedStream = (source) => {
+let getSource = () => {
   return oleoduc(
     source,
     transformData((data) => data * 10)
@@ -223,7 +218,21 @@ let getTransformedStream = (source) => {
 };
 
 await oleoduc(
-  getTransformedStream(stream),
+  getSource(),
   writeData((data) => console.log(data), { parallel: 2 })
 );
+```
+
+### Source
+
+Above examples can be tested with a readable stream
+
+```js
+let source = new Readable({
+  objectMode: true,
+  read() {},
+});
+source.push(1);
+source.push(2);
+source.push(null);
 ```

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { filterObject } = require("../index");
+const { filterData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -19,7 +19,7 @@ describe(__filename, () => {
 
     source
       .pipe(
-        filterObject((value) => {
+        filterData((value) => {
           return value !== null && value !== undefined && Object.keys(value).length > 0;
         })
       )
@@ -39,7 +39,7 @@ describe(__filename, () => {
 
     let lines = 0;
     source
-      .pipe(filterObject(() => lines++ !== 0))
+      .pipe(filterData(() => lines++ !== 0))
       .on("data", (d) => chunks.push(d))
       .on("end", () => {
         assert.deepStrictEqual(chunks, ["second"]);
