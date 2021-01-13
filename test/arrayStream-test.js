@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { arrayStream, reduceData, writeData } = require("../index");
+const { arrayStream, accumulateData, writeData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -37,7 +37,7 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(reduceData((acc, data) => [...acc, data.substring(0, 1)], { initialValue: [] }))
+      .pipe(accumulateData((acc, data) => [...acc, data.substring(0, 1)], { accumulator: [] }))
       .pipe(arrayStream())
       .pipe(
         writeData((data) => {
