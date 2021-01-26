@@ -2,6 +2,7 @@ const transformData = require("./lib/transformData.js");
 
 module.exports = {
   oleoduc: require("./lib/oleoduc.js"),
+  mergeStreams: require("merge-stream"),
   transformData,
   accumulateData: require("./lib/accumulateData.js"),
   filterData: (filter) => transformData((data) => data, { filter }),
