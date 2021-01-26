@@ -23,7 +23,7 @@
   "homepage": "https://github.com/bguerout/oleoduc#readme",
   "dependencies": {
     "cyclist": "1.0.1",
-    "multipipe": "4.0.0",
+    "duplexer2": "0.1.4",
     "parallel-transform": "1.2.0"
   },
   "devDependencies": {

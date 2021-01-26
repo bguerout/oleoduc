@@ -1,7 +1,7 @@
 const transformData = require("./lib/transformData.js");
 
 module.exports = {
-  oleoduc: require("multipipe"),
+  oleoduc: require("./lib/oleoduc.js"),
   transformData,
   accumulateData: require("./lib/accumulateData.js"),
   filterData: (filter) => transformData((data) => data, { filter }),
