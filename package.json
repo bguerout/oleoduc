@@ -24,6 +24,7 @@
   "dependencies": {
     "cyclist": "1.0.1",
     "duplexer2": "0.1.4",
+    "merge-stream": "2.0.0",
     "parallel-transform": "1.2.0"
   },
   "devDependencies": {
