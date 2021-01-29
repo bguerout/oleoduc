@@ -26,7 +26,12 @@ describe(__filename, () => {
         accumulateData(
           (acc, data, flush) => {
             acc += data;
-            return acc.length === 3 ? flush(acc) : acc;
+            if (acc.length !== 3) {
+              return acc;
+            }
+
+            flush(acc);
+            return ""; // Reset accumulator
           },
           { accumulator: "" }
         )
