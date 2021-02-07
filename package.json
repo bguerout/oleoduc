@@ -32,10 +32,10 @@
   "dependencies": {
     "cyclist": "1.0.1",
     "duplexer3": "0.1.4",
-    "parallel-transform": "1.2.0",
-    "slow-stream": "0.0.4"
+    "parallel-transform": "1.2.0"
   },
   "devDependencies": {
+    "slow-stream": "0.0.4",
     "eslint": "7.19.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-plugin-node": "11.1.0",
