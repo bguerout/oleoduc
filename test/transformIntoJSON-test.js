@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { jsonStream } = require("../index");
+const { transformIntoJSON } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -18,7 +18,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream())
+      .pipe(transformIntoJSON())
       .on("data", (d) => {
         return (json += d);
       })
@@ -34,7 +34,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream())
+      .pipe(transformIntoJSON())
       .on("data", (d) => {
         return (json += d);
       })
@@ -51,7 +51,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream({ arrayPropertyName: "results" }))
+      .pipe(transformIntoJSON({ arrayPropertyName: "results" }))
       .on("data", (d) => {
         return (json += d);
       })
@@ -67,7 +67,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream({ arrayPropertyName: "results" }))
+      .pipe(transformIntoJSON({ arrayPropertyName: "results" }))
       .on("data", (d) => {
         return (json += d);
       })
@@ -84,7 +84,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
+      .pipe(transformIntoJSON({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
       .on("data", (d) => {
         return (json += d);
       })
@@ -100,7 +100,7 @@ describe(__filename, () => {
     let json = "";
 
     sourceStream
-      .pipe(jsonStream({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
+      .pipe(transformIntoJSON({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
       .on("data", (d) => {
         return (json += d);
       })

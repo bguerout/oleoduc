@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { csvStream, writeData } = require("../index");
+const { transformIntoCSV, writeData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -17,7 +17,7 @@ describe(__filename, () => {
 
     let csv = [];
     source
-      .pipe(csvStream())
+      .pipe(transformIntoCSV())
       .pipe(
         writeData((line) => {
           csv.push(line);
@@ -37,7 +37,7 @@ describe(__filename, () => {
     let csv = [];
     source
       .pipe(
-        csvStream({
+        transformIntoCSV({
           sepatator: "|",
           columns: {
             name: (data) => `${data.firstName} ${data.lastName}`,
@@ -51,6 +51,35 @@ describe(__filename, () => {
       )
       .on("finish", () => {
         assert.deepStrictEqual(csv, ["name\n", "Robert Hue\n"]);
+        done();
+      });
+  });
+
+  it("should catch error in transformIntoCSV", (done) => {
+    let result = [];
+    let source = createStream();
+    source.push("a");
+    source.push(null);
+
+    let transformer = transformIntoCSV({
+      sepatator: "|",
+      columns: {
+        name() {
+          throw new Error("Unable to hande data");
+        },
+      },
+    });
+
+    transformer.on("error", (e) => {
+      assert.strictEqual(e.message, "Unable to hande data");
+      done();
+    });
+
+    source
+      .pipe(transformer)
+      .pipe(writeData((data) => result.push(data)))
+      .on("finish", () => {
+        assert.fail();
         done();
       });
   });
