@@ -5,6 +5,14 @@
   "engines": {
     "node": ">= 10"
   },
+  "keywords": [
+    "stream",
+    "streams",
+    "pipeline",
+    "pipe",
+    "transform",
+    "parallel"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive --exit --timeout 1000 test/",
