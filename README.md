@@ -5,7 +5,7 @@ to manipulate data during a stream processing :
 
 - `transformData` to transform data (eg. convert raw data into a json)
 - `filterData` to select/exclude the data processed
-- `jsonStream` to convert data into a json array
+- `transformIntoJSON` to convert data into a json array
 - `writeData` allows data to be written somewhere (last step)
 
 These functions can be used on any stream or inside a pipeline:
@@ -75,7 +75,7 @@ oleoduc(
 ### Stream data as if it where a json array
 
 ```js
-const { oleoduc, jsonStream } = require("oleoduc");
+const { oleoduc, transformIntoJSON } = require("oleoduc");
 const { createWriteStream } = require("fs");
 
 // Source:
@@ -84,7 +84,7 @@ const { createWriteStream } = require("fs");
 
 await oleoduc(
   source,
-  jsonStream(),
+  transformIntoJSON(),
   createWriteStream(file)
 );
 
@@ -96,7 +96,7 @@ await oleoduc(
 ### Stream data as if it where a json array wrapped into an object
 
 ```js
-const { oleoduc, jsonStream } = require("oleoduc");
+const { oleoduc, transformIntoJSON } = require("oleoduc");
 const { createWriteStream } = require("fs");
 
 // Source:
@@ -105,7 +105,7 @@ const { createWriteStream } = require("fs");
 
 await oleoduc(
   source,
-  jsonStream({ arrayWrapper: { other: "data" }, arrayPropertyName: "results" }),
+  transformIntoJSON({ arrayWrapper: { other: "data" }, arrayPropertyName: "results" }),
   createWriteStream(file)
 );
 

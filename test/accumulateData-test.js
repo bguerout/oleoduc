@@ -10,7 +10,7 @@ const createStream = () => {
 };
 
 describe(__filename, () => {
-  it("can accumulateData into new chunks", (done) => {
+  it("can accumulateData by grouping them (flush)", (done) => {
     let result = [];
     let source = createStream();
     source.push("a");
@@ -43,7 +43,7 @@ describe(__filename, () => {
       });
   });
 
-  it("can accumulateData into a single new chunk (no flush)", (done) => {
+  it("can accumulateData into a single chunk (no flush)", (done) => {
     let result = [];
     let source = createStream();
     source.push("a");
@@ -59,6 +59,29 @@ describe(__filename, () => {
       .pipe(writeData((data) => result.push(data)))
       .on("finish", () => {
         assert.deepStrictEqual(result, ["abcdef"]);
+        done();
+      });
+  });
+
+  it("should catch error in accumulateData", (done) => {
+    let result = [];
+    let source = createStream();
+    source.push("a");
+    source.push(null);
+
+    let accumulator = accumulateData(() => {
+      throw new Error("Unable to hande data");
+    });
+    accumulator.on("error", (e) => {
+      assert.strictEqual(e.message, "Unable to hande data");
+      done();
+    });
+
+    source
+      .pipe(accumulator)
+      .pipe(writeData((data) => result.push(data)))
+      .on("finish", () => {
+        assert.fail();
         done();
       });
   });

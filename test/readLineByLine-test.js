@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { lineStream, writeData } = require("../index");
+const { readLineByLine, writeData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -19,7 +19,7 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(lineStream())
+      .pipe(readLineByLine())
       .pipe(
         writeData((data) => {
           return result.push(data);

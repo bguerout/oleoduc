@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { flatMapStream, accumulateData, writeData } = require("../index");
+const { flattenArray, accumulateData, writeData } = require("../index");
 const SlowStream = require("slow-stream");
 
 const createStream = () => {
@@ -18,8 +18,7 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(flatMapStream())
-      .pipe(new SlowStream({ maxWriteInterval: 100 }))
+      .pipe(flattenArray())
       .pipe(
         writeData((data) => {
           result += data;
@@ -40,7 +39,7 @@ describe(__filename, () => {
 
     source
       .pipe(accumulateData((acc, data) => [...acc, data.substring(0, 1)], { accumulator: [] }))
-      .pipe(flatMapStream())
+      .pipe(flattenArray())
       .pipe(
         writeData((data) => {
           result += data.toUpperCase();
@@ -48,6 +47,26 @@ describe(__filename, () => {
       )
       .on("finish", () => {
         assert.deepStrictEqual(result, "AB");
+        done();
+      });
+  });
+
+  it("should stop when down streams are busy", (done) => {
+    let result = "";
+    let source = createStream();
+    source.push(["andré", "bruno", "robert"]);
+    source.push(null);
+
+    source
+      .pipe(flattenArray({ highWaterMark: 1 }))
+      .pipe(new SlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
+      .pipe(
+        writeData((data) => {
+          result += data;
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(result, "andrébrunorobert");
         done();
       });
   });

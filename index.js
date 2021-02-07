@@ -1,18 +1,14 @@
-const oleoduc = require("./lib/oleoduc.js");
 const transformData = require("./lib/transformData.js");
-const splitStream = require("./lib/splitStream");
 
 module.exports = {
-  oleoduc,
+  oleoduc: require("./lib/oleoduc.js"),
   transformData,
+  transformIntoJSON: require("./lib/transformIntoJSON.js"),
+  transformIntoCSV: require("./lib/transformIntoCSV.js"),
+  readLineByLine: require("./lib/readLineByLine"),
+  flattenArray: require("./lib/flattenArray.js"),
   filterData: (filter) => transformData((data) => data, { filter }),
   accumulateData: require("./lib/accumulateData.js"),
   writeData: require("./lib/writeData.js"),
-  mergeStreams: require("./lib/mergeStreams.js"),
-  multiStream: (...streams) => oleoduc(...streams, { promisify: false }),
-  lineStream: () => splitStream({ separator: /\r?\n/, trailing: false }),
-  flatMapStream: require("./lib/flatMapStream.js"),
-  jsonStream: require("./lib/jsonStream.js"),
-  csvStream: require("./lib/csvStream.js"),
-  stdoutStream: require("./lib/stdoutStream.js"),
+  writeToStdout: require("./lib/writeToStdout.js"),
 };
