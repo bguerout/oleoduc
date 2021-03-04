@@ -49,7 +49,6 @@ describe(__filename, () => {
     let nbParallelTasks = 2;
     let acc = [];
 
-    let start = Date.now();
     let source = createStream();
     //first batch
     source.push(1);
@@ -63,6 +62,7 @@ describe(__filename, () => {
 
     source.push(null);
 
+    let start = Date.now();
     source
       .pipe(
         transformData(
@@ -84,9 +84,9 @@ describe(__filename, () => {
         );
 
         // 2 tasks per batch with 10ms of timeout
-        let timeElapsed = acc.find((r) => r.number === 6).timestamp - start;
+        let timeElapsed = acc[acc.length - 1].timestamp - start;
         assert.ok(timeElapsed < 60);
-        assert.ok(timeElapsed > 30);
+        assert.ok(timeElapsed > 29);
         done();
       });
   });
@@ -96,7 +96,6 @@ describe(__filename, () => {
     let nbParallelTasks = 2;
     let acc = [];
 
-    let start = Date.now();
     let source = createStream();
     //first batch
     source.push(1);
@@ -110,6 +109,7 @@ describe(__filename, () => {
 
     source.push(null);
 
+    let start = Date.now();
     source
       .pipe(
         writeData(
@@ -126,9 +126,9 @@ describe(__filename, () => {
         );
 
         // 2 tasks per batch with 10ms of timeout
-        let timeElapsed = acc.find((r) => r.number === 6).timestamp - start;
+        let timeElapsed = acc[acc.length - 1].timestamp - start;
         assert.ok(timeElapsed < 60);
-        assert.ok(timeElapsed > 30);
+        assert.ok(timeElapsed >= 29);
         done();
       });
   });
