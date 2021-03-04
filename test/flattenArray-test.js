@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
 const { flattenArray, accumulateData, writeData } = require("../index");
-const SlowStream = require("slow-stream");
+const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
 
 const createStream = () => {
   return new Readable({
