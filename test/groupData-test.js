@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { chunk, writeData } = require("../index");
+const { groupData, writeData } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -10,7 +10,7 @@ const createStream = () => {
 };
 
 describe(__filename, () => {
-  it("can create chunks", (done) => {
+  it("can create group of data", (done) => {
     let results = [];
     let source = createStream();
     source.push("abc");
@@ -19,7 +19,7 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(chunk())
+      .pipe(groupData())
       .pipe(
         writeData((group) => {
           return results.push(group);
@@ -31,7 +31,7 @@ describe(__filename, () => {
       });
   });
 
-  it("can create chunks with custom size", (done) => {
+  it("can create group of data with custom size", (done) => {
     let results = [];
     let source = createStream();
     source.push("abc");
@@ -40,7 +40,7 @@ describe(__filename, () => {
     source.push(null);
 
     source
-      .pipe(chunk({ size: 2 }))
+      .pipe(groupData({ size: 2 }))
       .pipe(
         writeData((group) => {
           return results.push(group);
