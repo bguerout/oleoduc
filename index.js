@@ -7,7 +7,7 @@ module.exports = {
   transformIntoCSV: require("./lib/transformIntoCSV.js"),
   filterData: (filter) => transformData((data) => data, { filter }),
   accumulateData: require("./lib/accumulateData.js"),
-  chunk: require("./lib/chunk"),
+  groupData: require("./lib/groupData"),
   readLineByLine: require("./lib/readLineByLine"),
   flattenArray: require("./lib/flattenArray.js"),
   writeData: require("./lib/writeData.js"),
