@@ -2,35 +2,43 @@
 set -euo pipefail
 
 readonly PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
+readonly AUTH_TOKEN="${AUTH_TOKEN:?'AUTH_TOKEN env variable must exist'}"
 
-function safeguard {
+function safeguard() {
   local release_version="${1}"
 
-   while true; do
+  echo "Checking if AUTH_TOKEN is valid..."
+  NPM_CONFIG_TOKEN="${AUTH_TOKEN}" npm token list --json >/dev/null 2>&1 || {
+    echo "AUTH_TOKEN is invalid"
+    exit 1
+  }
+  echo "AUTH_TOKEN is valid and can be used to publish."
+
+  while true; do
     read -p $'[WARN] Do you really want to publish version '"$release_version"$' (y/n) ?' yn
     case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
+    [Yy]*) break ;;
+    [Nn]*) exit ;;
+    *) echo "Please answer yes or no." ;;
     esac
-    done
+  done
 }
 
-function clean_resources {
-    local repo_dir;
+function clean_resources() {
+  local repo_dir
 
-    echo "Cleaning resources..."
-    repo_dir="$(mktemp --dry-run)"
-    pkill -P $$
-    find "${TMPDIR:-"$(dirname "${repo_dir}")"}" -depth -type d -name "oleoduc" -exec rm -rf {} \;
+  echo "Cleaning resources..."
+  repo_dir="$(mktemp --dry-run)"
+  pkill -P $$
+  find "${TMPDIR:-"$(dirname "${repo_dir}")"}" -depth -type d -name "oleoduc" -exec rm -rf {} \;
 }
 
-function main {
-  local branch_name="${1:?"Please provide a branch name (eg. master)"}";
-  local release_version;
-  local next_version;
-  local repo_dir;
-  local repo_url;
+function main() {
+  local branch_name="${1:?"Please provide a branch name (eg. master)"}"
+  local release_version
+  local next_version
+  local repo_dir
+  local repo_url
 
   cd "${PROJECT_DIR}"
   release_version=$(node -e "console.log(require('./package.json').version);")
@@ -52,7 +60,7 @@ function main {
   git push origin "${release_version}"
 
   echo "Publishing module into npm repository..."
-  npm publish
+  NPM_CONFIG_TOKEN="${AUTH_TOKEN}" npm publish
 
   echo "Preparing project for next release..."
   npm version patch --no-git-tag-version
@@ -66,4 +74,3 @@ function main {
 
 trap clean_resources EXIT HUP INT QUIT PIPE TERM
 main "$@"
-

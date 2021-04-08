@@ -13,32 +13,31 @@ describe(__filename, () => {
   it("can accumulateData by grouping them (flush)", (done) => {
     let result = [];
     let source = createStream();
-    source.push("a");
-    source.push("b");
-    source.push("c");
-    source.push("d");
-    source.push("e");
-    source.push("f");
+    source.push("John");
+    source.push("Doe");
+    source.push("Robert");
+    source.push("Hue");
     source.push(null);
 
     source
       .pipe(
         accumulateData(
           (acc, data, flush) => {
-            acc += data;
-            if (acc.length !== 3) {
+            acc = [...acc, data];
+
+            if (acc.length < 2) {
               return acc;
             }
 
-            flush(acc);
-            return ""; // Reset accumulator
+            flush(acc.join(" "));
+            return []; // Reset accumulator
           },
-          { accumulator: "" }
+          { accumulator: [] }
         )
       )
       .pipe(writeData((data) => result.push(data)))
       .on("finish", () => {
-        assert.deepStrictEqual(result, ["abc", "def"]);
+        assert.deepStrictEqual(result, ["John Doe", "Robert Hue"]);
         done();
       });
   });
@@ -46,19 +45,17 @@ describe(__filename, () => {
   it("can accumulateData into a single chunk (no flush)", (done) => {
     let result = [];
     let source = createStream();
-    source.push("a");
-    source.push("b");
-    source.push("c");
-    source.push("d");
-    source.push("e");
-    source.push("f");
+    source.push("j");
+    source.push("o");
+    source.push("h");
+    source.push("n");
     source.push(null);
 
     source
       .pipe(accumulateData((acc, data) => acc + data, { accumulator: "" }))
       .pipe(writeData((data) => result.push(data)))
       .on("finish", () => {
-        assert.deepStrictEqual(result, ["abcdef"]);
+        assert.deepStrictEqual(result, ["john"]);
         done();
       });
   });
