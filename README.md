@@ -60,9 +60,9 @@ await oleoduc(
 )
 ```
 
-## API
+# API
 
-### oleoduc(...streams, [options])
+## oleoduc(...streams, [options])
 
 Pipe streams together, forwards errors and returns a promisified stream.
 
@@ -130,9 +130,9 @@ try {
 }
 ```
 
-### transformData(callback, [options])
+## transformData(callback, [options])
 
-`transformData` allows data to be manipulated and transformed during a stream processing.
+Allows data to be manipulated and transformed during a stream processing.
 
 Note that by default a chunk is processed just after the previous one has been pushed to the next step (sequentially).
 
@@ -176,9 +176,9 @@ oleoduc(
 }
 ```
 
-### filterData(callback, [options])
+## filterData(callback, [options])
 
-`filterData` allows data to be filtered (return false to ignore the current chunk).
+Allows data to be filtered (return false to ignore the current chunk).
 
 Note that by default a chunk is processed just after the previous one has been pushed to the next step (sequentially).
 
@@ -215,9 +215,9 @@ oleoduc(
 1
 ```
 
-### writeData(callback, [options])
+## writeData(callback, [options])
 
-`writeData` allows data to be written somewhere. Note that it must be the last step.
+Allows data to be written somewhere. Note that it must be the last step.
 
 Note that by default a chunk is processed just after the previous one has been written (sequentially).
 
@@ -258,9 +258,9 @@ await oleoduc(
 );
 ```
 
-### accumulateData(callback, [options])
+## accumulateData(callback, [options])
 
-`accumulateData` allows data to be accumulated before piping them to the next step. It can be used to reduce the data or
+Allows data to be accumulated before piping them to the next step. It can be used to reduce the data or
 to create group
 
 #### Parameters
@@ -328,7 +328,7 @@ oleoduc(
 ]
 ```
 
-### groupData([options])
+## groupData([options])
 
 A pre-built accumulator to create group of data
 
@@ -358,9 +358,9 @@ oleoduc(
 ]
 ```
 
-### flattenArray([options])
+## flattenArray([options])
 
-`flattenArray` allows chunks of array to be streamed as if it were part of the source
+Allows chunks of array to be streamed as if it were part of the source
 
 #### Parameters
 
@@ -389,9 +389,9 @@ oleoduc(
 "Robert Hue"
 ```
 
-### transformIntoJSON([options])
+## transformIntoJSON([options])
 
-`transformIntoJSON` allows data to be streamed as if it were a json string
+Allows data to be streamed as if it were a json string
 
 #### Parameters
 
@@ -438,9 +438,9 @@ await oleoduc(
 '{ other: "data", users: [{ user: "John Doe" }, { user: "Robert Hue" }] }'
 ```
 
-### transformIntoCSV([options])
+## transformIntoCSV([options])
 
-`transformIntoCSV` allows data to be streamed as if it were a csv
+Allows data to be streamed as if it were a csv
 
 #### Parameters
 
@@ -502,9 +502,9 @@ Robert Hue|2021-03-12T21:34:13.085Z
 `
 ```
 
-### readLineByLine()
+## readLineByLine()
 
-`readLineByLine` allows data to be read line by line
+Allows data to be read line by line
 
 #### Examples
 
