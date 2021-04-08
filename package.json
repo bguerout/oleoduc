@@ -24,7 +24,7 @@
     "url": "git+https://github.com/bguerout/oleoduc.git"
   },
   "author": "Benoît Guérout",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/bguerout/oleoduc/issues"
   },
