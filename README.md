@@ -14,25 +14,28 @@ oleoduc (french synonym of pipeline) provides tools to stream the data you manip
 const { oleoduc, transformData, writeData } = require("oleoduc");
 const { Readable } = require("stream");
 
-let source = Readable.from(["Hello", "World"]);
+let source = Readable.from(["Huge", "List", "..."]);
 
 await oleoduc(
   source,
-  transformData((data) => data.toString()),
+  transformData((data) => data.toLowerCase()),
   writeData((data) => console.log(data)),
 )
 ```
 
-## Practical examples:
+## Real life examples:
 
 Stream MongoDB documents to client through an express server
 
 ```js
 const express = require("express");
+const mongodb = require("mongodb");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
-
+  
 const app = express();
 app.get("/documents", async (req, res) => {
+    // No need to load all the documents into the memory. 
+    // Consume the MongoDB cursor and send documents as it flows
     oleoduc(
       db.collection("documents").find(),
       transformIntoJSON(),
@@ -42,12 +45,13 @@ app.get("/documents", async (req, res) => {
 );
 ```
 
-Import file into a database without loading all content into the memory
+Import file into a database
 
 ```js
 const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
 const { createReadStream } = require("fs");
 
+//No need to load all file content into the memory. Stream lines and save them as it flows
 await oleoduc(
   createReadStream("/path/to/file"),
   readLineByLine(),
@@ -97,7 +101,7 @@ await oleoduc(
 );
 ```
 
-Create an oleoduc and handle errors with an event listener
+Create an oleoduc and handle errors in single event listener
 
 ```js
 const { oleoduc, writeData } = require("oleoduc");
@@ -126,7 +130,7 @@ try {
 }
 ```
 
-### transformData
+### transformData(callback, [options])
 
 `transformData` allows data to be manipulated and transformed during a stream processing.
 
@@ -136,12 +140,14 @@ This behaviour can be changed to transform multiple chunks in parallel (based
 on [parallel-transform](https://www.npmjs.com/package/parallel-transform)). This is useful when transforming chunk is
 slow (ie. async call to a database).
 
-#### Options
+#### Parameters
 
-| Name | Description  | Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| parallel | Number of chunks processed at the same time | 1  |`{ parallel: 1 }`  |
-| * | The rest of the options is passed to `parallel-transform`  | `{ objectMode: true }`  |`{ highWaterMark: 32 }`  |
+- `callback`: a function with signature `function(data)` that must return the transformed data or null to ignored it.
+  Note that the returned value can be a promise.
+- `options`:
+    - `parallel`: Number of chunks processed at the same time (default: 1)
+    - `*`: The rest of the options is passed
+      to [parallel-transform](https://github.com/mafintosh/parallel-transform#stream-options)
 
 #### Examples
 
@@ -170,7 +176,7 @@ oleoduc(
 }
 ```
 
-### filterData
+### filterData(callback, [options])
 
 `filterData` allows data to be filtered (return false to ignore the current chunk).
 
@@ -180,12 +186,14 @@ This behaviour can be changed to filter multiple chunks in parallel (based
 on [parallel-transform](https://www.npmjs.com/package/parallel-transform)). This is useful when filtering chunk is slow
 .
 
-#### Options
+#### Parameters
 
-| Name | Description  | Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| parallel | Number of chunks processed at the same time | 1  |`{ parallel: 1 }`  |
-| * | The rest of the options is passed to `parallel-transform`  | `{ objectMode: true }`  |`{ highWaterMark: 32 }`  |
+- `callback`: a function with signature `function(data)` that must return the transformed data or null to ignored it.
+  Note that the returned value can be a promise.
+- `options`:
+    - `parallel`: Number of chunks processed at the same time (default: 1)
+    - `*`: The rest of the options is passed
+      to [parallel-transform](https://github.com/mafintosh/parallel-transform#stream-options)
 
 #### Examples
 
@@ -207,7 +215,7 @@ oleoduc(
 1
 ```
 
-### writeData
+### writeData(callback, [options])
 
 `writeData` allows data to be written somewhere. Note that it must be the last step.
 
@@ -216,12 +224,14 @@ Note that by default a chunk is processed just after the previous one has been w
 This behaviour can be changed to write multiple chunks in parallel. This is useful when writing chunk is slow (ie. async
 call to a database).
 
-#### Options
+#### Parameters
 
-| Name | Description  | Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| parallel | Number of chunks processed at the same time | 1  |`{ parallel: 1 }`  |
-| * | The rest of the options is passed to `stream.Writable`  | `{ objectMode: true }`  |`{ highWaterMark: 32 }`  |
+- `callback`: a function with signature `function(data)` to write the data. Note that the returned value can be a
+  promise.
+- `options`:
+    - `parallel`: Number of chunks processed at the same time (default: 1)
+    - `*`: The rest of the options is passed
+      to [stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)
 
 #### Examples
 
@@ -248,17 +258,19 @@ await oleoduc(
 );
 ```
 
-### accumulateData
+### accumulateData(callback, [options])
 
-`accumulateData` allows data to be accumulated before piping them to the next step. It can be used to reduce all the
-data or to create group
+`accumulateData` allows data to be accumulated before piping them to the next step. It can be used to reduce the data or
+to create group
 
-#### Options
+#### Parameters
 
-| Name  |Description| Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| accumulator  |Initial value of the accumulator| undefined  |`{ accumulator: [] }`  |
-| * | The rest of the options is passed to `stream.Transform`  | `{ objectMode: true }`   |`{ highWaterMark: 32 }`  |
+- `callback`: a function with signature `function(acc, data, flush)` that must return the accumulated data (can be a
+  promise). Call `flush` to push the data accumulated yet;
+- `options`:
+    - `accumulator`: Initial value of the accumulator (default: undefined)
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
 
 #### Examples
 
@@ -282,7 +294,7 @@ oleoduc(
 "john"
 ```
 
-Group values from the source
+Group values
 
 ```js
 const { oleoduc, accumulateData, writeData } = require("oleoduc");
@@ -292,14 +304,16 @@ let source = Readable.from(["John", "Doe", "Robert", "Hue"]);
 
 oleoduc(
   source,
-  accumulateData((array, value, flush) => {
-    //Grouping firstname and lastname
-    acc = [...acc, data];
-    if (acc.length < 2) {
-      return acc;
+  accumulateData((group, data, flush) => {
+    //Group firstname and lastname
+    group = [...group, data];
+    if (group.length < 2) {
+      //Accumulate data until we have a group with firstname and lastname
+      return group;
     } else {
-      //flush and reset accumulator for the next group
-      flush(acc.join(" "));
+      //flush the group
+      flush(group.join(" "));
+      //Reset accumulator for the next group
       return [];
     }
 
@@ -314,15 +328,45 @@ oleoduc(
 ]
 ```
 
-### flattenArray
+### groupData([options])
+
+A pre-built accumulator to create group of data
+
+#### Parameters
+
+- `options`:
+    - `size`: The number of elements in each group
+
+#### Examples
+
+```js
+const { oleoduc, groupData, writeData } = require("oleoduc");
+const { Readable } = require("stream");
+
+let source = Readable.from(["John", "Doe", "Robert", "Hue"]);
+
+oleoduc(
+  source,
+  groupData({ size: 2 }),
+  writeData((array) => console.log(array))
+);
+
+// --> Output:
+[
+  "John Doe",
+  "Robert Hue"
+]
+```
+
+### flattenArray([options])
 
 `flattenArray` allows chunks of array to be streamed as if it were part of the source
 
-#### Options
+#### Parameters
 
-| Name  |Description| Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| * | The rest of the options is passed to `stream.Transform`  | `{ objectMode: true }`   |`{ highWaterMark: 32 }`  |
+- `options`:
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
 
 #### Examples
 
@@ -345,16 +389,15 @@ oleoduc(
 "Robert Hue"
 ```
 
-### transformIntoJSON
+### transformIntoJSON([options])
 
-`transformIntoJSON` allows data to be streamed as if it were a json array or a json object
+`transformIntoJSON` allows data to be streamed as if it were a json string
 
-#### Options
+#### Parameters
 
-| Name  |Description| Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| arrayWrapper |The wrapper object| -  |`{ arrayWrapper: { value:"hello" } }`  |
-| arrayPropertyName |The name of the array in the wrapper object| -  |`{ arrayPropertyName: "myArray" }`  |
+- `options`:
+    - `arrayWrapper`: The wrapper object
+    - `arrayPropertyName`: The json property name of the array
 
 #### Examples
 
@@ -377,7 +420,7 @@ await oleoduc(
 
 ```
 
-Stream data as if it where a json object
+Stream data as if it where a json object with an array property inside
 
 ```js
 const { oleoduc, transformIntoJSON, writeData } = require("oleoduc");
@@ -395,16 +438,15 @@ await oleoduc(
 '{ other: "data", users: [{ user: "John Doe" }, { user: "Robert Hue" }] }'
 ```
 
-### transformIntoCSV
+### transformIntoCSV([options])
 
 `transformIntoCSV` allows data to be streamed as if it were a csv
 
-#### Options
+#### Parameters
 
-| Name  |Description| Default value |Example |
-| -------------| ------------- | ------------- |------------- |
-| separator |The separator between columns| `;`  |`{ separator: "|"}`  |
-| columns |The list of columns with a mapper| keys of the object provided  |`{ columns: {name: (data) => data.toString()} }`  |
+- `options`:
+    - `separator`: The separator between columns (default : `;`)
+    - `columns`: An object to map each column (default: the keys of the object)
 
 #### Examples
 
@@ -460,7 +502,7 @@ Robert Hue|2021-03-12T21:34:13.085Z
 `
 ```
 
-### readLineByLine
+### readLineByLine()
 
 `readLineByLine` allows data to be read line by line
 
@@ -519,51 +561,3 @@ await oleoduc(
 ]
 
 ```
-
-## Misc
-
-### Using nodejs stream API
-
-Functions can be used on any nodejs stream:
-
-```js
-const { transformData, writeData } = require("oleoduc");
-
-stream
-  .pipe(transformData((data) => data.toString()))
-  .pipe(writeData((data) => console.log(data)))
-  .on("finish", () => console.log("done"))
-```
-
-```js
-const { pipeline } = require('stream');
-const { transformData, writeData } = require("oleoduc");
-
-pipeline(
-  transformData((data) => data.toString()),
-  writeData((data) => console.log(data)),
-)
-```
-
-### Async/Await
-
-All utilities can return a promise.
-
-```js
-const { oleoduc, transformData, writeData } = require("oleoduc");
-
-await oleoduc(
-  source,
-  transformData((data) => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(data), 1000);
-    });
-  }),
-  filterData(async (data) => {
-    let value = await retrieveValue();
-    return value > data;
-  }),
-  writeData((obj) => console.log(obj))
-);
-```
-
