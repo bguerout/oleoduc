@@ -48,6 +48,25 @@ describe(__filename, () => {
       });
   });
 
+  it("should transform object into a csv with bom", (done) => {
+    let source = createStream();
+    source.push({ firstName: "Robert", lastName: "Hue" });
+    source.push(null);
+
+    let csv = [];
+    source
+      .pipe(transformIntoCSV({ bom: true }))
+      .pipe(
+        writeData((line) => {
+          csv.push(line);
+        })
+      )
+      .on("finish", () => {
+        assert.ok(csv[0].startsWith("\ufeff"));
+        done();
+      });
+  });
+
   it("should transform object into a csv with custom columns and separator", (done) => {
     let source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
