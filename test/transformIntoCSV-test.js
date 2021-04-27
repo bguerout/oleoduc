@@ -29,6 +29,25 @@ describe(__filename, () => {
       });
   });
 
+  it("should transform object into a csv with fields enclosed in double quotes", (done) => {
+    let source = createStream();
+    source.push({ firstName: "Robert", lastName: "Hue" });
+    source.push(null);
+
+    let csv = [];
+    source
+      .pipe(transformIntoCSV({ doubleQuotes: true }))
+      .pipe(
+        writeData((line) => {
+          csv.push(line);
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(csv, ['"firstName";"lastName"\n', '"Robert";"Hue"\n']);
+        done();
+      });
+  });
+
   it("should transform object into a csv with custom columns and separator", (done) => {
     let source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });

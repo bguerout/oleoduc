@@ -447,6 +447,7 @@ Allows data to be streamed as if it were a csv
 - `options`:
     - `separator`: The separator between columns (default : `;`)
     - `columns`: An object to map each column (default: the keys of the object)
+    - `doubleQuotes`: If true column names and values will be enclosed in double quotes (default: true)
 
 #### Examples
 
