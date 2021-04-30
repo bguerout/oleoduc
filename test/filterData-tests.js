@@ -30,6 +30,26 @@ describe(__filename, () => {
       });
   });
 
+  it("should filter (async)", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("first");
+    source.push("");
+    source.push(null);
+
+    source
+      .pipe(
+        filterData(() => {
+          return Promise.resolve(false);
+        })
+      )
+      .on("data", (d) => chunks.push(d))
+      .on("end", () => {
+        assert.deepStrictEqual(chunks, []);
+        done();
+      });
+  });
+
   it("should filter (ignore first line)", (done) => {
     let chunks = [];
     let source = createStream();
