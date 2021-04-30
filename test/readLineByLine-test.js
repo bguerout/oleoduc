@@ -30,4 +30,24 @@ describe(__filename, () => {
         done();
       });
   });
+
+  it("can handle content without carriage return on the last line", (done) => {
+    let result = [];
+    let source = createStream();
+    source.push("ab\n");
+    source.push("hi");
+    source.push(null);
+
+    source
+      .pipe(readLineByLine())
+      .pipe(
+        writeData((data) => {
+          return result.push(data);
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(result, ["ab", "hi"]);
+        done();
+      });
+  });
 });
