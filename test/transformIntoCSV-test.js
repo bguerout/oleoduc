@@ -29,14 +29,14 @@ describe(__filename, () => {
       });
   });
 
-  it("should transform object into a csv with fields enclosed in double quotes", (done) => {
+  it("should transform object with mapper", (done) => {
     let source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
     let csv = [];
     source
-      .pipe(transformIntoCSV({ doubleQuotes: true }))
+      .pipe(transformIntoCSV({ mapper: (v) => `"${v}"` }))
       .pipe(
         writeData((line) => {
           csv.push(line);
