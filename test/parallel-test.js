@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { transformData, writeData } = require("../index");
+const { transformData, writeData, filterData } = require("../index");
 const { delay } = require("./testUtils");
 
 const createStream = () => {
@@ -85,6 +85,62 @@ describe(__filename, () => {
 
         // 2 tasks per batch with 10ms of timeout
         let timeElapsed = acc[acc.length - 1].timestamp - start;
+        assert.ok(timeElapsed < 60);
+        assert.ok(timeElapsed > 29);
+        done();
+      });
+  });
+
+  it("can filterData (parallel)", (done) => {
+    let timeoutPerBatch = 10;
+    let nbParallelTasks = 2;
+    let acc = [];
+
+    let source = createStream();
+    //first batch
+    source.push(1);
+    source.push(2);
+    //second
+    source.push(3);
+    source.push(4);
+    //third
+    source.push(5);
+    source.push(6);
+
+    source.push(null);
+
+    let start = Date.now();
+    let last;
+    source
+      .pipe(
+        filterData(
+          (number) => {
+            return delay(() => {
+              last = Date.now();
+              return number < 5;
+            }, timeoutPerBatch);
+          },
+          { parallel: nbParallelTasks }
+        )
+      )
+      .pipe(
+        transformData((number) => {
+          return { number, timestamp: Date.now() };
+        })
+      )
+      .pipe(writeData((data) => acc.push(data)))
+      .on("error", () => {
+        assert.fail();
+        done();
+      })
+      .on("finish", () => {
+        assert.deepStrictEqual(
+          acc.map((v) => v.number),
+          [1, 2, 3, 4]
+        );
+
+        // 2 tasks per batch with 10ms of timeout
+        let timeElapsed = last - start;
         assert.ok(timeElapsed < 60);
         assert.ok(timeElapsed > 29);
         done();

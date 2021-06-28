@@ -66,4 +66,20 @@ describe(__filename, () => {
         done();
       });
   });
+
+  it("should filter with options", (done) => {
+    let source = createStream();
+    source.push({ object: true });
+    source.push(null);
+
+    source
+      .pipe(filterData(() => true, { objectMode: false }))
+      .on("error", (e) => {
+        assert.strictEqual(e.message, "Invalid non-string/buffer chunk");
+        done();
+      })
+      .on("end", () => {
+        assert.fail();
+      });
+  });
 });
