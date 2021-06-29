@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { Readable } = require("stream");
 const { transformIntoCSV, writeData } = require("../index");
+const { delay } = require("./testUtils");
 
 const createStream = () => {
   return new Readable({
@@ -67,7 +68,31 @@ describe(__filename, () => {
       });
   });
 
-  it("should transform object into a csv with custom columns and separator", (done) => {
+  it("should transform object into a csv with separator", (done) => {
+    let source = createStream();
+    source.push({ firstName: "Robert", lastName: "Hue" });
+    source.push({ firstName: "John", lastName: "Doe" });
+    source.push(null);
+
+    let csv = [];
+    source
+      .pipe(
+        transformIntoCSV({
+          separator: "|",
+        })
+      )
+      .pipe(
+        writeData((line) => {
+          csv.push(line);
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(csv, ["firstName|lastName\n", "Robert|Hue\n", "John|Doe\n"]);
+        done();
+      });
+  });
+
+  it("should transform object into a csv with custom columns", (done) => {
     let source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
@@ -76,9 +101,8 @@ describe(__filename, () => {
     source
       .pipe(
         transformIntoCSV({
-          sepatator: "|",
           columns: {
-            name: (data) => `${data.firstName} ${data.lastName}`,
+            fullName: (data) => `${data.firstName} ${data.lastName}`,
           },
         })
       )
@@ -88,34 +112,57 @@ describe(__filename, () => {
         })
       )
       .on("finish", () => {
-        assert.deepStrictEqual(csv, ["name\n", "Robert Hue\n"]);
+        assert.deepStrictEqual(csv, ["fullName\n", "Robert Hue\n"]);
         done();
       });
   });
 
-  it("should catch error in transformIntoCSV", (done) => {
-    let result = [];
+  it("should transform object into a csv with async columns", (done) => {
+    let source = createStream();
+    source.push({ firstName: "Robert", lastName: "Hue" });
+    source.push(null);
+
+    let csv = [];
+    source
+      .pipe(
+        transformIntoCSV({
+          columns: {
+            fullName: (data) => Promise.resolve(`${data.firstName} ${data.lastName}`),
+            lastName: async (data) => await delay(() => data.lastName, 5),
+          },
+        })
+      )
+      .pipe(
+        writeData((line) => {
+          csv.push(line);
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(csv, ["fullName;lastName\n", "Robert Hue;Hue\n"]);
+        done();
+      });
+  });
+
+  it.only("should catch error in transformIntoCSV", (done) => {
     let source = createStream();
     source.push("a");
     source.push(null);
 
     let transformer = transformIntoCSV({
-      sepatator: "|",
       columns: {
-        name() {
-          throw new Error("Unable to hande data");
+        error() {
+          throw new Error("Unable to handle data");
         },
       },
     });
 
-    transformer.on("error", (e) => {
-      assert.strictEqual(e.message, "Unable to hande data");
-      done();
-    });
-
     source
       .pipe(transformer)
-      .pipe(writeData((data) => result.push(data)))
+      .on("data", () => ({}))
+      .on("error", (e) => {
+        assert.strictEqual(e.message, "Unable to handle data");
+        done();
+      })
       .on("finish", () => {
         assert.fail();
         done();
