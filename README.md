@@ -25,38 +25,37 @@ await oleoduc(
 
 ## Real life examples:
 
-Stream MongoDB documents to client through an express server
+Stream documents to client through an express server
 
 ```js
 const express = require("express");
-const mongodb = require("mongodb");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
-  
+
+// No need to load all the documents into the memory. 
+// Consume for example a MongoDB cursor and send documents as it flows
 const app = express();
 app.get("/documents", async (req, res) => {
-    // No need to load all the documents into the memory. 
-    // Consume the MongoDB cursor and send documents as it flows
-    oleoduc(
-      db.collection("documents").find(),
-      transformIntoJSON(),
-      res
-    );
-  }
-);
+  oleoduc(
+    db.collection("documents").find(),
+    transformIntoJSON(),
+    res
+  );
+});
 ```
 
-Import file into a database
+Import file into database
 
 ```js
 const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
 const { createReadStream } = require("fs");
 
-//No need to load all file content into the memory. Stream lines and save them as it flows
+// No need to load all file content into the memory. 
+// Stream lines and save them as it flows
 await oleoduc(
   createReadStream("/path/to/file"),
   readLineByLine(),
   transformData((line) => JSON.parse(line)),
-  writeData((json) => db.save(json)),
+  writeData((json) => db.insertOne(json)),
 )
 ```
 
