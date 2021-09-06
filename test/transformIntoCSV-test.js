@@ -143,7 +143,7 @@ describe(__filename, () => {
       });
   });
 
-  it.only("should catch error in transformIntoCSV", (done) => {
+  it("should catch error in transformIntoCSV", (done) => {
     let source = createStream();
     source.push("a");
     source.push(null);
