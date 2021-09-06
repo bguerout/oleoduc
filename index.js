@@ -10,6 +10,7 @@ module.exports = {
   groupData: require("./lib/groupData"),
   readLineByLine: require("./lib/readLineByLine"),
   flattenArray: require("./lib/flattenArray.js"),
+  mergeStreams: require("./lib/mergeStreams.js"),
   writeData: require("./lib/writeData.js"),
   writeToStdout: require("./lib/writeToStdout.js"),
 };
