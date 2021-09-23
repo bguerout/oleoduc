@@ -79,27 +79,6 @@ with stream composition capability.
 
 #### Examples
 
-Compose streams
-
-```js
-const { transformData, writeData } = require("oleoduc");
-
-async function getSource() {
-  let cursor = await getDataFromDB();
-  return oleoduc(
-    cursor,
-    transformData((data) => data.value * 10),
-    { promisify: false } //do not promisify the stream 
-  )
-};
-
-let source = await getSource();
-await oleoduc(
-  source,
-  writeData((data) => console.log(data))
-);
-```
-
 Create an oleoduc and handle errors in single event listener
 
 ```js
@@ -127,6 +106,27 @@ try {
 } catch (e) {
   //Handle error
 }
+```
+
+Compose streams
+
+```js
+const { transformData, writeData } = require("oleoduc");
+
+async function getSource() {
+  let cursor = await getDataFromDB();
+  return oleoduc(
+    cursor,
+    transformData((data) => data.value * 10),
+    { promisify: false } //do not promisify the stream 
+  )
+};
+
+let source = await getSource();
+await oleoduc(
+  source,
+  writeData((data) => console.log(data))
+);
 ```
 
 ## transformData(callback, [options])
@@ -293,7 +293,7 @@ oleoduc(
 "john"
 ```
 
-Group values
+Group values into an array
 
 ```js
 const { oleoduc, accumulateData, writeData } = require("oleoduc");
@@ -303,15 +303,15 @@ let source = Readable.from(["John", "Doe", "Robert", "Hue"]);
 
 oleoduc(
   source,
-  accumulateData((group, data, flush) => {
+  accumulateData((acc, data, flush) => {
     //Group firstname and lastname
-    group = [...group, data];
-    if (group.length < 2) {
-      //Accumulate data until we have a group with firstname and lastname
-      return group;
+    acc = [...acc, data];
+    if (acc.length < 2) {
+      //Accumulate data until we have firstname and lastname
+      return acc;
     } else {
       //flush the group
-      flush(group.join(" "));
+      flush(acc.join(" "));
       //Reset accumulator for the next group
       return [];
     }
@@ -329,7 +329,7 @@ oleoduc(
 
 ## groupData([options])
 
-A pre-built accumulator to create group of data
+A pre-built accumulator to group data into an array (without the need to flush)
 
 #### Parameters
 
@@ -359,7 +359,7 @@ oleoduc(
 
 ## flattenArray([options])
 
-Allows chunks of array to be streamed as if it were part of the source
+Allows chunks of an array to be streamed as if it were part of the source
 
 #### Parameters
 
