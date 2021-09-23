@@ -13,4 +13,5 @@ module.exports = {
   mergeStreams: require("./lib/mergeStreams.js"),
   writeData: require("./lib/writeData.js"),
   writeToStdout: require("./lib/writeToStdout.js"),
+  asyncReadableIterator: require("./lib/asyncReadableIterator.js"),
 };

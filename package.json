@@ -3,7 +3,7 @@
   "version": "0.5.11",
   "description": "Stream with ease",
   "engines": {
-    "node": ">= 10"
+    "node": ">= 12.9"
   },
   "keywords": [
     "stream",
@@ -16,7 +16,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive --exit --timeout 1000 test/",
-    "test:coverage": "nyc --reporter=html --report-dir .coverage mocha --recursive --exit --timeout 500 test/",
+    "test:coverage": "nyc --reporter=html --report-dir .coverage mocha --recursive --exit --timeout 1000 test/",
     "lint": "eslint index.js test/"
   },
   "repository": {
