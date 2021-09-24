@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { oleoduc, transformData, asyncReadableIterator } = require("../index");
+const { oleoduc, transformData, asAsyncGenerator } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -18,7 +18,7 @@ describe(__filename, () => {
     source.push(null);
 
     let chunks = [];
-    for await (const chunk of asyncReadableIterator(source)) {
+    for await (const chunk of source) {
       chunks.push(chunk);
     }
 
@@ -38,7 +38,7 @@ describe(__filename, () => {
     source.push("b");
 
     try {
-      let consumer = asyncReadableIterator(failingStream);
+      let consumer = asAsyncGenerator(failingStream);
       await consumer.next();
       assert.fail();
     } catch (e) {
