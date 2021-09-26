@@ -1,6 +1,6 @@
 # oleoduc
 
-Streams are one of the best concepts in nodejs but are often used only for IO and low level stuff.
+oleoduc (french synonym of pipeline) provides tools to easily stream data.
 
 ```sh
 npm install oleoduc
@@ -8,22 +8,23 @@ npm install oleoduc
 yarn add oleoduc
 ```
 
-oleoduc (french synonym of pipeline) provides tools to stream the data you manipulate in your day to day work.
+## Getting started 
 
+### Quick tour
+
+Read a file, parse each line and store it into a database
 ```js
-const { oleoduc, transformData, writeData } = require("oleoduc");
-const { Readable } = require("stream");
+const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
+const { createReadStream } = require("fs");
 
-let source = Readable.from(["Huge", "List", "..."]);
-
+// No need to load all file content into the memory.
 await oleoduc(
-  source,
-  transformData((data) => data.toLowerCase()),
-  writeData((data) => console.log(data)),
+  createReadStream("/path/to/file"),
+  readLineByLine(),
+  transformData((line) => JSON.parse(line)),
+  writeData((json) => db.insertOne(json)),
 )
 ```
-
-## Real life examples:
 
 Stream documents to client through an express server
 
@@ -31,7 +32,6 @@ Stream documents to client through an express server
 const express = require("express");
 const { oleoduc, transformIntoJSON } = require("oleoduc");
 
-// No need to load all the documents into the memory. 
 // Consume for example a MongoDB cursor and send documents as it flows
 const app = express();
 app.get("/documents", async (req, res) => {
@@ -43,21 +43,11 @@ app.get("/documents", async (req, res) => {
 });
 ```
 
-Import file into database
+### Features
 
-```js
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const { createReadStream } = require("fs");
-
-// No need to load all file content into the memory. 
-// Stream lines and save them as it flows
-await oleoduc(
-  createReadStream("/path/to/file"),
-  readLineByLine(),
-  transformData((line) => JSON.parse(line)),
-  writeData((json) => db.insertOne(json)),
-)
-```
+- Read a stream as if it were a promise
+- Compose streams
+- Transform, filter, reduce and group data during stream processing
 
 # API
 
@@ -359,7 +349,7 @@ oleoduc(
 
 ## flattenArray([options])
 
-Allows chunks of an array to be streamed as if it were part of the source
+Allows chunks of an array to be streamed as if each was part of the source
 
 #### Parameters
 
