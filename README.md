@@ -2,6 +2,9 @@
 
 oleoduc (french synonym of pipeline) provides tools to easily stream data.
 
+![ci](https://github.com/bguerout/oleoduc/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/bguerout/oleoduc/branch/master/graph/badge.svg?token=BVLPFRCPRH)](https://codecov.io/gh/bguerout/oleoduc)
+
 ```sh
 npm install oleoduc
 # or
