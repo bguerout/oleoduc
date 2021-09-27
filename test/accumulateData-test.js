@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("accumulateData", () => {
   it("can accumulateData by grouping them (flush)", (done) => {
     let result = [];
     let source = createStream();

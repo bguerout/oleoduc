@@ -10,7 +10,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("toAsyncIterator", () => {
   it("can convert a readable stream into an iterator", async () => {
     let readable = createStream();
     readable.push("a");

@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("transformData", () => {
   it("should transformData", (done) => {
     let chunks = [];
     let source = createStream();

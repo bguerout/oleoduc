@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("writeData", () => {
   it("should writeData", (done) => {
     let source = createStream();
     source.push("andré");

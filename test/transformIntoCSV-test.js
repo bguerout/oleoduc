@@ -10,7 +10,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("transformIntoCSV", () => {
   it("should transform object into a csv", (done) => {
     let source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });

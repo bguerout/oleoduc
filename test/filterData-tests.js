@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("filterData", () => {
   it("should filter (ignore empty)", (done) => {
     let chunks = [];
     let source = createStream();
