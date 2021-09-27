@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("transformIntoJSON", () => {
   it("can stream a json array", (done) => {
     let sourceStream = createStream();
     sourceStream.push({ name: "andré" });

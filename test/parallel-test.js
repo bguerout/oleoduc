@@ -10,7 +10,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("parallel", () => {
   it("can run parallel task with order preserved", (done) => {
     let chunks = [];
     let source = createStream();

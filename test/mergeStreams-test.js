@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("mergeStreams", () => {
   it("can merge multiple streams", (done) => {
     let result = "";
     let source1 = createStream();

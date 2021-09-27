@@ -2,6 +2,7 @@ const transformData = require("./lib/transformData.js");
 
 module.exports = {
   oleoduc: require("./lib/oleoduc.js"),
+  compose: require("./lib/compose.js"),
   transformData,
   transformIntoJSON: require("./lib/transformIntoJSON.js"),
   transformIntoCSV: require("./lib/transformIntoCSV.js"),

@@ -1,7 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { oleoduc, transformData, writeData, compose } = require("../index");
-const { delay } = require("./testUtils");
+const { compose, transformData, writeData, oleoduc } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -10,29 +9,29 @@ const createStream = () => {
   });
 };
 
-describe("oleoduc", () => {
-  it("can create oleoduc", async () => {
+describe("compose", () => {
+  it("can compose streams", (done) => {
     let chunks = [];
     let source = createStream();
-    source.push("andré");
-    source.push("bruno");
-    source.push("robert");
+    source.push("first");
     source.push(null);
 
-    await oleoduc(
+    compose(
       source,
-      transformData((data) => {
-        return delay(() => data.substring(0, 1), 2);
-      }),
-      writeData((data) => {
-        return delay(() => chunks.push(data), 2);
+      transformData((d) => d.substring(0, 1)),
+      writeData((data) => chunks.push(data))
+    )
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["f"]);
+        done();
       })
-    );
-
-    assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+      .on("error", () => {
+        assert.fail();
+        done();
+      });
   });
 
-  it("can iterate over an oleoduc", async () => {
+  it("can iterate over a composed stream", async () => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -40,7 +39,7 @@ describe("oleoduc", () => {
     source.push("robert");
     source.push(null);
 
-    let stream = oleoduc(
+    let stream = compose(
       source,
       transformData((data) => data.substring(0, 1))
     );
@@ -52,7 +51,49 @@ describe("oleoduc", () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can create oleoduc with a nested oleoduc", async () => {
+  it("can add nested composed stream into a compose", (done) => {
+    let chunks = [];
+    let source = createStream();
+    let nested = compose(
+      source,
+      transformData((d) => d.substring(0, 1))
+    );
+
+    source.push("first");
+    source.push(null);
+
+    compose(
+      nested,
+      writeData((d) => chunks.push(d))
+    )
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["f"]);
+        done();
+      })
+      .on("error", (e) => {
+        assert.fail(e);
+        done();
+      });
+  });
+
+  it("can pipe composed stream", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
+
+    compose(source)
+      .pipe(transformData((data) => data.substring(0, 1)))
+      .pipe(writeData((data) => chunks.push(data)))
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+        done();
+      });
+  });
+
+  it("can add a nested oleoduc into compose", (done) => {
     let chunks = [];
     let source = createStream();
     let nested = oleoduc(
@@ -63,68 +104,32 @@ describe("oleoduc", () => {
     source.push("first");
     source.push(null);
 
-    try {
-      await oleoduc(
-        nested,
-        writeData((d) => chunks.push(d))
-      );
-      assert.deepStrictEqual(chunks, ["f"]);
-    } catch (e) {
-      assert.fail(e);
-    }
-  });
-
-  it("can create oleoduc with a nested composed stream", async () => {
-    let chunks = [];
-    let source = createStream();
-    let composed = compose(
-      source,
-      transformData((d) => d.substring(0, 1))
-    );
-
-    source.push("first");
-    source.push(null);
-
-    await oleoduc(
-      composed,
+    compose(
+      nested,
       writeData((d) => chunks.push(d))
     )
-      .then(() => {
-        assert.deepStrictEqual(chunks, ["f"]);
-      })
-      .catch((e) => {
-        assert.fail(e);
-      });
-  });
-
-  it("can pipe and oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
-    source.push("andré");
-    source.push("bruno");
-    source.push("robert");
-    source.push(null);
-
-    await oleoduc(source)
-      .pipe(transformData((data) => data.substring(0, 1)))
-      .pipe(writeData((data) => chunks.push(data)))
       .on("finish", () => {
-        assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+        assert.deepStrictEqual(chunks, ["f"]);
+        done();
+      })
+      .on("error", () => {
+        assert.fail();
+        done();
       });
   });
 
   it("should propagate emitted error", (done) => {
     let source = createStream();
 
-    oleoduc(
+    compose(
       source,
       writeData(() => ({}))
     )
-      .then(() => {
+      .on("finish", () => {
         assert.fail();
         done();
       })
-      .catch((e) => {
+      .on("error", (e) => {
         assert.deepStrictEqual(e, "emitted");
         done();
       });
@@ -133,31 +138,24 @@ describe("oleoduc", () => {
     source.emit("error", "emitted");
   });
 
-  it("hould propagate thrown error", async () => {
+  it("should propagate thrown error", (done) => {
     let source = createStream();
     source.push("first");
     source.push(null);
 
-    await oleoduc(
+    compose(
       source,
       writeData(() => {
         throw new Error("write error");
       })
     )
-      .then(() => {
+      .on("finish", () => {
         assert.fail();
+        done();
       })
-      .catch((e) => {
+      .on("error", (e) => {
         assert.deepStrictEqual(e.message, "write error");
+        done();
       });
-  });
-
-  it("should fail when no stream are provided", async () => {
-    try {
-      await oleoduc();
-      assert.fail();
-    } catch (e) {
-      assert.strictEqual(e.message, "You must provide at least one stream");
-    }
   });
 });

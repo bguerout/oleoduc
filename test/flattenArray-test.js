@@ -10,7 +10,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("flattenArray", () => {
   it("can flat map an array", (done) => {
     let result = "";
     let source = createStream();

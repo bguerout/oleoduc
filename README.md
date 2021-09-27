@@ -8,11 +8,12 @@ npm install oleoduc
 yarn add oleoduc
 ```
 
-## Getting started 
+## Getting started
 
 ### Quick tour
 
 Read a file, parse each line and store it into a database
+
 ```js
 const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
 const { createReadStream } = require("fs");
@@ -53,7 +54,8 @@ app.get("/documents", async (req, res) => {
 
 ## oleoduc(...streams, [options])
 
-Pipe streams together, forwards errors and returns a promisified stream.
+Pipe streams together, forwards errors and returns a promisified stream. If the last stream is readable, the returned
+stream will be also an iterator
 
 Based on [duplexer3](https://www.npmjs.com/package/duplexer3) and inspired
 by [multipipe](https://www.npmjs.com/package/multipipe), it is same as nodejs
@@ -98,21 +100,43 @@ try {
 }
 ```
 
-Compose streams
+Iterate over a readable stream
 
 ```js
-const { transformData, writeData } = require("oleoduc");
+let stream
+oleoduc(
+  source,
+  transformData((data) => data.value * 10),
+);
+
+for await (const chunk of stream) {
+  console.log(chunk)
+}
+
+```
+
+## compose(...streams, [options])
+
+Same as oleoduc but without promise stuff.
+
+#### Parameters
+
+- `streams`: A list of streams to pipe together
+- `options`:
+    - `*`:    The rest of the options is passed to duplexer3
+
+```js
+const { compose, transformData, writeData } = require("oleoduc");
 
 async function getSource() {
   let cursor = await getDataFromDB();
-  return oleoduc(
+  return compose(
     cursor,
     transformData((data) => data.value * 10),
-    { promisify: false } //do not promisify the stream 
   )
 };
 
-let source = await getSource();
+let source = await getSource();// A composed stream
 await oleoduc(
   source,
   writeData((data) => console.log(data))
@@ -249,8 +273,7 @@ await oleoduc(
 
 ## accumulateData(callback, [options])
 
-Allows data to be accumulated before piping them to the next step. It can be used to reduce the data or
-to create group
+Allows data to be accumulated before piping them to the next step. It can be used to reduce the data or to create group
 
 #### Parameters
 

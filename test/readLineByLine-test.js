@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("readLineByLine", () => {
   it("can read a stream line by line", (done) => {
     let result = [];
     let source = createStream();

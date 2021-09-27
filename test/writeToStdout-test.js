@@ -8,7 +8,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("writeToStdout", () => {
   it("should write to stdout", (done) => {
     let source = createStream();
     source.push("andré");

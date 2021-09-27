@@ -9,7 +9,7 @@ const createStream = () => {
   });
 };
 
-describe(__filename, () => {
+describe("groupData", () => {
   it("can create group of data", (done) => {
     let results = [];
     let source = createStream();
