@@ -27,4 +27,21 @@ describe(__filename, () => {
         done();
       });
   });
+
+  it("can iterate over a merged stream", async () => {
+    let source1 = createStream();
+    source1.push("andré");
+    source1.push(null);
+
+    let source2 = createStream();
+    source2.push("bruno");
+    source2.push(null);
+
+    let chunks = [];
+    for await (const chunk of mergeStreams(source1, source2)) {
+      chunks.push(chunk);
+    }
+
+    assert.deepStrictEqual(chunks, ["andré", "bruno"]);
+  });
 });

@@ -3,7 +3,7 @@
   "version": "0.5.12",
   "description": "Stream with ease",
   "engines": {
-    "node": ">= 12.9"
+    "node": ">= 10"
   },
   "keywords": [
     "stream",

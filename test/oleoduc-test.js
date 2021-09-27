@@ -164,6 +164,27 @@ describe(__filename, () => {
       });
   });
 
+  it("can iterate over an oleoduc", async () => {
+    let chunks = [];
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
+
+    let stream = oleoduc(
+      source,
+      transformData((data) => data.substring(0, 1)),
+      { promisify: false }
+    );
+
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+
+    assert.deepStrictEqual(chunks, ["a", "b", "r"]);
+  });
+
   it("oleoduc should propagate emitted error", (done) => {
     let source = createStream();
 
