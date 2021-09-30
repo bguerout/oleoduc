@@ -13,6 +13,12 @@ yarn add oleoduc
 
 ## Getting started
 
+### Features
+
+- Read a stream as if it were a promise
+- Compose streams
+- Transform, filter, reduce and group data during stream processing
+
 ### Quick tour
 
 Read a file, parse each line and store it into a database
@@ -21,7 +27,8 @@ Read a file, parse each line and store it into a database
 const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
 const { createReadStream } = require("fs");
 
-// No need to load all file content into the memory.
+// Wait until all lines have been inserted.
+// No need to load all content into the memory
 await oleoduc(
   createReadStream("/path/to/file"),
   readLineByLine(),
@@ -30,7 +37,7 @@ await oleoduc(
 )
 ```
 
-Stream documents to client through an express server
+Stream JSON to client through an express server
 
 ```js
 const express = require("express");
@@ -47,18 +54,11 @@ app.get("/documents", async (req, res) => {
 });
 ```
 
-### Features
-
-- Read a stream as if it were a promise
-- Compose streams
-- Transform, filter, reduce and group data during stream processing
-
 # API
 
 ## oleoduc(...streams, [options])
 
-Pipe streams together, forwards errors and returns a promisified stream. If the last stream is readable, the returned
-stream will be also an iterator
+Pipe streams together, forwards errors and returns a promisified stream.
 
 Based on [duplexer3](https://www.npmjs.com/package/duplexer3) and inspired
 by [multipipe](https://www.npmjs.com/package/multipipe), it is same as nodejs
@@ -103,30 +103,17 @@ try {
 }
 ```
 
-Iterate over a readable stream
-
-```js
-let stream
-oleoduc(
-  source,
-  transformData((data) => data.value * 10),
-);
-
-for await (const chunk of stream) {
-  console.log(chunk)
-}
-
-```
-
 ## compose(...streams, [options])
 
-Same as oleoduc but without promise stuff.
+Same as oleoduc but without promise stuff. If the last stream is readable, the returned stream will be an iterator
 
 #### Parameters
 
 - `streams`: A list of streams to pipe together
 - `options`:
     - `*`:    The rest of the options is passed to duplexer3
+
+Create an oleoduc with a composed stream
 
 ```js
 const { compose, transformData, writeData } = require("oleoduc");
@@ -139,11 +126,28 @@ async function getSource() {
   )
 };
 
-let source = await getSource();// A composed stream
+let source = await getSource();
 await oleoduc(
   source,
   writeData((data) => console.log(data))
 );
+```
+
+Iterate over a composed readable stream
+
+```js
+const { compose, transformData } = require("oleoduc");
+
+let stream
+compose(
+  source,
+  transformData((data) => data.value * 10),
+);
+
+for await (const data of stream) {
+  console.log(data)
+}
+
 ```
 
 ## transformData(callback, [options])
