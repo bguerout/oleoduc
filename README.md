@@ -2,22 +2,23 @@
 
 oleoduc (french synonym of pipeline) provides tools to easily stream data.
 
-![ci](https://github.com/bguerout/oleoduc/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/bguerout/oleoduc/branch/master/graph/badge.svg?token=BVLPFRCPRH)](https://codecov.io/gh/bguerout/oleoduc)
-
 ```sh
 npm install oleoduc
 # or
 yarn add oleoduc
 ```
 
+[![NPM](https://img.shields.io/npm/v/oleoduc.svg)](https://www.npmjs.com/package/oleoduc)
+![ci](https://github.com/bguerout/oleoduc/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/bguerout/oleoduc/branch/master/graph/badge.svg?token=BVLPFRCPRH)](https://codecov.io/gh/bguerout/oleoduc)
+
 ## Getting started
 
 ### Features
 
-- Read a stream as if it were a promise
-- Compose streams
 - Transform, filter, reduce and group data during stream processing
+- Compose and merge streams together
+- Read a stream as if it were a promise
 
 ### Quick tour
 
@@ -37,6 +38,24 @@ await oleoduc(
 )
 ```
 
+Compose streams and iterate over it
+
+```js
+const { compose, readLineByLine, transformData } = require("oleoduc");
+const { createReadStream } = require("fs");
+
+//Same as the previous example but with composition and for loop
+let stream = compose(
+  createReadStream("/path/to/file"),
+  readLineByLine(),
+  transformData((line) => JSON.parse(line)),
+)
+
+for await (const json of stream) {
+  await db.insertOne(json)
+}
+```
+
 Stream JSON to client through an express server
 
 ```js
@@ -48,7 +67,7 @@ const app = express();
 app.get("/documents", async (req, res) => {
   oleoduc(
     db.collection("documents").find(),
-    transformIntoJSON(),
+    transformIntoJSON(),// Stream the documents as a json array
     res
   );
 });
@@ -63,7 +82,9 @@ Pipe streams together, forwards errors and returns a promisified stream.
 Based on [duplexer3](https://www.npmjs.com/package/duplexer3) and inspired
 by [multipipe](https://www.npmjs.com/package/multipipe), it is same as nodejs
 core [pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) but
-with stream composition capability.
+with better error handling and stream composition capability.
+
+If the last stream is readable, the returned stream will be iterable
 
 #### Parameters
 
@@ -74,22 +95,18 @@ with stream composition capability.
 
 #### Examples
 
-Create an oleoduc and handle errors in single event listener
+Create an oleoduc and wait for stream to be consumed
 
 ```js
 const { oleoduc, writeData } = require("oleoduc");
 
-oleoduc(
+await oleoduc(
   source,
-  writeData((obj) => throw new Error())
-)
-  .on("error", (e) => {
-    //Handle error
-  });
-
+  writeData((obj) => console.log(obj))
+);
 ```
 
-Create an oleoduc and handle errors with async/await and try/catch
+Handle errors
 
 ```js
 
@@ -105,7 +122,7 @@ try {
 
 ## compose(...streams, [options])
 
-Same as oleoduc but without promise stuff. If the last stream is readable, the returned stream will be an iterator
+Same as oleoduc but without promise stuff.
 
 #### Parameters
 
@@ -113,7 +130,7 @@ Same as oleoduc but without promise stuff. If the last stream is readable, the r
 - `options`:
     - `*`:    The rest of the options is passed to duplexer3
 
-Create an oleoduc with a composed stream
+Compose streams
 
 ```js
 const { compose, transformData, writeData } = require("oleoduc");
@@ -141,7 +158,7 @@ const { compose, transformData } = require("oleoduc");
 let stream
 compose(
   source,
-  transformData((data) => data.value * 10),
+  transformData((data) => data.trim()),
 );
 
 for await (const data of stream) {
@@ -150,11 +167,27 @@ for await (const data of stream) {
 
 ```
 
+Handle errors in single event listener
+
+```js
+const { oleoduc, writeData } = require("oleoduc");
+
+let stream = compose(
+  source,
+  writeData((obj) => throw new Error())
+);
+
+stream.on("error", (e) => {
+  //Handle error
+});
+
+```
+
 ## transformData(callback, [options])
 
 Allows data to be manipulated and transformed during a stream processing.
 
-Note that by default a chunk is processed just after the previous one has been pushed to the next step (sequentially).
+Note that by default a chunk is processed when the previous one has been pushed to the next step (sequentially).
 
 This behaviour can be changed to transform multiple chunks in parallel (based
 on [parallel-transform](https://www.npmjs.com/package/parallel-transform)). This is useful when transforming chunk is
@@ -200,7 +233,7 @@ oleoduc(
 
 Allows data to be filtered (return false to ignore the current chunk).
 
-Note that by default a chunk is processed just after the previous one has been pushed to the next step (sequentially).
+Note that by default a chunk is processed when the previous one has been pushed to the next step (sequentially).
 
 This behaviour can be changed to filter multiple chunks in parallel (based
 on [parallel-transform](https://www.npmjs.com/package/parallel-transform)). This is useful when filtering chunk is slow
@@ -208,7 +241,7 @@ on [parallel-transform](https://www.npmjs.com/package/parallel-transform)). This
 
 #### Parameters
 
-- `callback`: a function with signature `function(data)` that must return the transformed data or null to ignored it.
+- `callback`: a function with signature `function(data)` that must return false to ignore a chunk.
   Note that the returned value can be a promise.
 - `options`:
     - `parallel`: Number of chunks processed at the same time (default: 1)
@@ -239,7 +272,7 @@ oleoduc(
 
 Allows data to be written somewhere. Note that it must be the last step.
 
-Note that by default a chunk is processed just after the previous one has been written (sequentially).
+Note that by default a chunk is processed when the previous one has been written (sequentially).
 
 This behaviour can be changed to write multiple chunks in parallel. This is useful when writing chunk is slow (ie. async
 call to a database).
@@ -408,6 +441,73 @@ oleoduc(
 "Robert Hue"
 ```
 
+## readLineByLine()
+
+Allows data to be read line by line
+
+#### Examples
+
+Read a [ndsjon](http://ndjson.org/) file line by line
+
+```js
+const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+await oleoduc(
+  createReadStream("/path/to/file.ndjson"),
+  readLineByLine(),
+  transformData(line => JSON.parse(line)),
+  writeData((json) => console.log(json))
+);
+```
+
+## mergeStreams([options])
+
+Allows multiple streams to be merged into a single one. The returned stream will be an iterator.
+
+#### Parameters
+
+- `options`:
+    - `sequential`: Read the next stream after the previous one has ended (default: false)
+
+#### Examples
+
+Read multiple files as if it were a single one
+
+```js
+const { oleoduc, mergeStreams, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+let output = [];
+await oleoduc(
+  mergeStreams(
+    createReadStream("/path/to/file1.txt"),
+    createReadStream("/path/to/file2.txt")
+  ),
+  writeData((line) => console.log(line))
+)
+;
+```
+
+Read multiple files sequentially and iterate over the merged stream
+
+```js
+const { oleoduc, mergeStreams, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+let stream = mergeStreams(
+  createReadStream("/path/to/file1.txt"),
+  createReadStream("/path/to/file2.txt"),
+  { sequential: true }
+);
+
+for await (const data of stream) {
+  console.log(data)
+}
+
+
+```
+
 ## transformIntoJSON([options])
 
 Allows data to be streamed as if it were a json string
@@ -520,64 +620,4 @@ fullname|date
 John Doe|2021-03-12T21:34:13.085Z
 Robert Hue|2021-03-12T21:34:13.085Z
 `
-```
-
-## readLineByLine()
-
-Allows data to be read line by line
-
-#### Examples
-
-Read a text file line by line
-
-```js
-const { oleoduc, readLineByLine, writeData } = require("oleoduc");
-const { createReadStream } = require("stream");
-
-//source file
-let file = `
-first line
-second line
-`
-
-let output = [];
-await oleoduc(
-  createReadStream("/path/to/file.txt"),
-  readLineByLine(),
-  writeData((line) => output.push(line))
-);
-
-// --> Output:
-[
-  "first line",
-  "second line"
-]
-```
-
-Read a [ndsjon](http://ndjson.org/) file line by line
-
-```js
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const { createReadStream } = require("stream");
-
-//source ndjson file
-let file = `
-{"value":1}
-{"value":2}
-`
-
-let output = [];
-await oleoduc(
-  createReadStream("/path/to/file.ndjson"),
-  readLineByLine(),
-  transformData(line => JSON.parse(line)),
-  writeData((json) => output.push(json))
-);
-
-// --> Output:
-[
-  { value: 1 },
-  { value: 2 },
-]
-
 ```
