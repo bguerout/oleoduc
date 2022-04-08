@@ -133,7 +133,7 @@ describe("oleoduc", () => {
     source.emit("error", "emitted");
   });
 
-  it("hould propagate thrown error", async () => {
+  it("should propagate thrown error", async () => {
     let source = createStream();
     source.push("first");
     source.push(null);

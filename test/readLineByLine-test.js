@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { readLineByLine, writeData } = require("../index");
+const { readLineByLine, writeData, oleoduc } = require("../index");
 
 const createStream = () => {
   return new Readable({
@@ -70,5 +70,28 @@ describe("readLineByLine", () => {
         assert.deepStrictEqual(result, ["ab", "hi"]);
         done();
       });
+  });
+
+  it("can read multiple lines with backpressure", async () => {
+    let array = [];
+    let source = createStream();
+    let _25Lines = Array(250)
+      .fill("line")
+      .map((v, i) => `${v}-${i}\n`)
+      .join("");
+
+    source.push(_25Lines);
+    source.push(null);
+
+    await oleoduc(
+      source,
+      readLineByLine(),
+      writeData((opco) => {
+        array.push(opco);
+      })
+    );
+
+    assert.deepStrictEqual(array[0], "line-0");
+    assert.deepStrictEqual(array[array.length - 1], "line-249");
   });
 });
