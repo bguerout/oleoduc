@@ -31,6 +31,27 @@ describe("readLineByLine", () => {
       });
   });
 
+  it("can read a stream line by line (CRLF)", (done) => {
+    let result = [];
+    let source = createStream();
+    source.push("ab");
+    source.push("c\r\ndef\r\ng");
+    source.push("hi\r\n");
+    source.push(null);
+
+    source
+      .pipe(readLineByLine())
+      .pipe(
+        writeData((data) => {
+          return result.push(data);
+        })
+      )
+      .on("finish", () => {
+        assert.deepStrictEqual(result, ["abc", "def", "ghi"]);
+        done();
+      });
+  });
+
   it("can handle content without carriage return on the last line", (done) => {
     let result = [];
     let source = createStream();
