@@ -51,7 +51,7 @@ describe("compose", () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can add nested composed stream into a compose", (done) => {
+  it("can nest compose", (done) => {
     let chunks = [];
     let source = createStream();
     let nested = compose(
@@ -76,7 +76,7 @@ describe("compose", () => {
       });
   });
 
-  it("can pipe composed stream", (done) => {
+  it("can pipe a compose stream", (done) => {
     let chunks = [];
     let source = createStream();
     source.push("andré");
@@ -93,7 +93,29 @@ describe("compose", () => {
       });
   });
 
-  it("can add a nested oleoduc into compose", (done) => {
+  it("can build compose with first writeable and last readable (duplex)", (done) => {
+    let chunks = [];
+    let source = createStream();
+    source.push("andré");
+    source.push("bruno");
+    source.push("robert");
+    source.push(null);
+
+    source
+      .pipe(
+        compose(
+          transformData((data) => data.substring(0, 1)),
+          transformData((data) => "_" + data)
+        )
+      )
+      .pipe(writeData((data) => chunks.push(data)))
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["_a", "_b", "_r"]);
+        done();
+      });
+  });
+
+  it("can use oleoduc inside compose", (done) => {
     let chunks = [];
     let source = createStream();
     let nested = oleoduc(

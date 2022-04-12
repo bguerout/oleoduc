@@ -75,12 +75,12 @@ describe("readLineByLine", () => {
   it("can read multiple lines with backpressure", async () => {
     let array = [];
     let source = createStream();
-    let _25Lines = Array(250)
+    let manyLines = Array(250)
       .fill("line")
       .map((v, i) => `${v}-${i}\n`)
       .join("");
 
-    source.push(_25Lines);
+    source.push(manyLines);
     source.push(null);
 
     await oleoduc(
