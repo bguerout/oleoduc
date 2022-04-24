@@ -15,9 +15,12 @@
   ],
   "main": "index.js",
   "scripts": {
+    "hooks": "git config core.hooksPath .tools/git-hooks && chmod +x .tools/git-hooks/*",
     "test": "mocha --recursive --exit --timeout 1000 test/",
-    "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
-    "lint": "eslint index.js test/"
+    "test:coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
+    "lint": "eslint index.js test/",
+    "ci": "npm install && npm test && npm run lint",
+    "release": "bash .tools/release.sh main"
   },
   "repository": {
     "type": "git",
