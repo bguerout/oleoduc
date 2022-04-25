@@ -79,8 +79,7 @@ app.get("/documents", async (req, res) => {
 
 Pipe streams together, forwards errors and returns a promisified stream.
 
-Based on [duplexer3](https://www.npmjs.com/package/duplexer3) and inspired
-by [multipipe](https://www.npmjs.com/package/multipipe), it is same as nodejs
+It is same as nodejs
 core [pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) but
 with better error handling and stream composition capability.
 

@@ -11,7 +11,7 @@ const createStream = () => {
   });
 };
 
-describe("pipelin", () => {
+describe("pipeline", () => {
   it("can create pipeline from stream", (done) => {
     let chunks = [];
     let source = createStream();
