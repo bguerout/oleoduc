@@ -72,6 +72,10 @@ function main() {
   git commit -m "Bump project version to ${next_version}"
   git push origin "${branch_name}"
   cd -
+
+  cd "${PROJECT_DIR}"
+  git pull
+  cd -
 }
 
 trap clean_resources EXIT HUP INT QUIT PIPE TERM
