@@ -1,6 +1,8 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const { compose, transformData, writeData, oleoduc } = require("../index");
+const { compose, transformData, writeData, oleoduc, flattenArray } = require("../index");
+// eslint-disable-next-line node/no-unpublished-require
+const SlowStream = require("slow-stream");
 
 const createStream = () => {
   return new Readable({
@@ -51,31 +53,6 @@ describe("compose", () => {
     assert.deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can nest compose", (done) => {
-    let chunks = [];
-    let source = createStream();
-    let nested = compose(
-      source,
-      transformData((d) => d.substring(0, 1))
-    );
-
-    source.push("first");
-    source.push(null);
-
-    compose(
-      nested,
-      writeData((d) => chunks.push(d))
-    )
-      .on("finish", () => {
-        assert.deepStrictEqual(chunks, ["f"]);
-        done();
-      })
-      .on("error", (e) => {
-        assert.fail(e);
-        done();
-      });
-  });
-
   it("can pipe a compose stream", (done) => {
     let chunks = [];
     let source = createStream();
@@ -115,6 +92,31 @@ describe("compose", () => {
       });
   });
 
+  it("can compose inside compose", (done) => {
+    let chunks = [];
+    let source = createStream();
+    let nested = compose(
+      source,
+      transformData((d) => d.substring(0, 1))
+    );
+
+    source.push("first");
+    source.push(null);
+
+    compose(
+      nested,
+      writeData((d) => chunks.push(d))
+    )
+      .on("finish", () => {
+        assert.deepStrictEqual(chunks, ["f"]);
+        done();
+      })
+      .on("error", (e) => {
+        assert.fail(e);
+        done();
+      });
+  });
+
   it("can use oleoduc inside compose", (done) => {
     let chunks = [];
     let source = createStream();
@@ -138,6 +140,43 @@ describe("compose", () => {
         assert.fail();
         done();
       });
+  });
+
+  it("can handle back pressure", (done) => {
+    let result = "";
+    let source = createStream();
+    source.push(["andré", "bruno", "robert"]);
+    source.push(null);
+
+    compose(
+      source,
+      flattenArray({ highWaterMark: 1 }),
+      new SlowStream({ maxWriteInterval: 10 }),
+      writeData((data) => {
+        result += data;
+      })
+    ).on("finish", () => {
+      assert.deepStrictEqual(result, "andrébrunorobert");
+      done();
+    });
+  });
+
+  it("can handle back pressure with nested compose", (done) => {
+    let result = "";
+    let source = createStream();
+    source.push(["andré", "bruno", "robert"]);
+    source.push(null);
+
+    compose(
+      source,
+      compose(flattenArray({ highWaterMark: 1 }), new SlowStream({ maxWriteInterval: 10 })),
+      writeData((data) => {
+        result += data;
+      })
+    ).on("finish", () => {
+      assert.deepStrictEqual(result, "andrébrunorobert");
+      done();
+    });
   });
 
   it("should propagate emitted error", (done) => {
