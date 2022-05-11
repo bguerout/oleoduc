@@ -1,21 +1,12 @@
 const assert = require("assert");
-const { Readable } = require("stream");
 const { flattenArray, accumulateData, writeData } = require("../index");
+const { createStream } = require("./testUtils");
 const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("flattenArray", () => {
   it("can flat map an array", (done) => {
     let result = "";
-    let source = createStream();
-    source.push(["andré", "bruno"]);
-    source.push(null);
+    let source = createStream([["andré", "bruno"]]);
 
     source
       .pipe(flattenArray())
@@ -54,19 +45,20 @@ describe("flattenArray", () => {
   it("should stop when down streams are busy", (done) => {
     let result = "";
     let source = createStream();
-    source.push(["andré", "bruno", "robert"]);
+    source.push(["andré", "bruno", "robert"]); //fill the buffer
+    source.push(["john", "henri"]);
     source.push(null);
 
     source
-      .pipe(flattenArray({ highWaterMark: 1 }))
+      .pipe(flattenArray({ objectMode: true, highWaterMark: 1 }))
       .pipe(new SlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
       .pipe(
         writeData((data) => {
-          result += data;
+          result += "_" + data;
         })
       )
       .on("finish", () => {
-        assert.deepStrictEqual(result, "andrébrunorobert");
+        assert.deepStrictEqual(result, "_andré_bruno_robert_john_henri");
         done();
       });
   });
