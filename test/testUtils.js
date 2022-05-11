@@ -12,7 +12,7 @@ function createStream(items) {
   return new Readable({
     objectMode: true,
     read() {
-      this.push(items.length === 0 ? null : items.pop());
+      this.push(items.length > 0 ? items.shift() : null);
     },
   });
 }

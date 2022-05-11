@@ -90,7 +90,8 @@ If the last stream is readable, the returned stream will be iterable
 - `streams`: A list of streams to pipe together
 - `options`:
     - `promisify`: Make returned stream also a promise (default: `true`)
-    - `*`:    The rest of the options is passed to duplexer3
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
 
 #### Examples
 
@@ -127,7 +128,8 @@ Same as oleoduc but without promise stuff.
 
 - `streams`: A list of streams to pipe together
 - `options`:
-    - `*`:    The rest of the options is passed to duplexer3
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
 
 Compose streams
 
@@ -440,6 +442,39 @@ oleoduc(
 "Robert Hue"
 ```
 
+## flattenStream([options])
+
+Convert chunk into a stream and consumes it
+
+#### Parameters
+
+- `options`:
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
+
+#### Examples
+
+Stream data as if it where a json array
+
+```js
+const { oleoduc, flattenStream, writeData } = require("oleoduc");
+const { Readable } = require("stream");
+
+let source = Readable.from(["John Doe", "Robert Hue"]);
+
+await oleoduc(
+  source,
+  transformData(data => {
+    return createAStream(data);
+  }),
+  flattenStream(),
+  writeData((json) => console.log(json))
+);
+
+// Json Output
+'[{ user: "John Doe" }, { user: "Robert Hue" }]'
+```
+
 ## readLineByLine()
 
 Allows data to be read line by line
@@ -565,7 +600,7 @@ Allows data to be streamed as if it were a csv
 - `options`:
     - `separator`: The separator between columns (default : `;`)
     - `columns`: An object to map each column (default: the keys of the object)
-    - `doubleQuotes`: If true column names and values will be enclosed in double quotes (default: true)
+    - `mapper`: A function with signature `function(value)` that must return the value of the current cell
 
 #### Examples
 
@@ -592,7 +627,7 @@ Robert;Hue
 `
 ```
 
-Stream data as if it where a csv with custom columns
+Stream data as if it where a csv with options
 
 ```js
 const { oleoduc, transformIntoCSV } = require("oleoduc");
@@ -605,6 +640,7 @@ await oleoduc(
   source,
   transformIntoCSV({
     sepatator: "|",
+    mapper: (v) => `"${v || ''}"`,//Values will be enclosed in double quotes
     columns: {
       fullname: (data) => `${data.firstName} ${data.lastName}`,
       date: () => new Date().toISOString(),
