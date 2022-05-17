@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { writeData, flattenStream } = require("../index");
+const { writeData, flattenStream, compose, transformData, oleoduc } = require("../index");
 const { createStream } = require("./testUtils");
 const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
 
@@ -41,5 +41,29 @@ describe("flattenStream", () => {
         assert.deepStrictEqual(result, "_andré_bruno_robert_john_henri");
         done();
       });
+  });
+
+  it("should propagate error", async () => {
+    let stream = createStream([
+      compose(
+        createStream(["andré"]),
+        transformData(() => {
+          throw new Error("This is a stream error");
+        })
+      ),
+    ]);
+
+    try {
+      await oleoduc(
+        stream,
+        flattenStream(),
+        writeData(() => {
+          //do nothing
+        })
+      );
+      assert.fail();
+    } catch (e) {
+      assert.strictEqual(e.message, "This is a stream error");
+    }
   });
 });
