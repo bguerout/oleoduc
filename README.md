@@ -8,6 +8,14 @@ npm install oleoduc
 yarn add oleoduc
 ```
 
+It can be used with both CommonJS and ESM
+
+```sh
+const { ... } = require("oleoduc");
+# or
+import { ... } from "oleoduc";
+```
+
 [![NPM](https://img.shields.io/npm/v/oleoduc.svg)](https://www.npmjs.com/package/oleoduc)
 ![ci](https://github.com/bguerout/oleoduc/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/bguerout/oleoduc/branch/master/graph/badge.svg?token=BVLPFRCPRH)](https://codecov.io/gh/bguerout/oleoduc)
