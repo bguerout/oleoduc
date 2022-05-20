@@ -1,4 +1,4 @@
-module.exports = {
+const exported = {
   oleoduc: require("./lib/oleoduc.js"),
   compose: require("./lib/compose.js"),
   transformData: require("./lib/transformData.js"),
@@ -14,3 +14,9 @@ module.exports = {
   writeData: require("./lib/writeData.js"),
   writeToStdout: require("./lib/writeToStdout.js"),
 };
+
+//CJS
+module.exports = exported;
+
+//ESM (+rollup)
+Object.keys(exported).forEach((key) => (module.exports[key] = exported[key]));
