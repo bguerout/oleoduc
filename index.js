@@ -1,22 +1,14 @@
-const exported = {
-  oleoduc: require("./lib/oleoduc.js"),
-  compose: require("./lib/compose.js"),
-  transformData: require("./lib/transformData.js"),
-  transformIntoJSON: require("./lib/transformIntoJSON.js"),
-  transformIntoCSV: require("./lib/transformIntoCSV.js"),
-  flattenStream: require("./lib/flattenStream.js"),
-  filterData: require("./lib/filterData"),
-  accumulateData: require("./lib/accumulateData.js"),
-  groupData: require("./lib/groupData"),
-  readLineByLine: require("./lib/readLineByLine"),
-  flattenArray: require("./lib/flattenArray.js"),
-  mergeStreams: require("./lib/mergeStreams.js"),
-  writeData: require("./lib/writeData.js"),
-  writeToStdout: require("./lib/writeToStdout.js"),
-};
-
-//CJS
-module.exports = exported;
-
-//ESM (+rollup)
-Object.keys(exported).forEach((key) => (module.exports[key] = exported[key]));
+module.exports.oleoduc = require("./lib/oleoduc.js");
+module.exports.compose = require("./lib/compose.js");
+module.exports.transformData = require("./lib/transformData.js");
+module.exports.transformIntoJSON = require("./lib/transformIntoJSON.js");
+module.exports.transformIntoCSV = require("./lib/transformIntoCSV.js");
+module.exports.flattenStream = require("./lib/flattenStream.js");
+module.exports.filterData = require("./lib/filterData");
+module.exports.accumulateData = require("./lib/accumulateData.js");
+module.exports.groupData = require("./lib/groupData");
+module.exports.readLineByLine = require("./lib/readLineByLine");
+module.exports.flattenArray = require("./lib/flattenArray.js");
+module.exports.mergeStreams = require("./lib/mergeStreams.js");
+module.exports.writeData = require("./lib/writeData.js");
+module.exports.writeToStdout = require("./lib/writeToStdout.js");
