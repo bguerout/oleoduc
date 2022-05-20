@@ -1,3 +1,5 @@
 .nyc_output/
 .coverage/
 .tools/
+.idea/
+.github/

@@ -54,7 +54,9 @@ function main() {
   echo "Preparing version to be released..."
   git checkout "${branch_name}"
   npm ci
-  npm run validate
+  npm test
+  npm run lint
+  npm run build
 
   echo "Creating release tag..."
   git tag -a "${release_version}" -m "Release ${release_version}"

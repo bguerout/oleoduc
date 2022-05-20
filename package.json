@@ -1,6 +1,6 @@
 {
   "name": "oleoduc",
-  "version": "0.6.4",
+  "version": "7.0.0",
   "description": "Stream with ease",
   "engines": {
     "node": ">= 10"
@@ -13,13 +13,20 @@
     "transform",
     "parallel"
   ],
-  "main": "index.js",
+  "main": "./index.js",
+  "module": "./dist/bundle.mjs",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./dist/bundle.mjs"
+    }
+  },
   "scripts": {
+    "build": "npx rollup --config rollup.config.mjs",
     "hooks": "git config core.hooksPath .tools/git-hooks && chmod +x .tools/git-hooks/*",
     "test": "mocha --recursive --exit --timeout 1000 test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint index.js test/",
-    "validate": "npm test && npm run lint",
     "release": "bash .tools/release.sh master"
   },
   "repository": {
@@ -37,6 +44,7 @@
     "parallel-transform": "1.2.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "22.0.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-mocha": "9.0.0",
@@ -45,6 +53,7 @@
     "mocha": "9.2.2",
     "nyc": "15.1.0",
     "prettier": "2.6.2",
+    "rollup": "2.74.1",
     "slow-stream": "0.0.4"
   },
   "prettier": {
