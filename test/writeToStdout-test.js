@@ -10,7 +10,7 @@ const createStream = () => {
 
 describe("writeToStdout", () => {
   it("should write to stdout", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push(null);
 

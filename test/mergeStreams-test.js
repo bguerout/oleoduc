@@ -5,8 +5,8 @@ const { createStream } = require("./testUtils");
 describe("mergeStreams", () => {
   it("can merge multiple streams", (done) => {
     let result = "";
-    let source1 = createStream(["andré"]);
-    let source2 = createStream(["bruno"]);
+    const source1 = createStream(["andré"]);
+    const source2 = createStream(["bruno"]);
 
     mergeStreams(source1, source2)
       .pipe(writeData((data) => (result += data)))
@@ -44,8 +44,8 @@ describe("mergeStreams", () => {
 
   it("can merge multiple streams (sequentially)", (done) => {
     let result = "";
-    let source1 = createStream(["andré"]);
-    let source2 = createStream(["bruno"]);
+    const source1 = createStream(["andré"]);
+    const source2 = createStream(["bruno"]);
 
     mergeStreams(source1, source2, { sequential: true })
       .pipe(writeData((data) => (result += data)))
@@ -70,10 +70,10 @@ describe("mergeStreams", () => {
   });
 
   it("can iterate over a merged stream", async () => {
-    let source1 = createStream(["andré"]);
-    let source2 = createStream(["bruno"]);
+    const source1 = createStream(["andré"]);
+    const source2 = createStream(["bruno"]);
 
-    let chunks = [];
+    const chunks = [];
     for await (const chunk of mergeStreams(source1, source2)) {
       chunks.push(chunk);
     }

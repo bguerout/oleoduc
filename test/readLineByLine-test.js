@@ -11,8 +11,8 @@ const createStream = () => {
 
 describe("readLineByLine", () => {
   it("can read a stream line by line", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("ab");
     source.push("c\ndef\ng");
     source.push("hi\n");
@@ -32,8 +32,8 @@ describe("readLineByLine", () => {
   });
 
   it("can read a stream line by line (CRLF)", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("ab");
     source.push("c\r\ndef\r\ng");
     source.push("hi\r\n");
@@ -53,8 +53,8 @@ describe("readLineByLine", () => {
   });
 
   it("can handle content without carriage return on the last line", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("ab\n");
     source.push("hi");
     source.push(null);
@@ -73,9 +73,9 @@ describe("readLineByLine", () => {
   });
 
   it("can read multiple lines with backpressure", async () => {
-    let array = [];
-    let source = createStream();
-    let manyLines = Array(250)
+    const array = [];
+    const source = createStream();
+    const manyLines = Array(250)
       .fill("line")
       .map((v, i) => `${v}-${i}\n`)
       .join("");

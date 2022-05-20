@@ -12,8 +12,8 @@ const createStream = () => {
 
 describe("parallel", () => {
   it("can run parallel task with order preserved", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -45,11 +45,11 @@ describe("parallel", () => {
   });
 
   it("can transformData (parallel)", (done) => {
-    let timeoutPerBatch = 10;
-    let nbParallelTasks = 2;
-    let acc = [];
+    const timeoutPerBatch = 10;
+    const nbParallelTasks = 2;
+    const acc = [];
 
-    let source = createStream();
+    const source = createStream();
     //first batch
     source.push(1);
     source.push(2);
@@ -62,7 +62,7 @@ describe("parallel", () => {
 
     source.push(null);
 
-    let start = Date.now();
+    const start = Date.now();
     source
       .pipe(
         transformData(
@@ -84,7 +84,7 @@ describe("parallel", () => {
         );
 
         // 2 tasks per batch with 10ms of timeout
-        let timeElapsed = acc[acc.length - 1].timestamp - start;
+        const timeElapsed = acc[acc.length - 1].timestamp - start;
         assert.ok(timeElapsed < 60);
         assert.ok(timeElapsed > 29);
         done();
@@ -92,11 +92,11 @@ describe("parallel", () => {
   });
 
   it("can filterData (parallel)", (done) => {
-    let timeoutPerBatch = 10;
-    let nbParallelTasks = 2;
-    let acc = [];
+    const timeoutPerBatch = 10;
+    const nbParallelTasks = 2;
+    const acc = [];
 
-    let source = createStream();
+    const source = createStream();
     //first batch
     source.push(1);
     source.push(2);
@@ -109,7 +109,7 @@ describe("parallel", () => {
 
     source.push(null);
 
-    let start = Date.now();
+    const start = Date.now();
     let last;
     source
       .pipe(
@@ -140,7 +140,7 @@ describe("parallel", () => {
         );
 
         // 2 tasks per batch with 10ms of timeout
-        let timeElapsed = last - start;
+        const timeElapsed = last - start;
         assert.ok(timeElapsed < 60);
         assert.ok(timeElapsed > 29);
         done();
@@ -148,11 +148,11 @@ describe("parallel", () => {
   });
 
   it("can writeData (parallel)", (done) => {
-    let timeoutPerBatch = 10;
-    let nbParallelTasks = 2;
-    let acc = [];
+    const timeoutPerBatch = 10;
+    const nbParallelTasks = 2;
+    const acc = [];
 
-    let source = createStream();
+    const source = createStream();
     //first batch
     source.push(1);
     source.push(2);
@@ -165,7 +165,7 @@ describe("parallel", () => {
 
     source.push(null);
 
-    let start = Date.now();
+    const start = Date.now();
     source
       .pipe(
         writeData(
@@ -182,7 +182,7 @@ describe("parallel", () => {
         );
 
         // 2 tasks per batch with 10ms of timeout
-        let timeElapsed = acc[acc.length - 1].timestamp - start;
+        const timeElapsed = acc[acc.length - 1].timestamp - start;
         assert.ok(timeElapsed < 60);
         assert.ok(timeElapsed >= 29);
         done();

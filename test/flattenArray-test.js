@@ -6,7 +6,7 @@ const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpubl
 describe("flattenArray", () => {
   it("can flat map an array", (done) => {
     let result = "";
-    let source = createStream([["andré", "bruno"]]);
+    const source = createStream([["andré", "bruno"]]);
 
     source
       .pipe(flattenArray())
@@ -23,7 +23,7 @@ describe("flattenArray", () => {
 
   it("can flat map an array inside a pipeline", (done) => {
     let result = [];
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push(null);
@@ -44,7 +44,7 @@ describe("flattenArray", () => {
 
   it("should stop when down streams are busy", (done) => {
     let result = "";
-    let source = createStream();
+    const source = createStream();
     source.push(["andré", "bruno", "robert"]); //fill the buffer
     source.push(["john", "henri"]);
     source.push(null);

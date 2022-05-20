@@ -12,8 +12,8 @@ const createStream = () => {
 
 describe("oleoduc", () => {
   it("can create oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -33,14 +33,14 @@ describe("oleoduc", () => {
   });
 
   it("can iterate over an oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
     source.push(null);
 
-    let stream = oleoduc(
+    const stream = oleoduc(
       source,
       transformData((data) => data.substring(0, 1))
     );
@@ -53,9 +53,9 @@ describe("oleoduc", () => {
   });
 
   it("can nest oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
-    let nested = oleoduc(
+    const chunks = [];
+    const source = createStream();
+    const nested = oleoduc(
       source,
       transformData((d) => d.substring(0, 1))
     );
@@ -75,8 +75,8 @@ describe("oleoduc", () => {
   });
 
   it("can build oleoduc with first writeable and last readable (duplex)", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -98,9 +98,9 @@ describe("oleoduc", () => {
   });
 
   it("can use compose inside oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
-    let composed = compose(
+    const chunks = [];
+    const source = createStream();
+    const composed = compose(
       source,
       transformData((d) => d.substring(0, 1))
     );
@@ -121,8 +121,8 @@ describe("oleoduc", () => {
   });
 
   it("can pipe and oleoduc", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -137,7 +137,7 @@ describe("oleoduc", () => {
   });
 
   it("should propagate emitted error", (done) => {
-    let source = createStream();
+    const source = createStream();
 
     oleoduc(
       source,
@@ -157,7 +157,7 @@ describe("oleoduc", () => {
   });
 
   it("should propagate thrown error", async () => {
-    let source = createStream();
+    const source = createStream();
     source.push("first");
     source.push(null);
 

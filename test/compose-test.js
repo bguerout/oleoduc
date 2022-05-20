@@ -13,8 +13,8 @@ const createStream = () => {
 
 describe("compose", () => {
   it("can compose streams", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("first");
     source.push(null);
 
@@ -34,14 +34,14 @@ describe("compose", () => {
   });
 
   it("can iterate over a composed stream", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
     source.push(null);
 
-    let stream = compose(
+    const stream = compose(
       source,
       transformData((data) => data.substring(0, 1))
     );
@@ -54,8 +54,8 @@ describe("compose", () => {
   });
 
   it("can pipe a compose stream", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -71,8 +71,8 @@ describe("compose", () => {
   });
 
   it("can build compose with first writeable and last readable (duplex)", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -93,9 +93,9 @@ describe("compose", () => {
   });
 
   it("can compose inside compose", (done) => {
-    let chunks = [];
-    let source = createStream();
-    let nested = compose(
+    const chunks = [];
+    const source = createStream();
+    const nested = compose(
       source,
       transformData((d) => d.substring(0, 1))
     );
@@ -118,9 +118,9 @@ describe("compose", () => {
   });
 
   it("can use oleoduc inside compose", (done) => {
-    let chunks = [];
-    let source = createStream();
-    let nested = oleoduc(
+    const chunks = [];
+    const source = createStream();
+    const nested = oleoduc(
       source,
       transformData((d) => d.substring(0, 1))
     );
@@ -144,7 +144,7 @@ describe("compose", () => {
 
   it("can handle back pressure", (done) => {
     let result = "";
-    let source = createStream();
+    const source = createStream();
     source.push(["andré", "bruno", "robert"]);
     source.push(null);
 
@@ -163,7 +163,7 @@ describe("compose", () => {
 
   it("can handle back pressure with nested compose", (done) => {
     let result = "";
-    let source = createStream();
+    const source = createStream();
     source.push(["andré", "bruno", "robert"]);
     source.push(null);
 
@@ -180,7 +180,7 @@ describe("compose", () => {
   });
 
   it("should propagate emitted error", (done) => {
-    let source = createStream();
+    const source = createStream();
 
     compose(
       source,
@@ -200,7 +200,7 @@ describe("compose", () => {
   });
 
   it("should propagate thrown error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("first");
     source.push(null);
 

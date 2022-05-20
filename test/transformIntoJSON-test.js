@@ -11,12 +11,12 @@ const createStream = () => {
 
 describe("transformIntoJSON", () => {
   it("can stream a json array", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push({ name: "andré" });
     sourceStream.push({ name: "robert" });
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON())
       .on("data", (d) => {
@@ -29,10 +29,10 @@ describe("transformIntoJSON", () => {
   });
 
   it("can stream an empty json array", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON())
       .on("data", (d) => {
@@ -45,11 +45,11 @@ describe("transformIntoJSON", () => {
   });
 
   it("can wrap and stream a json array", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push({ name: "andré" });
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON({ arrayPropertyName: "results" }))
       .on("data", (d) => {
@@ -62,10 +62,10 @@ describe("transformIntoJSON", () => {
   });
 
   it("can wrap and stream an empty json array", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON({ arrayPropertyName: "results" }))
       .on("data", (d) => {
@@ -78,11 +78,11 @@ describe("transformIntoJSON", () => {
   });
 
   it("can wrap and stream a json array into a object", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push({ name: "andré" });
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
       .on("data", (d) => {
@@ -95,10 +95,10 @@ describe("transformIntoJSON", () => {
   });
 
   it("can wrap and stream an empty json array into a object", (done) => {
-    let sourceStream = createStream();
+    const sourceStream = createStream();
     sourceStream.push(null);
-    let json = "";
 
+    let json = "";
     sourceStream
       .pipe(transformIntoJSON({ arrayWrapper: { preexisting: true }, arrayPropertyName: "results" }))
       .on("data", (d) => {

@@ -11,8 +11,8 @@ const createStream = () => {
 
 describe("filterData", () => {
   it("should filter (ignore empty)", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("first");
     source.push("");
     source.push(null);
@@ -31,8 +31,8 @@ describe("filterData", () => {
   });
 
   it("should filter (async)", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("first");
     source.push("");
     source.push(null);
@@ -51,8 +51,8 @@ describe("filterData", () => {
   });
 
   it("should filter (ignore first line)", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("first");
     source.push("second");
     source.push(null);
@@ -68,7 +68,7 @@ describe("filterData", () => {
   });
 
   it("should filter with options", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ object: true });
     source.push(null);
 

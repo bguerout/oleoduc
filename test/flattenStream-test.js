@@ -6,7 +6,7 @@ const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpubl
 describe("flattenStream", () => {
   it("can transform a chunk into a stream", (done) => {
     let result = "";
-    let stream = createStream([createStream(["andré"]), createStream(["bruno"])]);
+    const stream = createStream([createStream(["andré"]), createStream(["bruno"])]);
 
     stream
       .pipe(flattenStream())
@@ -23,7 +23,7 @@ describe("flattenStream", () => {
 
   it("should stop transforming when down streams are busy", (done) => {
     let result = "";
-    let stream = createStream([
+    const stream = createStream([
       createStream(["andré", "bruno", "robert"]), //fill the buffer
       createStream(["john"]),
       createStream(["henri"]),
@@ -44,7 +44,7 @@ describe("flattenStream", () => {
   });
 
   it("should propagate error", async () => {
-    let stream = createStream([
+    const stream = createStream([
       compose(
         createStream(["andré"]),
         transformData(() => {

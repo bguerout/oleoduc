@@ -11,8 +11,8 @@ const createStream = () => {
 
 describe("transformData", () => {
   it("should transformData", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push(null);
@@ -27,8 +27,8 @@ describe("transformData", () => {
   });
 
   it("should transformData (async)", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push(null);
@@ -56,7 +56,7 @@ describe("transformData", () => {
   });
 
   it("should transformData and handle synchronous error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push(null);
 
@@ -78,7 +78,7 @@ describe("transformData", () => {
   });
 
   it("should transformData and handle asynchronous error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push(null);
 

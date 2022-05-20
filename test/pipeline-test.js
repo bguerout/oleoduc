@@ -13,8 +13,8 @@ const createStream = () => {
 
 describe("pipeline", () => {
   it("can create pipeline from stream", (done) => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -35,8 +35,8 @@ describe("pipeline", () => {
   });
 
   it("can create pipeline from stream (async)", async () => {
-    let chunks = [];
-    let source = createStream();
+    const chunks = [];
+    const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push("robert");
@@ -56,7 +56,7 @@ describe("pipeline", () => {
   });
 
   it("pipeline should propagate emitted error", (done) => {
-    let source = createStream();
+    const source = createStream();
 
     promisify(pipeline)(
       source,
@@ -75,7 +75,7 @@ describe("pipeline", () => {
   });
 
   it("pipeline should propagate thrown error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("first");
     source.push(null);
 

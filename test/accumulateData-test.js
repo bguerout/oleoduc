@@ -11,8 +11,8 @@ const createStream = () => {
 
 describe("accumulateData", () => {
   it("can accumulateData by grouping them (flush)", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("John");
     source.push("Doe");
     source.push("Robert");
@@ -43,8 +43,8 @@ describe("accumulateData", () => {
   });
 
   it("can accumulateData into a single chunk (no flush)", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("j");
     source.push("o");
     source.push("h");
@@ -61,12 +61,12 @@ describe("accumulateData", () => {
   });
 
   it("should catch error in accumulateData", (done) => {
-    let result = [];
-    let source = createStream();
+    const result = [];
+    const source = createStream();
     source.push("a");
     source.push(null);
 
-    let accumulator = accumulateData(() => {
+    const accumulator = accumulateData(() => {
       throw new Error("Unable to hande data");
     });
     accumulator.on("error", (e) => {

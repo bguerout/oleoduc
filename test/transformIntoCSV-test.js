@@ -12,11 +12,11 @@ const createStream = () => {
 
 describe("transformIntoCSV", () => {
   it("should transform object into a csv", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(transformIntoCSV())
       .pipe(
@@ -31,11 +31,11 @@ describe("transformIntoCSV", () => {
   });
 
   it("should transform object with mapper", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(transformIntoCSV({ mapper: (v) => `"${v}"` }))
       .pipe(
@@ -50,11 +50,11 @@ describe("transformIntoCSV", () => {
   });
 
   it("should transform object into a csv with bom", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(transformIntoCSV({ bom: true }))
       .pipe(
@@ -69,12 +69,12 @@ describe("transformIntoCSV", () => {
   });
 
   it("should transform object into a csv with separator", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push({ firstName: "John", lastName: "Doe" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(
         transformIntoCSV({
@@ -93,11 +93,11 @@ describe("transformIntoCSV", () => {
   });
 
   it("should transform object into a csv with custom columns", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(
         transformIntoCSV({
@@ -118,11 +118,11 @@ describe("transformIntoCSV", () => {
   });
 
   it("should transform object into a csv with async columns", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    let csv = [];
+    const csv = [];
     source
       .pipe(
         transformIntoCSV({
@@ -144,11 +144,11 @@ describe("transformIntoCSV", () => {
   });
 
   it("should catch error in transformIntoCSV", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("a");
     source.push(null);
 
-    let transformer = transformIntoCSV({
+    const transformer = transformIntoCSV({
       columns: {
         error() {
           throw new Error("Unable to handle data");

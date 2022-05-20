@@ -11,10 +11,10 @@ const createStream = () => {
 
 describe("writeData", () => {
   it("should writeData", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push(null);
-    let acc = [];
+    const acc = [];
 
     source
       .pipe(
@@ -29,7 +29,7 @@ describe("writeData", () => {
   });
 
   it("should writeData and handle synchronous error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push(1);
     source.push(null);
 
@@ -53,7 +53,7 @@ describe("writeData", () => {
   });
 
   it("should writeData and handle asynchronous error (first chunk)", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push("andré");
     source.push(null);
 
@@ -74,12 +74,12 @@ describe("writeData", () => {
   });
 
   it("should writeData and handle asynchronous error", (done) => {
-    let source = createStream();
+    const source = createStream();
     source.push(1);
     source.push(2);
     source.push(3);
     source.push(null);
-    let acc = [];
+    const acc = [];
 
     source
       .pipe(

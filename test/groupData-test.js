@@ -11,8 +11,8 @@ const createStream = () => {
 
 describe("groupData", () => {
   it("can create group of data", (done) => {
-    let results = [];
-    let source = createStream();
+    const results = [];
+    const source = createStream();
     source.push("abc");
     source.push("def");
     source.push("ghi");
@@ -32,8 +32,8 @@ describe("groupData", () => {
   });
 
   it("can create group of data with custom size", (done) => {
-    let results = [];
-    let source = createStream();
+    const results = [];
+    const source = createStream();
     source.push("abc");
     source.push("def");
     source.push("ghi");
