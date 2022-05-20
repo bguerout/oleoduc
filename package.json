@@ -27,7 +27,6 @@
     "test": "mocha --recursive --exit --timeout 1000 test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint index.js test/",
-    "validate": "npm test && npm run lint",
     "release": "bash .tools/release.sh master"
   },
   "repository": {
