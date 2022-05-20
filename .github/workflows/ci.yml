@@ -14,6 +14,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run validate
+      - run: npm run build
 
   coverage:
     runs-on: ubuntu-latest

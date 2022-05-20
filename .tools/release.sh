@@ -55,6 +55,7 @@ function main() {
   git checkout "${branch_name}"
   npm ci
   npm run validate
+  npm run build
 
   echo "Creating release tag..."
   git tag -a "${release_version}" -m "Release ${release_version}"
