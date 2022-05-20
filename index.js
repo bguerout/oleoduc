@@ -1,13 +1,11 @@
-const transformData = require("./lib/transformData.js");
-
 module.exports = {
   oleoduc: require("./lib/oleoduc.js"),
   compose: require("./lib/compose.js"),
-  transformData,
+  transformData: require("./lib/transformData.js"),
   transformIntoJSON: require("./lib/transformIntoJSON.js"),
   transformIntoCSV: require("./lib/transformIntoCSV.js"),
   flattenStream: require("./lib/flattenStream.js"),
-  filterData: (filter, options = {}) => transformData((data) => data, { ...options, filter }),
+  filterData: require("./lib/filterData"),
   accumulateData: require("./lib/accumulateData.js"),
   groupData: require("./lib/groupData"),
   readLineByLine: require("./lib/readLineByLine"),
