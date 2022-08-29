@@ -24,7 +24,8 @@ import { ... } from "oleoduc";
 
 ### Features
 
-- Transform, filter, reduce and group data during stream processing
+- Easily transform, filter and write data flowing through the stream
+- Catch stream errors
 - Compose and merge streams together
 - Read a stream as if it were a promise
 
@@ -36,7 +37,7 @@ Read a file, parse each line and store it into a database
 const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
 const { createReadStream } = require("fs");
 
-// Wait until all lines have been inserted.
+// Read a each line from a file, parse them as json and store document into MongoDB.
 // No need to load all content into the memory
 await oleoduc(
   createReadStream("/path/to/file"),
@@ -44,24 +45,6 @@ await oleoduc(
   transformData((line) => JSON.parse(line)),
   writeData((json) => db.insertOne(json)),
 )
-```
-
-Compose streams and iterate over it
-
-```js
-const { compose, readLineByLine, transformData } = require("oleoduc");
-const { createReadStream } = require("fs");
-
-//Same as the previous example but with composition and for loop
-let stream = compose(
-  createReadStream("/path/to/file"),
-  readLineByLine(),
-  transformData((line) => JSON.parse(line)),
-)
-
-for await (const json of stream) {
-  await db.insertOne(json)
-}
 ```
 
 Stream JSON to client through an express server
@@ -81,7 +64,39 @@ app.get("/documents", async (req, res) => {
 });
 ```
 
+Create a stream to parse CSV and iterate over it
+
+```js
+const { compose, transformData } = require("oleoduc");
+const { createReadStream } = require("fs");
+const { parse } = require("csv-parse");
+
+const csvStream = compose(
+  createReadStream("/path/to/file.csv"),
+  parse(),
+)
+
+for await (const data of csvStream) {
+  await db.insertOne(data)
+}
+```
+
 # API
+
+* [oleoduc(...streams, [options])](#oleoducstreams-options)
+* [compose(...streams, [options])](#composestreams-options)
+* [transformData(callback, [options])](#transformdatacallback-options)
+* [filterData(callback, [options])](#filterdatacallback-options)
+* [writeData(callback, [options])](#writedatacallback-options)
+* [accumulateData(callback, [options])](#accumulatedatacallback-options)
+* [groupData([options])](#groupdataoptions)
+* [flattenArray([options])](#flattenarrayoptions)
+* [flattenStream([options])](#flattenstreamoptions)
+* [readLineByLine()](#readlinebyline)
+* [mergeStreams(...streams, [options])](#mergestreamsstreams-options)
+* [concatStreams(...streams, [options])](#concatstreamsstreams-options)
+* [transformIntoJSON([options])](#transformintojsonoptions)
+* [transformIntoCSV([options])](#transformintocsvoptions)
 
 ## oleoduc(...streams, [options])
 
@@ -452,7 +467,7 @@ oleoduc(
 
 ## flattenStream([options])
 
-Convert chunk into a stream and consumes it
+Allows chunks of a sub-stream to be streamed as if each was part of the source
 
 #### Parameters
 
@@ -462,25 +477,27 @@ Convert chunk into a stream and consumes it
 
 #### Examples
 
-Stream data as if it where a json array
-
 ```js
 const { oleoduc, flattenStream, writeData } = require("oleoduc");
 const { Readable } = require("stream");
 
-let source = Readable.from(["John Doe", "Robert Hue"]);
+const source = createStream();
+source.push("John Doe,Robert Hue");
+source.push(null);
 
 await oleoduc(
   source,
   transformData(data => {
-    return createAStream(data);
+    var array = data.split(",");
+    return Readable.from(array); //Return a stream
   }),
-  flattenStream(),
-  writeData((json) => console.log(json))
+  flattenStream(),//Each chunk of the returned stream are flatten
+  writeData((name) => console.log(name))
 );
 
-// Json Output
-'[{ user: "John Doe" }, { user: "Robert Hue" }]'
+// --> Output:
+"John Doe"
+"Robert Hue"
 ```
 
 ## readLineByLine()
@@ -503,12 +520,13 @@ await oleoduc(
 );
 ```
 
-## mergeStreams([options])
+## mergeStreams(...streams, [options])
 
-Allows multiple streams to be merged into a single one. The returned stream will be an iterator.
+Allows multiple streams to be merged into a single one.
 
 #### Parameters
 
+- `streams`: A list of streams to merge or a list of stream factory functions
 - `options`:
     - `sequential`: Read the next stream after the previous one has ended (default: false)
 
@@ -524,7 +542,7 @@ let output = [];
 await oleoduc(
   mergeStreams(
     createReadStream("/path/to/file1.txt"),
-    createReadStream("/path/to/file2.txt")
+    () => createReadStream("/path/to/file2.txt") // can be an async function
   ),
   writeData((line) => console.log(line))
 )
@@ -547,6 +565,55 @@ for await (const data of stream) {
   console.log(data)
 }
 
+```
+
+## concatStreams(...streams, [options])
+
+Allows multiple streams to be processed one after the other.
+
+#### Parameters
+
+- `streams`: A list of streams or a function returning the next stream to process or `null` when no more streams
+  available
+- `options`: Options are passed to [stream.PassThrough](https://nodejs.org/api/stream.html#class-streampassthrough)
+
+#### Examples
+
+Read files as if it were a single one
+
+```js
+const { oleoduc, concatStreams, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+let output = [];
+await oleoduc(
+  concatStreams(
+    createReadStream("/path/to/file1.txt"),
+    createReadStream("/path/to/file2.txt")
+  ),
+  writeData((line) => console.log(line))
+)
+;
+
+```
+
+Read files until no more available
+
+```js
+const { oleoduc, concatStreams, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+async function next() {
+  const fileName = await getFilenameFromAnAsyncFunction()
+  return fileName ? createReadStream(fileName) : null;
+}
+
+let output = [];
+await oleoduc(
+  concatStreams(next),
+  writeData((line) => console.log(line))
+)
+;
 
 ```
 
