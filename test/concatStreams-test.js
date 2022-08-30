@@ -20,8 +20,9 @@ describe("concatStreams", () => {
   it("can concat streams (next function)", (done) => {
     let result = "";
     const array = [createStream(["andré"]), createStream(["bruno"])];
+    const next = () => array.shift();
 
-    concatStreams(() => array.shift())
+    concatStreams(next)
       .pipe(writeData((data) => (result += data)))
       .on("finish", () => {
         assert.deepStrictEqual(result, "andrébruno");
@@ -32,8 +33,9 @@ describe("concatStreams", () => {
   it("can concat streams (async next function)", (done) => {
     let result = "";
     const array = [createStream(["andré"]), createStream(["bruno"])];
+    const next = () => Promise.resolve(array.shift());
 
-    concatStreams(() => Promise.resolve(array.shift()))
+    concatStreams(next)
       .pipe(writeData((data) => (result += data)))
       .on("finish", () => {
         assert.deepStrictEqual(result, "andrébruno");

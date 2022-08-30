@@ -522,17 +522,16 @@ await oleoduc(
 
 ## mergeStreams(...streams, [options])
 
-Allows multiple streams to be merged into a single one.
+Allows streams to be merged into a single one.
 
 #### Parameters
 
-- `streams`: A list of streams to merge or a list of stream factory functions
-- `options`:
-    - `sequential`: Read the next stream after the previous one has ended (default: false)
+- `streams`: A list of streams
+- `options`: Options are passed to [stream.PassThrough](https://nodejs.org/api/stream.html#class-streampassthrough)
 
 #### Examples
 
-Read multiple files as if it were a single one
+Read files as if it were a single one
 
 ```js
 const { oleoduc, mergeStreams, writeData } = require("oleoduc");
@@ -542,29 +541,11 @@ let output = [];
 await oleoduc(
   mergeStreams(
     createReadStream("/path/to/file1.txt"),
-    () => createReadStream("/path/to/file2.txt") // can be an async function
+    createReadStream("/path/to/file2.txt")
   ),
   writeData((line) => console.log(line))
 )
 ;
-```
-
-Read multiple files sequentially and iterate over the merged stream
-
-```js
-const { oleoduc, mergeStreams, writeData } = require("oleoduc");
-const { createReadStream } = require("stream");
-
-let stream = mergeStreams(
-  createReadStream("/path/to/file1.txt"),
-  createReadStream("/path/to/file2.txt"),
-  { sequential: true }
-);
-
-for await (const data of stream) {
-  console.log(data)
-}
-
 ```
 
 ## concatStreams(...streams, [options])
