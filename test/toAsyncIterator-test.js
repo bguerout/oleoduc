@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { Readable } = require("stream");
-const toAsyncIterator = require("../lib/utils/toAsyncIterator");
+const { toAsyncIterator } = require("../lib/utils/toAsyncIterator");
 const { transformData, oleoduc } = require("../index");
 
 const createStream = () => {
