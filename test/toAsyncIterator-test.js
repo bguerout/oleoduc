@@ -1,14 +1,7 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { toAsyncIterator } = require("../lib/utils/toAsyncIterator");
 const { transformData, oleoduc } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("toAsyncIterator", () => {
   it("can convert a readable stream into an iterator", async () => {

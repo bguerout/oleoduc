@@ -1,14 +1,7 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { oleoduc, transformData, writeData, compose } = require("../index");
 const { delay } = require("./testUtils");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("oleoduc", () => {
   it("can create oleoduc", async () => {

@@ -1,13 +1,6 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { readLineByLine, writeData, oleoduc } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("readLineByLine", () => {
   it("can read a stream line by line", (done) => {

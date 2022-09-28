@@ -1,13 +1,6 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { filterData } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("filterData", () => {
   it("should filter (ignore empty)", (done) => {

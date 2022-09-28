@@ -1,14 +1,7 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { transformData, writeData, filterData } = require("../index");
 const { delay } = require("./testUtils");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("parallel", () => {
   it("can run parallel task with order preserved", (done) => {

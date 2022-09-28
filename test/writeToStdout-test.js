@@ -1,12 +1,5 @@
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { writeToStdout } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("writeToStdout", () => {
   it("should write to stdout", (done) => {

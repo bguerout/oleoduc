@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { flattenArray, accumulateData, writeData } = require("../index");
-const { createStream } = require("./testUtils");
+const { streamArray } = require("./testUtils");
 const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
 
 describe("flattenArray", () => {
   it("can flat map an array", (done) => {
     let result = "";
-    const source = createStream([["andré", "bruno"]]);
+    const source = streamArray([["andré", "bruno"]]);
 
     source
       .pipe(flattenArray())
@@ -23,7 +23,7 @@ describe("flattenArray", () => {
 
   it("can flat map an array inside a pipeline", (done) => {
     let result = [];
-    const source = createStream();
+    const source = streamArray();
     source.push("andré");
     source.push("bruno");
     source.push(null);
@@ -44,7 +44,7 @@ describe("flattenArray", () => {
 
   it("should stop when down streams are busy", (done) => {
     let result = "";
-    const source = createStream();
+    const source = streamArray();
     source.push(["andré", "bruno", "robert"]); //fill the buffer
     source.push(["john", "henri"]);
     source.push(null);

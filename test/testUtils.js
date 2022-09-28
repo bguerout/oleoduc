@@ -8,7 +8,7 @@ function delay(callback, delay) {
   });
 }
 
-function createStream(items) {
+function streamArray(items) {
   return new Readable({
     objectMode: true,
     read() {
@@ -17,7 +17,15 @@ function createStream(items) {
   });
 }
 
+function createStream() {
+  return new Readable({
+    objectMode: true,
+    read() {},
+  });
+}
+
 module.exports = {
   createStream,
+  streamArray,
   delay,
 };

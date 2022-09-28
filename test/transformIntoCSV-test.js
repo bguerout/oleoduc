@@ -1,14 +1,7 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { transformIntoCSV, writeData } = require("../index");
 const { delay } = require("./testUtils");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("transformIntoCSV", () => {
   it("should transform object into a csv", (done) => {

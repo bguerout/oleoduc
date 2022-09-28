@@ -1,15 +1,8 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { compose, transformData, writeData, oleoduc, flattenArray } = require("../index");
 // eslint-disable-next-line node/no-unpublished-require
 const SlowStream = require("slow-stream");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("compose", () => {
   it("can compose streams", (done) => {

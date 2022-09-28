@@ -1,15 +1,9 @@
 const assert = require("assert");
-const { Readable, pipeline } = require("stream");
+const { pipeline } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { promisify } = require("util");
 const { transformData, writeData } = require("../index");
 const { delay } = require("./testUtils");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("pipeline", () => {
   it("can create pipeline from stream", (done) => {

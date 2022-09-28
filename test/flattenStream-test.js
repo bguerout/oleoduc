@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { writeData, flattenStream, compose, transformData, oleoduc } = require("../index");
-const { createStream } = require("./testUtils");
+const { streamArray } = require("./testUtils");
 const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
 
 describe("flattenStream", () => {
   it("can transform a chunk into a stream", (done) => {
     let result = "";
-    const stream = createStream([createStream(["andré"]), createStream(["bruno"])]);
+    const stream = streamArray([streamArray(["andré"]), streamArray(["bruno"])]);
 
     stream
       .pipe(flattenStream())
@@ -23,10 +23,10 @@ describe("flattenStream", () => {
 
   it("should stop transforming when down streams are busy", (done) => {
     let result = "";
-    const stream = createStream([
-      createStream(["andré", "bruno", "robert"]), //fill the buffer
-      createStream(["john"]),
-      createStream(["henri"]),
+    const stream = streamArray([
+      streamArray(["andré", "bruno", "robert"]), //fill the buffer
+      streamArray(["john"]),
+      streamArray(["henri"]),
     ]);
 
     stream
@@ -44,9 +44,9 @@ describe("flattenStream", () => {
   });
 
   it("should propagate error", async () => {
-    const stream = createStream([
+    const stream = streamArray([
       compose(
-        createStream(["andré"]),
+        streamArray(["andré"]),
         transformData(() => {
           throw new Error("This is a stream error");
         })

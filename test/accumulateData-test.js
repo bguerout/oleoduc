@@ -1,13 +1,6 @@
 const assert = require("assert");
-const { Readable } = require("stream");
 const { accumulateData, writeData } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
+const { createStream } = require("./testUtils.js");
 
 describe("accumulateData", () => {
   it("can accumulateData by grouping them (flush)", (done) => {

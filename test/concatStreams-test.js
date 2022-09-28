@@ -1,13 +1,13 @@
 const assert = require("assert");
 const { concatStreams, writeData } = require("../index");
-const { createStream } = require("./testUtils");
+const { streamArray } = require("./testUtils");
 const { delay } = require("./testUtils.js");
 
 describe("concatStreams", () => {
   it("can concat streams", (done) => {
     let result = "";
-    const source1 = createStream(["andré"]);
-    const source2 = createStream(["bruno"]);
+    const source1 = streamArray(["andré"]);
+    const source2 = streamArray(["bruno"]);
 
     concatStreams(source1, source2)
       .pipe(writeData((data) => (result += data)))
@@ -19,7 +19,7 @@ describe("concatStreams", () => {
 
   it("can concat streams (next function)", (done) => {
     let result = "";
-    const array = [createStream(["andré"]), createStream(["bruno"])];
+    const array = [streamArray(["andré"]), streamArray(["bruno"])];
     const next = () => array.shift();
 
     concatStreams(next)
@@ -32,7 +32,7 @@ describe("concatStreams", () => {
 
   it("can concat streams (async next function)", (done) => {
     let result = "";
-    const array = [createStream(["andré"]), createStream(["bruno"])];
+    const array = [streamArray(["andré"]), streamArray(["bruno"])];
     const next = () => Promise.resolve(array.shift());
 
     concatStreams(next)
@@ -45,7 +45,7 @@ describe("concatStreams", () => {
 
   it("can concat streams (slow async next)", (done) => {
     let result = "";
-    const array = [createStream(["andré"]), createStream(["bruno"])];
+    const array = [streamArray(["andré"]), streamArray(["bruno"])];
     const next = () => delay(() => array.shift(), 2);
 
     concatStreams(next)
@@ -57,8 +57,8 @@ describe("concatStreams", () => {
   });
 
   it("can iterate over concatStreams", async () => {
-    const source1 = createStream(["andré"]);
-    const source2 = createStream(["bruno"]);
+    const source1 = streamArray(["andré"]);
+    const source2 = streamArray(["bruno"]);
 
     const chunks = [];
     for await (const chunk of concatStreams(source1, source2)) {

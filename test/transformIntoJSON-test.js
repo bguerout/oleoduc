@@ -1,13 +1,6 @@
 const assert = require("assert");
-const { Readable } = require("stream");
+const { createStream } = require("./testUtils.js");
 const { transformIntoJSON } = require("../index");
-
-const createStream = () => {
-  return new Readable({
-    objectMode: true,
-    read() {},
-  });
-};
 
 describe("transformIntoJSON", () => {
   it("can stream a json array", (done) => {
