@@ -91,12 +91,13 @@ for await (const data of csvStream) {
 * [accumulateData(callback, [options])](#accumulatedatacallback-options)
 * [groupData([options])](#groupdataoptions)
 * [flattenArray([options])](#flattenarrayoptions)
-* [flattenStream([options])](#flattenstreamoptions)
+* [transformIntoStream([options])](#transformintostreamoptions)
 * [readLineByLine()](#readlinebyline)
 * [mergeStreams(...streams, [options])](#mergestreamsstreams-options)
 * [concatStreams(...streams, [options])](#concatstreamsstreams-options)
 * [transformIntoJSON([options])](#transformintojsonoptions)
 * [transformIntoCSV([options])](#transformintocsvoptions)
+
 
 ## oleoduc(...streams, [options])
 
@@ -465,7 +466,7 @@ oleoduc(
 "Robert Hue"
 ```
 
-## flattenStream([options])
+## transformIntoStream([options])
 
 Allows chunks of a sub-stream to be streamed as if each was part of the source
 
@@ -478,7 +479,7 @@ Allows chunks of a sub-stream to be streamed as if each was part of the source
 #### Examples
 
 ```js
-const { oleoduc, flattenStream, writeData } = require("oleoduc");
+const { oleoduc, transformIntoStream, writeData } = require("oleoduc");
 const { Readable } = require("stream");
 
 const source = createStream();
@@ -487,11 +488,10 @@ source.push(null);
 
 await oleoduc(
   source,
-  transformData(data => {
+  transformIntoStream(data => {
     var array = data.split(",");
     return Readable.from(array); //Return a stream
   }),
-  flattenStream(),//Each chunk of the returned stream are flatten
   writeData((name) => console.log(name))
 );
 
