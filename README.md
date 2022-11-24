@@ -95,7 +95,7 @@ for await (const data of csvStream) {
 * [transformData](#transformdatacallback-options)
 * [transformIntoCSV](#transformintocsvoptions)
 * [transformIntoJSON](#transformintojsonoptions)
-* [transformIntoStream](#transformintostreamoptions)
+* [transformStream](#transformstreamoptions)
 * [writeData](#writedatacallback-options)
 
 ## accumulateData(callback, [options])
@@ -633,7 +633,7 @@ Robert Hue|2021-03-12T21:34:13.085Z
 `
 ```
 
-## transformIntoStream([options])
+## transformStream([options])
 
 Allows chunks of a sub-stream to be streamed as if each was part of the source
 
@@ -646,7 +646,7 @@ Allows chunks of a sub-stream to be streamed as if each was part of the source
 #### Examples
 
 ```js
-const { oleoduc, transformIntoStream, writeData } = require("oleoduc");
+const { oleoduc, transformStream, writeData } = require("oleoduc");
 const { Readable } = require("stream");
 
 const source = createStream();
@@ -655,7 +655,7 @@ source.push(null);
 
 await oleoduc(
   source,
-  transformIntoStream(data => {
+  transformStream(data => {
     var array = getListOfPeopleLivingInTheHouse();
     return Readable.from(array); //Return a stream
   }),

@@ -1,17 +1,17 @@
 const assert = require("assert");
 const { streamArray, createStream, delay } = require("./testUtils.js");
 const { writeData } = require("../index.js");
-const { transformIntoStream } = require("../lib/transformIntoStream.js");
+const { transformStream } = require("../lib/transformStream.js");
 const SlowStream = require("slow-stream"); // eslint-disable-line node/no-unpublished-require
 
-describe("transformIntoStream", () => {
+describe("transformStream", () => {
   it("should transform data into a stream", (done) => {
     const chunks = [];
     const source = streamArray(["andré", "bruno"]);
 
     source
       .pipe(
-        transformIntoStream((data) => {
+        transformStream((data) => {
           const source = createStream();
           source.push(data + "_transformed");
           source.push(null);
@@ -35,7 +35,7 @@ describe("transformIntoStream", () => {
 
     source
       .pipe(
-        transformIntoStream((data) => {
+        transformStream((data) => {
           const source = createStream();
 
           return delay(() => {
@@ -62,7 +62,7 @@ describe("transformIntoStream", () => {
 
     source
       .pipe(
-        transformIntoStream(
+        transformStream(
           async (data) => {
             const source = createStream();
             for (let i = 0; i < 5; i++) {
