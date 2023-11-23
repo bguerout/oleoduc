@@ -1,0 +1,55 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:node/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["tsconfig.test.json"],
+    "sourceType": "module"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": true,
+      "node": true
+    }
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "mocha"
+  ],
+  "env": {
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
+  "rules": {
+    "quote-props": ["error", "consistent"],
+    "mocha/no-skipped-tests": "error",
+    "mocha/no-exclusive-tests": "error",
+    "node/no-unpublished-import": [
+      "error", {
+        "allowModules": ["slow-stream"]
+      }
+    ],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "version": ">=13.0.0",
+        "ignores": ["modules"]
+      }
+    ],
+    "node/no-missing-import": [
+      "error", {
+        "allowModules": [],
+        "resolvePaths": ["/path/to/a/modules/directory"],
+        "tryExtensions": [".js", ".ts"]
+      }
+    ]
+  }
+}

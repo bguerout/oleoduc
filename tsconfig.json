@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "NodeNext",
+        "module": "NodeNext",
+        "outDir": "./dist/mjs",
+        "allowJs": true,
+        "strict": false,
+        "sourceMap": true,
+        "rootDirs": ["src"],
+        "target": "esnext",
+        "lib": ["esnext"],
+        "types": ["node", "mocha"]
+    },
+    "exclude": ["node_modules", "dist"],
+    "include": ["src"]
+}
