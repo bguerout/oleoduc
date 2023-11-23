@@ -13,21 +13,22 @@
     "transform",
     "parallel"
   ],
-  "main": "./index.js",
-  "module": "./dist/bundle.mjs",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "require": "./index.js",
-      "import": "./dist/bundle.mjs"
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
   "scripts": {
-    "build": "npx rollup --config rollup.config.mjs",
+    "build": "npx rollup --config rollup.mjs.config.mjs && npx rollup --config rollup.cjs.config.mjs && bash .tools/create-per-distribution-package-json.sh",
     "hooks": "git config core.hooksPath .tools/git-hooks && chmod +x .tools/git-hooks/*",
     "test": "mocha --recursive --exit --timeout 1000 test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
-    "lint": "eslint index.js test/",
-    "release": "bash .tools/release.sh master"
+    "lint": "eslint index.mjs test/",
+    "release": "bash .tools/release.sh master",
+    "clean": "rm -rf dist/"
   },
   "repository": {
     "type": "git",
@@ -47,10 +48,11 @@
     "@rollup/plugin-commonjs": "22.0.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.29.0",
     "eslint-plugin-mocha": "9.0.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "4.0.0",
-    "mocha": "9.2.2",
+    "mocha": "10.2.0",
     "nyc": "15.1.0",
     "prettier": "2.6.2",
     "rollup": "2.74.1",

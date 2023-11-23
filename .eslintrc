@@ -14,10 +14,24 @@
     "mocha": true
   },
   "plugins": [
-    "mocha"
+    "mocha",
+    "import"
   ],
   "rules": {
+    "import/extensions": [
+      "error",
+      "always"
+    ],
     "mocha/no-skipped-tests": "error",
-    "mocha/no-exclusive-tests": "error"
+    "mocha/no-exclusive-tests": "error",
+    "node/no-unpublished-import": [
+      "error",
+      {
+        "allowModules": [
+          "slow-stream",
+          "@rollup/plugin-commonjs"
+        ]
+      }
+    ]
   }
 }
