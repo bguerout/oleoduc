@@ -1,5 +1,9 @@
 import { Readable } from "stream";
 
+type ToAsyncIteratorOptions = {
+  chunkSize?: number;
+};
+
 /**
  * Adapted from
  *  - https://iximiuz.com/en/posts/nodejs-readable-streams-distilled/
@@ -8,11 +12,12 @@ import { Readable } from "stream";
  * @param options
  * @returns {AsyncGenerator<*, void, *>}
  */
-export async function* toAsyncIterator(stream, options: any = {}) {
+export async function* toAsyncIterator(stream, options: ToAsyncIteratorOptions = {}) {
   const chunkSize = options.chunkSize || 1;
+
   if (typeof stream.read !== "function") {
-    // @ts-ignore
-    stream = Readable.wrap(stream, { objectMode: true });
+    //FIXME seems not used
+    stream = new Readable().wrap(stream);
   }
 
   let ended = false;

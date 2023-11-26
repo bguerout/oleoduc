@@ -4,5 +4,8 @@
         "rootDirs": ["./test"],
         "types": ["node", "mocha"]
     },
-    "include": ["src", "test"]
+    "include": ["src", "test"],
+    "ts-node": {
+        "transpileOnly": true
+    }
 }

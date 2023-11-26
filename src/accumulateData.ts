@@ -1,6 +1,10 @@
-import { Transform } from "stream";
+import { Transform, TransformOptions } from "stream";
 
-export function accumulateData(accumulate, options: any = {}) {
+type AccumulateDateOptions = {
+  accumulator?: unknown;
+} & TransformOptions;
+
+export function accumulateData(accumulate, options: AccumulateDateOptions = {}) {
   const { accumulator, ...rest } = options;
   let acc = accumulator === undefined ? null : accumulator;
   let flushed = false;

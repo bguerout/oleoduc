@@ -23,8 +23,8 @@
   },
   "scripts": {
     "build": "bash .tools/build.sh",
-    "hooks": "git config core.hooksPath .tools/git-hooks && chmod +x .tools/git-hooks/*",
-    "test": "mocha test/",
+    "hooks": "bash .tools/hooks.sh",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint src/index.ts test/",
     "release": "bash .tools/release.sh master",

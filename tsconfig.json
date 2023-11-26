@@ -9,7 +9,7 @@
         "rootDirs": ["src"],
         "target": "esnext",
         "lib": ["esnext"],
-        "types": ["node", "mocha"]
+        "types": ["node"]
     },
     "exclude": ["node_modules", "dist"],
     "include": ["src"]
