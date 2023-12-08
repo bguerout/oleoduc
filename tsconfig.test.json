@@ -1,11 +1,9 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "./tsconfig.cjs.json",
     "compilerOptions": {
+        "outDir": "./build",
         "rootDirs": ["./test"],
         "types": ["node", "mocha"]
     },
-    "include": ["src", "test"],
-    "ts-node": {
-        "transpileOnly": true
-    }
+    "include": ["src", "test"]
 }

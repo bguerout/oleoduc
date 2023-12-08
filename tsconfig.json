@@ -2,14 +2,15 @@
     "compilerOptions": {
         "moduleResolution": "NodeNext",
         "module": "NodeNext",
+        "target": "esnext",
         "outDir": "./dist/mjs",
+        "rootDirs": ["src"],
+        "types": ["node"],
+        "lib": ["esnext"],
         "allowJs": true,
         "strict": false,
         "sourceMap": true,
-        "rootDirs": ["src"],
-        "target": "esnext",
-        "lib": ["esnext"],
-        "types": ["node"]
+        "esModuleInterop": true
     },
     "exclude": ["node_modules", "dist"],
     "include": ["src"]
