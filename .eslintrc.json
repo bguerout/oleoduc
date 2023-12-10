@@ -29,6 +29,7 @@
     "mocha": true
   },
   "rules": {
+    "@typescript-eslint/no-explicit-any": "warn",
     "quote-props": ["error", "consistent"],
     "mocha/no-skipped-tests": "error",
     "mocha/no-exclusive-tests": "error",
