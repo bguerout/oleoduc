@@ -13,21 +13,22 @@
     "transform",
     "parallel"
   ],
-  "main": "./index.js",
-  "module": "./dist/bundle.mjs",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "require": "./index.js",
-      "import": "./dist/bundle.mjs"
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
     }
   },
   "scripts": {
-    "build": "npx rollup --config rollup.config.mjs",
-    "hooks": "git config core.hooksPath .tools/git-hooks && chmod +x .tools/git-hooks/*",
-    "test": "mocha --recursive --exit --timeout 1000 test/",
+    "build": "bash .tools/build.sh",
+    "hooks": "bash .tools/hooks.sh",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json ts-mocha test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
-    "lint": "eslint index.js test/",
-    "release": "bash .tools/release.sh master"
+    "lint": "eslint src/ test/",
+    "release": "bash .tools/release.sh master",
+    "ts": "tsc -p tsconfig.test.json --showConfig"
   },
   "repository": {
     "type": "git",
@@ -40,21 +41,28 @@
   },
   "homepage": "https://github.com/bguerout/oleoduc#readme",
   "dependencies": {
-    "cyclist": "1.0.1",
+    "cyclist": "1.0.2",
     "parallel-transform": "1.2.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "22.0.0",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-mocha": "9.0.0",
+    "@types/mocha": "10.0.6",
+    "@types/node": "20.10.4",
+    "@typescript-eslint/eslint-plugin": "6.13.2",
+    "@typescript-eslint/parser": "6.13.2",
+    "assert": "2.1.0",
+    "eslint": "8.55.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-import-resolver-typescript": "3.6.1",
+    "eslint-plugin-import": "2.29.0",
+    "eslint-plugin-mocha": "10.2.0",
     "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-prettier": "4.0.0",
-    "mocha": "9.2.2",
+    "eslint-plugin-prettier": "5.0.1",
     "nyc": "15.1.0",
-    "prettier": "2.6.2",
-    "rollup": "2.74.1",
-    "slow-stream": "0.0.4"
+    "prettier": "3.1.0",
+    "slow-stream": "0.0.4",
+    "ts-mocha": "10.0.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.3.3"
   },
   "prettier": {
     "printWidth": 120

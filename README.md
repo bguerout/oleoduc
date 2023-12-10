@@ -169,7 +169,7 @@ oleoduc(
 
 ## compose(...streams, [options])
 
-Same as oleoduc but without promise stuff.
+Same as oleoduc but without promise stuff and stream composition capability
 
 #### Parameters
 
@@ -381,7 +381,7 @@ oleoduc(
 
 ## mergeStreams(...streams, [options])
 
-Allows streams to be merged into a single one.
+Allows chunks of multiple streams to be processed in no particular order.
 
 #### Parameters
 
@@ -432,8 +432,8 @@ await oleoduc(
 Pipe streams together, forwards errors and returns a promisified stream.
 
 It is same as nodejs
-core [pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) but
-with better error handling and stream composition capability.
+core [pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) 
+but with better error handling.
 
 If the last stream is readable, the returned stream will be iterable
 
@@ -554,55 +554,6 @@ Robert;Hue
 `
 ```
 
-## transformIntoJSON([options])
-
-Allows data to be streamed as if it were a json string
-
-#### Parameters
-
-- `options`:
-    - `arrayWrapper`: The wrapper object
-    - `arrayPropertyName`: The json property name of the array
-
-#### Examples
-
-Stream data as if it where a json array
-
-```js
-const { oleoduc, transformIntoJSON, writeData } = require("oleoduc");
-const { Readable } = require("stream");
-
-const source = Readable.from([{ user: "John Doe" }, { user: "Robert Hue" }]);
-
-await oleoduc(
-  source,
-  transformIntoJSON(),
-  writeData((json) => console.log(json))
-);
-
-// Json Output
-'[{ user: "John Doe" }, { user: "Robert Hue" }]'
-
-```
-
-Stream data as if it where a json object with an array property inside
-
-```js
-const { oleoduc, transformIntoJSON, writeData } = require("oleoduc");
-const { Readable } = require("stream");
-
-const source = Readable.from([{ user: "John Doe" }, { user: "Robert Hue" }]);
-
-await oleoduc(
-  source,
-  transformIntoJSON({ arrayWrapper: { other: "data" }, arrayPropertyName: "users" }),
-  writeData((json) => console.log(json))
-);
-
-// Json Output
-'{ other: "data", users: [{ user: "John Doe" }, { user: "Robert Hue" }] }'
-```
-
 Stream data as if it where a csv with options
 
 ```js
@@ -631,6 +582,54 @@ fullname|date
 John Doe|2021-03-12T21:34:13.085Z
 Robert Hue|2021-03-12T21:34:13.085Z
 `
+```
+
+## transformIntoJSON([options])
+
+Allows data to be streamed as if it were a json string
+
+#### Parameters
+
+- `options`:
+    - `arrayWrapper`: The wrapper object
+    - `arrayPropertyName`: The json property name of the array
+
+#### Examples
+
+Stream data as if it where a json array
+
+```js
+const { oleoduc, transformIntoJSON, writeData } = require("oleoduc");
+const { Readable } = require("stream");
+
+const source = Readable.from([{ user: "John Doe" }, { user: "Robert Hue" }]);
+
+await oleoduc(
+  source,
+  transformIntoJSON(),
+  writeData((json) => console.log(json))
+);
+
+// Json Output
+'[{ user: "John Doe" }, { user: "Robert Hue" }]'
+```
+
+Stream data as if it where a json object with an array property inside
+
+```js
+const { oleoduc, transformIntoJSON, writeData } = require("oleoduc");
+const { Readable } = require("stream");
+
+const source = Readable.from([{ user: "John Doe" }, { user: "Robert Hue" }]);
+
+await oleoduc(
+  source,
+  transformIntoJSON({ arrayWrapper: { other: "data" }, arrayPropertyName: "users" }),
+  writeData((json) => console.log(json))
+);
+
+// Json Output
+'{ other: "data", users: [{ user: "John Doe" }, { user: "Robert Hue" }] }'
 ```
 
 ## transformStream([options])
