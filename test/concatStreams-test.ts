@@ -1,6 +1,7 @@
 import { deepStrictEqual } from "assert";
 import { concatStreams, writeData } from "../src/index";
 import { delay, streamArray } from "./testUtils";
+import { Readable } from "stream";
 
 describe("concatStreams", () => {
   it("can concat streams", (done) => {
@@ -19,7 +20,7 @@ describe("concatStreams", () => {
   it("can concat streams (next function)", (done) => {
     let result = "";
     const array = [streamArray(["andré"]), streamArray(["bruno"])];
-    const next = () => array.shift();
+    const next = () => array.shift() as Readable;
 
     concatStreams(next)
       .pipe(writeData((data) => (result += data)))
@@ -32,7 +33,7 @@ describe("concatStreams", () => {
   it("can concat streams (async next function)", (done) => {
     let result = "";
     const array = [streamArray(["andré"]), streamArray(["bruno"])];
-    const next = () => Promise.resolve(array.shift());
+    const next = () => Promise.resolve(array.shift() as Readable);
 
     concatStreams(next)
       .pipe(writeData((data) => (result += data)))
@@ -45,7 +46,7 @@ describe("concatStreams", () => {
   it("can concat streams (slow async next)", (done) => {
     let result = "";
     const array = [streamArray(["andré"]), streamArray(["bruno"])];
-    const next = () => delay(() => array.shift(), 2);
+    const next = () => delay(() => array.shift() as Readable, 2);
 
     concatStreams(next)
       .pipe(writeData((data) => (result += data)))

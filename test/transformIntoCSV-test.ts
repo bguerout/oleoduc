@@ -2,17 +2,19 @@ import { deepStrictEqual, fail, strictEqual, ok } from "assert";
 import { createStream, delay } from "./testUtils";
 import { transformIntoCSV, writeData } from "../src";
 
+type FullNameParams = { firstName: string; lastName: string };
+
 describe("transformIntoCSV", () => {
   it("should transform object into a csv", (done) => {
     const source = createStream();
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(transformIntoCSV())
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )
@@ -27,11 +29,11 @@ describe("transformIntoCSV", () => {
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(transformIntoCSV({ mapper: (v) => `"${v}"` }))
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )
@@ -46,11 +48,11 @@ describe("transformIntoCSV", () => {
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(transformIntoCSV({ bom: true }))
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )
@@ -66,7 +68,7 @@ describe("transformIntoCSV", () => {
     source.push({ firstName: "John", lastName: "Doe" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(
         transformIntoCSV({
@@ -74,7 +76,7 @@ describe("transformIntoCSV", () => {
         }),
       )
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )
@@ -89,7 +91,7 @@ describe("transformIntoCSV", () => {
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(
         transformIntoCSV({
@@ -99,7 +101,7 @@ describe("transformIntoCSV", () => {
         }),
       )
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )
@@ -114,18 +116,18 @@ describe("transformIntoCSV", () => {
     source.push({ firstName: "Robert", lastName: "Hue" });
     source.push(null);
 
-    const csv = [];
+    const csv: string[] = [];
     source
       .pipe(
         transformIntoCSV({
           columns: {
-            fullName: (data) => Promise.resolve(`${data.firstName} ${data.lastName}`),
-            lastName: async (data) => await delay(() => data.lastName, 5),
+            fullName: (data: FullNameParams) => Promise.resolve(`${data.firstName} ${data.lastName}`),
+            lastName: async (data: FullNameParams) => await delay(() => data.lastName, 5),
           },
         }),
       )
       .pipe(
-        writeData((line) => {
+        writeData((line: string) => {
           csv.push(line);
         }),
       )

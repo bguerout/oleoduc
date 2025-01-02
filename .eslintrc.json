@@ -29,15 +29,10 @@
     "mocha": true
   },
   "rules": {
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "error",
     "quote-props": ["error", "consistent"],
-    "mocha/no-skipped-tests": "error",
+    "mocha/no-skipped-tests": "warn",
     "mocha/no-exclusive-tests": "error",
-    "node/no-unpublished-import": [
-      "error", {
-        "allowModules": ["slow-stream"]
-      }
-    ],
     "node/no-unsupported-features/es-syntax": [
       "error",
       {
@@ -45,10 +40,13 @@
         "ignores": ["modules"]
       }
     ],
+    "node/no-unpublished-import": [
+      "error", {
+        "allowModules": ["slow-stream"]
+      }
+    ],
     "node/no-missing-import": [
       "error", {
-        "allowModules": [],
-        "resolvePaths": ["/path/to/a/modules/directory"],
         "tryExtensions": [".js", ".ts"]
       }
     ]

@@ -7,11 +7,11 @@ describe("writeData", () => {
     const source = createStream();
     source.push("andré");
     source.push(null);
-    const acc = [];
+    const acc: string[] = [];
 
     source
       .pipe(
-        writeData((data) => {
+        writeData((data: string) => {
           acc.push(data);
         }),
       )
@@ -72,12 +72,12 @@ describe("writeData", () => {
     source.push(2);
     source.push(3);
     source.push(null);
-    const acc = [];
+    const acc: number[] = [];
 
     source
       .pipe(
         writeData(
-          (data) => {
+          (data: number) => {
             return new Promise<void>((resolve, reject) => {
               if (data === 2) {
                 reject(new Error("async error"));

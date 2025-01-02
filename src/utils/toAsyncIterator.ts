@@ -12,7 +12,7 @@ type ToAsyncIteratorOptions = {
  * @param options
  * @returns {AsyncGenerator<*, void, *>}
  */
-export async function* toAsyncIterator(stream, options: ToAsyncIteratorOptions = {}) {
+export async function* toAsyncIterator(stream: NodeJS.ReadableStream, options: ToAsyncIteratorOptions = {}) {
   const chunkSize = options.chunkSize || 1;
 
   if (typeof stream.read !== "function") {

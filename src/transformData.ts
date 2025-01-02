@@ -1,19 +1,30 @@
 import transform from "parallel-transform";
+import { Transform, TransformOptions } from "node:stream";
+import { TransformCallback } from "stream";
 
-export function transformData(handleChunk, options: any = {}) {
+export type TransformDataCallback<TInput, TOutput> = (data: TInput) => Promise<TOutput> | TOutput;
+export type TransformDataOptions<TInput> = {
+  filter?: TransformDataCallback<TInput, boolean | null>;
+  parallel?: number;
+} & TransformOptions;
+
+export function transformData<TInput, TOutput = TInput>(
+  callback: TransformDataCallback<TInput, TOutput | null>,
+  options: TransformDataOptions<TInput> = {},
+): Transform {
   const { filter, parallel, ...rest } = options;
-  const filterChunk = (value) => !filter || filter(value);
+  const filterChunk = (value: TInput) => !filter || filter(value);
   const maxParallel = parallel || 1;
 
-  return transform(maxParallel, { objectMode: true, ...rest }, async (chunk, callback) => {
+  return transform(maxParallel, { objectMode: true, ...rest }, async (chunk: TInput, cb: TransformCallback) => {
     try {
       if (!(await filterChunk(chunk))) {
-        return callback(null, null);
+        return cb(null, null);
       }
-      const res = await handleChunk(chunk);
-      callback(null, res);
+      const res = await callback(chunk);
+      cb(null, res);
     } catch (e) {
-      callback(e);
+      cb(e as Error);
     }
   });
 }

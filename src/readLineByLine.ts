@@ -4,10 +4,10 @@ import { compose } from "./compose";
 
 export function readLineByLine() {
   return compose(
-    accumulateData(
-      (acc, data, flush) => {
+    accumulateData<string, string[]>(
+      (acc, data: string, flush) => {
         const lines = data.toString().split(/\r?\n/);
-        const rest = lines.pop();
+        const rest = lines.pop() || "";
 
         if (lines.length > 0) {
           lines[0] = acc + lines[0];

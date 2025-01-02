@@ -6,7 +6,7 @@ import { transformData, writeData } from "../src";
 
 describe("pipeline", () => {
   it("can create pipeline from stream", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -15,8 +15,8 @@ describe("pipeline", () => {
 
     pipeline(
       source,
-      transformData((data) => data.substring(0, 1)),
-      writeData((data) => chunks.push(data)),
+      transformData((data: string) => data.substring(0, 1)),
+      writeData((data: string) => chunks.push(data)),
       (err) => {
         if (err) {
           return done(err);
@@ -28,7 +28,7 @@ describe("pipeline", () => {
   });
 
   it("can create pipeline from stream (async)", async () => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -37,10 +37,10 @@ describe("pipeline", () => {
 
     await promisify(pipeline)(
       source,
-      transformData((data) => {
+      transformData((data: string) => {
         return delay(() => data.substring(0, 1), 2);
       }),
-      writeData((data) => {
+      writeData((data: string) => {
         return delay(() => chunks.push(data), 2);
       }),
     );

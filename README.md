@@ -100,7 +100,7 @@ for await (const data of csvStream) {
 
 ## accumulateData(callback, [options])
 
-Allows data to be accumulated before piping them to the next step. It can be used to reduce the data or to create group
+Allows data to be accumulated before piping them to the next step. It can be used to reduce or group data
 
 #### Parameters
 

@@ -1,31 +1,19 @@
-import { compose } from "./compose";
-import { accumulateData } from "./accumulateData";
+import { accumulateData, AccumulateDataOptions } from "./accumulateData";
 
-function parseOptionalArgs(...args) {
-  const options = {
-    accumulator: [],
-    ...(typeof args[args.length - 1] === "object" ? args.pop() : {}),
-  };
-  const size = options.size || 1;
+export type GroupDataOptions<TInput> = { size?: number } & AccumulateDataOptions<Array<TInput>>;
 
-  return {
-    shouldFlush: args.pop() || ((group) => group.length === size),
-    options,
-  };
-}
-
-export function groupData(...args) {
-  const { shouldFlush, options } = parseOptionalArgs(...args);
-
-  return compose(
-    accumulateData((acc, data, flush) => {
+export function groupData<TInput>(options: GroupDataOptions<TInput> = {}): NodeJS.ReadWriteStream {
+  return accumulateData<TInput, Array<TInput>, Array<TInput>>(
+    (acc, data, flush) => {
       const group = [...acc, data];
-      if (shouldFlush(group)) {
+      const groupSize = options.size || 1;
+      if (group.length === groupSize) {
         flush(group);
         return [];
       } else {
         return group;
       }
-    }, options),
+    },
+    { ...options, accumulator: [] },
   );
 }

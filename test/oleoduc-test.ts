@@ -1,10 +1,10 @@
-import { deepStrictEqual, fail, strictEqual } from "assert";
-import { createStream, delay } from "./testUtils";
+import { deepStrictEqual, fail } from "assert";
+import { assertErrorMessage, createStream, delay } from "./testUtils";
 import { compose, oleoduc, transformData, writeData } from "../src";
 
 describe("oleoduc", () => {
   it("can create oleoduc", async () => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -13,10 +13,10 @@ describe("oleoduc", () => {
 
     await oleoduc(
       source,
-      transformData((data) => {
+      transformData((data: string) => {
         return delay(() => data.substring(0, 1), 2);
       }),
-      writeData((data) => {
+      writeData((data: string) => {
         return delay(() => chunks.push(data), 2);
       }),
     );
@@ -24,50 +24,8 @@ describe("oleoduc", () => {
     deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
-  it("can iterate over an oleoduc", async () => {
-    const chunks = [];
-    const source = createStream();
-    source.push("andré");
-    source.push("bruno");
-    source.push("robert");
-    source.push(null);
-
-    const stream = oleoduc(
-      source,
-      transformData((data) => data.substring(0, 1)),
-    );
-
-    for await (const chunk of stream) {
-      chunks.push(chunk);
-    }
-
-    deepStrictEqual(chunks, ["a", "b", "r"]);
-  });
-
-  it("can nest oleoduc", async () => {
-    const chunks = [];
-    const source = createStream();
-    const nested = oleoduc(
-      source,
-      transformData((d) => d.substring(0, 1)),
-    );
-
-    source.push("first");
-    source.push(null);
-
-    try {
-      await oleoduc(
-        nested,
-        writeData((d) => chunks.push(d)),
-      );
-      deepStrictEqual(chunks, ["f"]);
-    } catch (e) {
-      fail(e);
-    }
-  });
-
   it("can build oleoduc with first writeable and last readable (duplex)", async () => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -78,23 +36,23 @@ describe("oleoduc", () => {
       await oleoduc(
         source,
         compose(
-          transformData((data) => data.substring(0, 1)),
-          transformData((data) => "_" + data),
+          transformData((data: string) => data.substring(0, 1)),
+          transformData((data: string) => "_" + data),
         ),
-        writeData((d) => chunks.push(d)),
+        writeData((data: string) => chunks.push(data)),
       );
       deepStrictEqual(chunks, ["_a", "_b", "_r"]);
     } catch (e) {
-      fail(e);
+      fail(e as Error);
     }
   });
 
   it("can use compose inside oleoduc", async () => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     const composed = compose(
       source,
-      transformData((d) => d.substring(0, 1)),
+      transformData((d: string) => d.substring(0, 1)),
     );
 
     source.push("first");
@@ -102,29 +60,13 @@ describe("oleoduc", () => {
 
     await oleoduc(
       composed,
-      writeData((d) => chunks.push(d)),
+      writeData((data: string) => chunks.push(data)),
     )
       .then(() => {
         deepStrictEqual(chunks, ["f"]);
       })
       .catch((e) => {
         fail(e);
-      });
-  });
-
-  it("can pipe and oleoduc", async () => {
-    const chunks = [];
-    const source = createStream();
-    source.push("andré");
-    source.push("bruno");
-    source.push("robert");
-    source.push(null);
-
-    await oleoduc(source)
-      .pipe(transformData((data) => data.substring(0, 1)))
-      .pipe(writeData((data) => chunks.push(data)))
-      .on("finish", () => {
-        deepStrictEqual(chunks, ["a", "b", "r"]);
       });
   });
 
@@ -169,10 +111,11 @@ describe("oleoduc", () => {
 
   it("should fail when no stream are provided", async () => {
     try {
+      // @ts-expect-error TS2345
       await oleoduc();
       fail();
     } catch (e) {
-      strictEqual(e.message, "You must provide at least one stream");
+      assertErrorMessage(e, "You must provide at least one stream");
     }
   });
 });

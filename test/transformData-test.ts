@@ -4,15 +4,15 @@ import { transformData, writeData } from "../src";
 
 describe("transformData", () => {
   it("should transformData", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
     source.push(null);
 
     source
-      .pipe(transformData((data) => data.substring(0, 1)))
-      .pipe(writeData((data) => chunks.push(data)))
+      .pipe(transformData((data: string) => data.substring(0, 1)))
+      .pipe(writeData((data: string) => chunks.push(data)))
       .on("finish", () => {
         deepStrictEqual(chunks, ["a", "b"]);
         done();
@@ -20,7 +20,7 @@ describe("transformData", () => {
   });
 
   it("should transformData (async)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -28,14 +28,14 @@ describe("transformData", () => {
 
     source
       .pipe(
-        transformData(async (data) => {
-          return new Promise((resolve) => {
+        transformData(async (data: string) => {
+          return new Promise<string>((resolve) => {
             resolve(data.substring(0, 1));
           });
         }),
       )
       .pipe(
-        writeData(async (data) => {
+        writeData(async (data: string) => {
           return new Promise<void>((resolve) => {
             chunks.push(data);
             resolve();

@@ -1,11 +1,13 @@
-import { PassThrough } from "stream";
+import { PassThrough, TransformOptions } from "stream";
 import { parseArgs } from "./utils/parseArgs";
 
-class ArrayCursor {
-  private array: any;
+type NextStreamCallback = () => Promise<NodeJS.ReadableStream | null> | NodeJS.ReadableStream | null;
+
+class StreamArrayCursor<TStream extends NodeJS.ReadableStream> {
+  private array: Array<TStream>;
   private cpt: number;
 
-  constructor(array) {
+  constructor(array: Array<TStream>) {
     this.array = array;
     this.cpt = 0;
   }
@@ -15,13 +17,15 @@ class ArrayCursor {
   }
 }
 
-function isFunction(streams) {
-  return streams.length === 1 && typeof streams[0] === "function";
-}
-
-export function concatStreams(...args) {
-  const { streams, options } = parseArgs(args);
-  const cursor = isFunction(streams) ? { next: streams[0] } : new ArrayCursor(streams);
+export function concatStreams(
+  ...args:
+    | [...streams: NodeJS.ReadableStream[]]
+    | [...streams: NodeJS.ReadableStream[], options: TransformOptions]
+    | [next: NextStreamCallback]
+    | [next: NextStreamCallback, options: TransformOptions]
+): NodeJS.ReadWriteStream {
+  const { params, options } = parseArgs<NodeJS.ReadableStream | NextStreamCallback, TransformOptions>(args);
+  const cursor = asCursor(params);
   const passThrough = new PassThrough({ objectMode: true, ...options });
   passThrough.setMaxListeners(0);
 
@@ -31,7 +35,7 @@ export function concatStreams(...args) {
       return passThrough.end();
     }
 
-    stream.on("error", (e) => passThrough.emit("error", e));
+    stream.on("error", (e: Error) => passThrough.emit("error", e));
     stream.on("end", () => concat());
     stream.pipe(passThrough, { end: false });
   }
@@ -39,4 +43,16 @@ export function concatStreams(...args) {
   concat();
 
   return passThrough;
+}
+
+function isFunction(streams: (NodeJS.ReadableStream | NextStreamCallback)[]) {
+  return streams.length === 1 && typeof streams[0] === "function";
+}
+
+function asCursor(value: (NodeJS.ReadableStream | NextStreamCallback)[]) {
+  if (isFunction(value)) {
+    const callbacks = value as NextStreamCallback[];
+    return { next: callbacks[0] };
+  }
+  return new StreamArrayCursor(value as NodeJS.ReadableStream[]);
 }

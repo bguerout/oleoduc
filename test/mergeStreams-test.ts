@@ -9,7 +9,11 @@ describe("mergeStreams", () => {
     const source2 = streamArray(["bruno"]);
 
     mergeStreams(source1, source2)
-      .pipe(writeData((data) => (result += data)))
+      .pipe(
+        writeData((data) => {
+          result += data;
+        }),
+      )
       .on("finish", () => {
         deepStrictEqual(result, "andrébruno");
         done();

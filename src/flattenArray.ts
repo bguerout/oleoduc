@@ -1,16 +1,17 @@
-import { Transform } from "stream";
+import { Transform, TransformCallback, TransformOptions } from "stream";
 
 /**
  * Inspired by https://stackoverflow.com/a/43811543/122975
  */
-class TransformArray extends Transform {
-  private _resumeTransform: any;
+class TransformArray<T = unknown> extends Transform {
+  private _resumeTransform: (() => void) | null;
 
-  constructor(options) {
+  constructor(options?: TransformOptions) {
     super(options);
     this._resumeTransform = null;
   }
-  _transform(chunk, encoding, callback) {
+
+  _transform(chunk: Array<T> | T, encoding: BufferEncoding, callback: TransformCallback) {
     const array = Array.isArray(chunk) ? chunk : [chunk];
     let index = 0;
     const pushArrayItems = () => {
@@ -31,7 +32,7 @@ class TransformArray extends Transform {
     //Start pushing array items
     pushArrayItems();
   }
-  _read(size) {
+  _read(size: number) {
     if (this._resumeTransform !== null) {
       //Ensure every items from the previous transform has been pushed
       this._resumeTransform();
@@ -40,6 +41,6 @@ class TransformArray extends Transform {
   }
 }
 
-export function flattenArray(options = {}) {
+export function flattenArray(options: TransformOptions = {}): Transform {
   return new TransformArray({ objectMode: true, ...options });
 }

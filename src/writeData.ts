@@ -1,22 +1,26 @@
 import { Writable } from "stream";
-import cyclist from "cyclist";
+import cyclist, { Cyclist } from "cyclist";
+import { WritableOptions } from "node:stream";
 
-type ParallelWriteOptions = {
-  parallel?: number;
-};
+export type WriteDataOptions = { parallel?: number };
+export type WriteDataCallback<TInput> = (data: TInput) => void | unknown;
 
-class ParallelWrite<T> extends Writable {
+type ParallelWriteOptions = WritableOptions & { ordered?: boolean };
+type ParallelOnWrite<TInput> = (chunk: TInput, callback: (e?: Error | null, data?: unknown) => void) => void;
+type ParallelOnDrain = () => void;
+
+class ParallelWrite<TInput> extends Writable {
   private _maxParallel: number;
-  private _onWrite: (chunk: T, callback: (e: Error, data: T) => void) => void;
+  private _onWrite: ParallelOnWrite<TInput>;
   private _destroyed: boolean;
   private _flushed: boolean;
   private _ordered: boolean;
-  private _buffer: cyclist | [];
+  private _buffer: Cyclist | Array<TInput>;
   private _top: number;
   private _bottom: number;
-  private _ondrain: () => void;
+  private _ondrain: ParallelOnDrain | null;
 
-  constructor(maxParallel, opts, onWrite) {
+  constructor(maxParallel: number, opts: ParallelWriteOptions | null, onWrite: ParallelOnWrite<TInput>) {
     super();
     if (typeof maxParallel === "function") {
       onWrite = maxParallel;
@@ -51,7 +55,7 @@ class ParallelWrite<T> extends Writable {
     this.emit("close");
   }
 
-  _write(chunk, enc, callback) {
+  _write(chunk: TInput, enc: BufferEncoding, callback: ParallelOnDrain) {
     const pos = this._top++;
 
     this._onWrite(chunk, (err, data) => {
@@ -61,10 +65,10 @@ class ParallelWrite<T> extends Writable {
         this.destroy();
         return;
       }
-      if (this._ordered) {
+      if (this._isOrdered(this._buffer)) {
         this._buffer.put(pos, data === undefined || data === null ? null : data);
       } else {
-        this._buffer.push(data);
+        this._buffer.push(data as TInput);
       }
       this._drain();
     });
@@ -73,14 +77,14 @@ class ParallelWrite<T> extends Writable {
     this._ondrain = callback;
   }
 
-  _final(callback) {
+  _final(callback: ParallelOnDrain) {
     this._flushed = true;
     this._ondrain = callback;
     this._drain();
   }
 
   _drain() {
-    if (this._ordered) {
+    if (this._isOrdered(this._buffer)) {
       while (this._buffer.get(this._bottom) !== undefined) {
         this._buffer.del(this._bottom++);
       }
@@ -98,19 +102,26 @@ class ParallelWrite<T> extends Writable {
     ondrain();
   }
 
+  _isOrdered(buffer: Cyclist | Array<TInput>): buffer is Cyclist {
+    return this._ordered;
+  }
+
   _drained() {
     const diff = this._top - this._bottom;
     return this._flushed ? !diff : diff < this._maxParallel;
   }
 }
 
-export function writeData(handleChunk, options: ParallelWriteOptions = {}) {
-  return new ParallelWrite(options.parallel || 1, { objectMode: true }, async (chunk, callback) => {
+export function writeData<TInput>(
+  callback: WriteDataCallback<TInput>,
+  options: WriteDataOptions = {},
+): NodeJS.WritableStream {
+  return new ParallelWrite<TInput>(options.parallel || 1, { objectMode: true }, async (chunk, cb) => {
     try {
-      const res = await handleChunk(chunk);
-      callback(null, res);
+      const res = await callback(chunk);
+      cb(null, res);
     } catch (e) {
-      callback(e);
+      cb(e as Error);
     }
   });
 }

@@ -4,7 +4,7 @@ import { filterData } from "../src";
 
 describe("filterData", () => {
   it("should filter (ignore empty)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("first");
     source.push("");
@@ -24,7 +24,7 @@ describe("filterData", () => {
   });
 
   it("should filter (async)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("first");
     source.push("");
@@ -44,7 +44,7 @@ describe("filterData", () => {
   });
 
   it("should filter (ignore first line)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("first");
     source.push("second");

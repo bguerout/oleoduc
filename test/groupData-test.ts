@@ -4,7 +4,7 @@ import { groupData, writeData } from "../src";
 
 describe("groupData", () => {
   it("can create group of data", (done) => {
-    const results = [];
+    const results: string[][] = [];
     const source = createStream();
     source.push("abc");
     source.push("def");
@@ -14,7 +14,7 @@ describe("groupData", () => {
     source
       .pipe(groupData())
       .pipe(
-        writeData((group) => {
+        writeData((group: string[]) => {
           return results.push(group);
         }),
       )
@@ -25,7 +25,7 @@ describe("groupData", () => {
   });
 
   it("can create group of data with custom size", (done) => {
-    const results = [];
+    const results: string[][] = [];
     const source = createStream();
     source.push("abc");
     source.push("def");
@@ -35,7 +35,7 @@ describe("groupData", () => {
     source
       .pipe(groupData({ size: 2 }))
       .pipe(
-        writeData((group) => {
+        writeData((group: string[]) => {
           return results.push(group);
         }),
       )

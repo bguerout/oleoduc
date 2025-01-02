@@ -1,9 +1,7 @@
 {
     "extends": "./tsconfig.cjs.json",
+    "include": ["src", "test"],
     "compilerOptions": {
-        "outDir": "./build",
-        "rootDirs": ["./test"],
-        "types": ["node", "mocha"]
+        "outDir": "./build"
     },
-    "include": ["src", "test"]
 }

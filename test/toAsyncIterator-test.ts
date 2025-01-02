@@ -1,7 +1,7 @@
 import { deepStrictEqual, fail } from "assert";
-import { createStream } from "./testUtils";
+import { assertErrorMessage, createStream } from "./testUtils";
 import { toAsyncIterator } from "../src/utils/toAsyncIterator";
-import { oleoduc, transformData } from "../src";
+import { compose, transformData } from "../src";
 
 describe("toAsyncIterator", () => {
   it("can convert a readable stream into an iterator", async () => {
@@ -21,12 +21,11 @@ describe("toAsyncIterator", () => {
 
   it("iterator should honor error", async () => {
     const readable = createStream();
-    const failingStream = oleoduc(
+    const failingStream = compose(
       readable,
       transformData(() => {
         throw new Error("This is a stream error");
       }),
-      { promisify: false },
     );
     readable.push("a");
     readable.push("b");
@@ -36,7 +35,7 @@ describe("toAsyncIterator", () => {
       await iterator.next();
       fail();
     } catch (e) {
-      deepStrictEqual(e.message, "This is a stream error");
+      assertErrorMessage(e, "This is a stream error");
     }
 
     readable.push(null);

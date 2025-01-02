@@ -24,11 +24,12 @@
   "scripts": {
     "build": "bash .tools/build.sh",
     "hooks": "bash .tools/hooks.sh",
-    "test": "TS_NODE_PROJECT=tsconfig.test.json ts-mocha test/",
+    "test": "mocha test/",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint src/ test/",
     "release": "bash .tools/release.sh master",
-    "ts": "tsc -p tsconfig.test.json --showConfig"
+    "tsc": "tsc",
+    "doc": "npx typedoc --out docs --plugin typedoc-plugin-markdown src/accumulateData.ts"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@types/mocha": "10.0.6",
     "@types/node": "20.10.4",
+    "@types/parallel-transform": "1.1.4",
     "@typescript-eslint/eslint-plugin": "6.13.2",
     "@typescript-eslint/parser": "6.13.2",
     "assert": "2.1.0",
@@ -57,12 +59,14 @@
     "eslint-plugin-mocha": "10.2.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "5.0.1",
+    "mocha": "11.0.1",
     "nyc": "15.1.0",
     "prettier": "3.1.0",
     "slow-stream": "0.0.4",
-    "ts-mocha": "10.0.0",
-    "ts-node": "10.9.2",
-    "typescript": "5.3.3"
+    "tsx": "4.19.2",
+    "typedoc": "0.27.6",
+    "typedoc-plugin-markdown": "4.4.0",
+    "typescript": "5.7.2"
   },
   "prettier": {
     "printWidth": 120

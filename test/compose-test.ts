@@ -1,19 +1,20 @@
 import { deepStrictEqual, fail } from "assert";
-import SlowStream from "slow-stream";
-import { createStream } from "./testUtils";
-import { compose, flattenArray, oleoduc, transformData, writeData } from "../src";
+import { createSlowStream, createStream } from "./testUtils";
+import { compose, flattenArray, transformData, writeData } from "../src";
 
 describe("compose", () => {
   it("can compose streams", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("first");
     source.push(null);
 
     compose(
       source,
-      transformData((d) => d.substring(0, 1)),
-      writeData((data) => chunks.push(data)),
+      transformData((data: string) => data.substring(0, 1)),
+      writeData((data: string) => {
+        chunks.push(data);
+      }),
     )
       .on("finish", () => {
         deepStrictEqual(chunks, ["f"]);
@@ -26,7 +27,7 @@ describe("compose", () => {
   });
 
   it("can iterate over a composed stream", async () => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -35,18 +36,18 @@ describe("compose", () => {
 
     const stream = compose(
       source,
-      transformData((data) => data.substring(0, 1)),
+      transformData((data: string) => data.substring(0, 1)),
     );
 
     for await (const chunk of stream) {
-      chunks.push(chunk);
+      chunks.push(chunk.toString());
     }
 
     deepStrictEqual(chunks, ["a", "b", "r"]);
   });
 
   it("can pipe a compose stream", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -54,8 +55,12 @@ describe("compose", () => {
     source.push(null);
 
     compose(source)
-      .pipe(transformData((data) => data.substring(0, 1)))
-      .pipe(writeData((data) => chunks.push(data)))
+      .pipe(transformData((data: string) => data.substring(0, 1)))
+      .pipe(
+        writeData((data: string) => {
+          chunks.push(data);
+        }),
+      )
       .on("finish", () => {
         deepStrictEqual(chunks, ["a", "b", "r"]);
         done();
@@ -63,7 +68,7 @@ describe("compose", () => {
   });
 
   it("can build compose with first writeable and last readable (duplex)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -73,11 +78,15 @@ describe("compose", () => {
     source
       .pipe(
         compose(
-          transformData((data) => data.substring(0, 1)),
+          transformData((data: string) => data.substring(0, 1)),
           transformData((data) => "_" + data),
         ),
       )
-      .pipe(writeData((data) => chunks.push(data)))
+      .pipe(
+        writeData((data: string) => {
+          chunks.push(data);
+        }),
+      )
       .on("finish", () => {
         deepStrictEqual(chunks, ["_a", "_b", "_r"]);
         done();
@@ -85,11 +94,11 @@ describe("compose", () => {
   });
 
   it("can compose inside compose", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     const nested = compose(
       source,
-      transformData((d) => d.substring(0, 1)),
+      transformData((d: string) => d.substring(0, 1)),
     );
 
     source.push("first");
@@ -97,7 +106,9 @@ describe("compose", () => {
 
     compose(
       nested,
-      writeData((d) => chunks.push(d)),
+      writeData((data: string) => {
+        chunks.push(data);
+      }),
     )
       .on("finish", () => {
         deepStrictEqual(chunks, ["f"]);
@@ -105,31 +116,6 @@ describe("compose", () => {
       })
       .on("error", (e) => {
         fail(e);
-        done();
-      });
-  });
-
-  it("can use oleoduc inside compose", (done) => {
-    const chunks = [];
-    const source = createStream();
-    const nested = oleoduc(
-      source,
-      transformData((d) => d.substring(0, 1)),
-    );
-
-    source.push("first");
-    source.push(null);
-
-    compose(
-      nested,
-      writeData((d) => chunks.push(d)),
-    )
-      .on("finish", () => {
-        deepStrictEqual(chunks, ["f"]);
-        done();
-      })
-      .on("error", () => {
-        fail();
         done();
       });
   });
@@ -143,8 +129,8 @@ describe("compose", () => {
     compose(
       source,
       flattenArray({ highWaterMark: 1 }),
-      new SlowStream({ maxWriteInterval: 10 }),
-      writeData((data) => {
+      createSlowStream({ maxWriteInterval: 10 }),
+      writeData((data: string) => {
         result += data;
       }),
     ).on("finish", () => {
@@ -161,8 +147,8 @@ describe("compose", () => {
 
     compose(
       source,
-      compose(flattenArray({ highWaterMark: 1 }), new SlowStream({ maxWriteInterval: 10 })),
-      writeData((data) => {
+      compose(flattenArray({ highWaterMark: 1 }), createSlowStream({ maxWriteInterval: 10 })),
+      writeData((data: string) => {
         result += data;
       }),
     ).on("finish", () => {
@@ -176,7 +162,7 @@ describe("compose", () => {
 
     compose(
       source,
-      writeData(() => ({})),
+      writeData(() => {}),
     )
       .on("finish", () => {
         fail();

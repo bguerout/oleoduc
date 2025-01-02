@@ -1,20 +1,32 @@
-import { Transform } from "stream";
+import { Transform, TransformOptions } from "stream";
 
-export function transformIntoCSV(options: any = {}) {
+export type TransformIntoCSVOptions<TInput> = TransformOptions & {
+  columns?: Record<string, (data: TInput) => Promise<AllowedCSVType> | AllowedCSVType>;
+  bom?: boolean;
+  mapper?: ValueMapper;
+  separator?: string;
+};
+type AllowedCSVType = string | number;
+type ValueMapper = (value: AllowedCSVType) => AllowedCSVType;
+
+export function transformIntoCSV<TInput extends Record<string, unknown>>(
+  options: TransformIntoCSVOptions<TInput> = {},
+): Transform {
   const bom = options.bom;
   const separator = options.separator || ";";
-  const mapper = options.mapper || ((v) => v);
+  const columns = options.columns;
+  const mapper: ValueMapper = options.mapper || ((v) => v);
 
-  function generateColumnNames(chunk, columns) {
+  function generateColumnNames(chunk: TInput) {
     return Object.keys(columns || chunk)
       .map(mapper)
       .join(separator);
   }
 
-  async function generateColumnValues(chunk, columns) {
-    let values;
+  async function generateColumnValues(chunk: TInput) {
+    let values: AllowedCSVType[];
     if (!columns) {
-      values = Object.values(chunk);
+      values = Object.values(chunk) as AllowedCSVType[];
     } else {
       const columnNames = Object.keys(columns);
       values = await Promise.all(columnNames.map((name) => columns[name](chunk)));
@@ -26,21 +38,19 @@ export function transformIntoCSV(options: any = {}) {
   let lines = 0;
   return new Transform({
     objectMode: true,
-    transform: async function (chunk, encoding, callback) {
-      const columns = options.columns;
-
+    transform: async function (chunk: TInput, encoding, cb) {
       try {
         if (lines++ === 0) {
           if (bom) {
             this.push("\ufeff");
           }
-          this.push(`${generateColumnNames(chunk, columns)}\n`);
+          this.push(`${generateColumnNames(chunk)}\n`);
         }
 
-        this.push(`${await generateColumnValues(chunk, columns)}\n`);
-        callback();
+        this.push(`${await generateColumnValues(chunk)}\n`);
+        cb();
       } catch (e) {
-        callback(e);
+        cb(e as Error);
       }
     },
   });

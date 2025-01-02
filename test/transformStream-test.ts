@@ -1,16 +1,15 @@
 import { deepStrictEqual } from "assert";
-import SlowStream from "slow-stream";
-import { createStream, delay, streamArray } from "./testUtils";
+import { createSlowStream, createStream, delay, streamArray } from "./testUtils";
 import { transformStream, writeData } from "../src";
 
 describe("transformStream", () => {
   it("should transform data into a stream", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = streamArray(["andré", "bruno"]);
 
     source
       .pipe(
-        transformStream((data) => {
+        transformStream((data: string) => {
           const source = createStream();
           source.push(data + "_transformed");
           source.push(null);
@@ -18,8 +17,8 @@ describe("transformStream", () => {
         }),
       )
       .pipe(
-        writeData((data) => {
-          return chunks.push(data);
+        writeData((data: string) => {
+          chunks.push(data);
         }),
       )
       .on("finish", () => {
@@ -29,12 +28,12 @@ describe("transformStream", () => {
   });
 
   it("should transform data into a stream (async)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = streamArray(["andré", "bruno"]);
 
     source
       .pipe(
-        transformStream((data) => {
+        transformStream((data: string) => {
           const source = createStream();
 
           return delay(() => {
@@ -45,8 +44,8 @@ describe("transformStream", () => {
         }),
       )
       .pipe(
-        writeData((data) => {
-          return chunks.push(data);
+        writeData((data: string) => {
+          chunks.push(data);
         }),
       )
       .on("finish", () => {
@@ -56,13 +55,13 @@ describe("transformStream", () => {
   });
 
   it("should transform data into a stream (backpressure)", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = streamArray(["andré"]);
 
     source
       .pipe(
         transformStream(
-          async (data) => {
+          async (data: string) => {
             const source = createStream();
             for (let i = 0; i < 5; i++) {
               source.push(data + "_transformed");
@@ -73,10 +72,10 @@ describe("transformStream", () => {
           { objectMode: true, highWaterMark: 1 },
         ),
       )
-      .pipe(new SlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
+      .pipe(createSlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
       .pipe(
-        writeData((data) => {
-          return chunks.push(data);
+        writeData((data: string) => {
+          chunks.push(data);
         }),
       )
       .on("finish", () => {

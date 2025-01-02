@@ -4,7 +4,7 @@ import { oleoduc, readLineByLine, writeData } from "../src";
 
 describe("readLineByLine", () => {
   it("can read a stream line by line", (done) => {
-    const result = [];
+    const result: string[] = [];
     const source = createStream();
     source.push("ab");
     source.push("c\ndef\ng");
@@ -14,8 +14,8 @@ describe("readLineByLine", () => {
     source
       .pipe(readLineByLine())
       .pipe(
-        writeData((data) => {
-          return result.push(data);
+        writeData((data: string) => {
+          result.push(data);
         }),
       )
       .on("finish", () => {
@@ -25,7 +25,7 @@ describe("readLineByLine", () => {
   });
 
   it("can read a stream line by line (CRLF)", (done) => {
-    const result = [];
+    const result: string[] = [];
     const source = createStream();
     source.push("ab");
     source.push("c\r\ndef\r\ng");
@@ -35,8 +35,8 @@ describe("readLineByLine", () => {
     source
       .pipe(readLineByLine())
       .pipe(
-        writeData((data) => {
-          return result.push(data);
+        writeData((data: string) => {
+          result.push(data);
         }),
       )
       .on("finish", () => {
@@ -46,7 +46,7 @@ describe("readLineByLine", () => {
   });
 
   it("can handle content without carriage return on the last line", (done) => {
-    const result = [];
+    const result: string[] = [];
     const source = createStream();
     source.push("ab\n");
     source.push("hi");
@@ -55,8 +55,8 @@ describe("readLineByLine", () => {
     source
       .pipe(readLineByLine())
       .pipe(
-        writeData((data) => {
-          return result.push(data);
+        writeData((data: string) => {
+          result.push(data);
         }),
       )
       .on("finish", () => {
@@ -66,7 +66,7 @@ describe("readLineByLine", () => {
   });
 
   it("can read multiple lines with backpressure", async () => {
-    const array = [];
+    const array: string[] = [];
     const source = createStream();
     const manyLines = Array(250)
       .fill("line")
@@ -79,7 +79,7 @@ describe("readLineByLine", () => {
     await oleoduc(
       source,
       readLineByLine(),
-      writeData((opco) => {
+      writeData((opco: string) => {
         array.push(opco);
       }),
     );

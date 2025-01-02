@@ -1,22 +1,24 @@
-import { Transform } from "stream";
+import { Transform, TransformCallback } from "stream";
+import { TransformOptions } from "node:stream";
 
-class TransformStream extends Transform {
-  private handleChunk: any;
-  private _current: any;
+export type TransformStreamCallback<TInput, TOutput extends NodeJS.ReadableStream> = (
+  data: TInput,
+) => Promise<TOutput> | TOutput;
 
-  constructor(handleChunk, options) {
+class TransformStream<TInput, TOutput extends NodeJS.ReadableStream> extends Transform {
+  private callback: TransformStreamCallback<TInput, TOutput>;
+  private _current: NodeJS.ReadableStream | null;
+
+  constructor(callback: TransformStreamCallback<TInput, TOutput>, options?: TransformOptions) {
     super(options);
-    this.handleChunk = handleChunk;
+    this.callback = callback;
     this._current = null;
   }
 
-  _transform(chunk, encoding, callback) {
-    const res = Promise.resolve(this.handleChunk(chunk));
-    const promise = res.then ? res : Promise.resolve(res); //FIXME
-
-    promise
+  _transform(chunk: TInput, encoding: BufferEncoding, cb: TransformCallback) {
+    Promise.resolve(this.callback(chunk))
       .then((stream) => {
-        stream.on("error", (err) => this.emit("error", err));
+        stream.on("error", (err: Error) => this.emit("error", err));
         stream.on("data", (data) => {
           this._current = stream;
           const backpressure = !this.push(data);
@@ -26,13 +28,13 @@ class TransformStream extends Transform {
         });
         stream.on("end", () => {
           this._current = null;
-          callback();
+          cb();
         });
       })
-      .catch(callback);
+      .catch(cb);
   }
 
-  async _read(size) {
+  async _read(size: number) {
     if (this._current) {
       //Ensure every chunks has been consumed from the previous transform
       this._current.resume();
@@ -41,6 +43,9 @@ class TransformStream extends Transform {
   }
 }
 
-export function transformStream(handleChunk, options = {}) {
-  return new TransformStream(handleChunk, { objectMode: true, ...options });
+export function transformStream<TInput, TOutput extends NodeJS.ReadableStream>(
+  callback: TransformStreamCallback<TInput, TOutput>,
+  options: TransformOptions = {},
+) {
+  return new TransformStream(callback, { objectMode: true, ...options });
 }

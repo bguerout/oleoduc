@@ -1,9 +1,12 @@
-import { Duplex } from "stream";
+import { Duplex, DuplexOptions, Readable, Writable } from "stream";
+
+type DuplexerCallback = (error?: Error | null) => void;
 
 export class Duplexer extends Duplex {
-  private input: any;
-  private output: any;
-  constructor(input, output, options) {
+  private input: Writable;
+  private output: Readable;
+
+  constructor(input: Writable, output: Readable, options?: DuplexOptions) {
     super(options || { writableObjectMode: true, readableObjectMode: true });
     this.input = input;
     this.output = output;
@@ -15,11 +18,11 @@ export class Duplexer extends Duplex {
       }
     });
   }
-  _write(chunk, encoding, callback) {
+  _write(chunk: unknown, encoding: BufferEncoding, callback: DuplexerCallback) {
     this.input.write(chunk, encoding, callback);
   }
-  _final(callback) {
-    this.input.end(null, null, callback);
+  _final(callback: DuplexerCallback) {
+    this.input.end(null, callback);
   }
   _read() {
     this.output.resume();

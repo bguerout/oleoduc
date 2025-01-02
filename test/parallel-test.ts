@@ -2,9 +2,11 @@ import { deepStrictEqual, fail, ok } from "assert";
 import { createStream, delay } from "./testUtils";
 import { filterData, transformData, writeData } from "../src";
 
+type AccParallelData = { number: number; timestamp: number };
+
 describe("parallel", () => {
   it("can run parallel task with order preserved", (done) => {
-    const chunks = [];
+    const chunks: string[] = [];
     const source = createStream();
     source.push("andré");
     source.push("bruno");
@@ -14,8 +16,8 @@ describe("parallel", () => {
     source
       .pipe(
         transformData(
-          async (data) => {
-            return new Promise((resolve) => {
+          async (data: string) => {
+            return new Promise<string>((resolve) => {
               resolve(data.substring(0, 1));
             });
           },
@@ -24,7 +26,7 @@ describe("parallel", () => {
       )
       .pipe(
         writeData(
-          (data) => {
+          (data: string) => {
             return delay(() => chunks.push(data), 10);
           },
           { parallel: 5 },
@@ -39,7 +41,7 @@ describe("parallel", () => {
   it("can transformData (parallel)", (done) => {
     const timeoutPerBatch = 10;
     const nbParallelTasks = 2;
-    const acc = [];
+    const acc: AccParallelData[] = [];
 
     const source = createStream();
     //first batch
@@ -58,13 +60,13 @@ describe("parallel", () => {
     source
       .pipe(
         transformData(
-          (number) => {
+          (number: number) => {
             return delay(() => ({ number, timestamp: Date.now() }), timeoutPerBatch);
           },
           { parallel: nbParallelTasks },
         ),
       )
-      .pipe(writeData((data) => acc.push(data)))
+      .pipe(writeData((data: AccParallelData) => acc.push(data)))
       .on("error", () => {
         fail();
         done();
@@ -86,7 +88,7 @@ describe("parallel", () => {
   it("can filterData (parallel)", (done) => {
     const timeoutPerBatch = 10;
     const nbParallelTasks = 2;
-    const acc = [];
+    const acc: AccParallelData[] = [];
 
     const source = createStream();
     //first batch
@@ -102,11 +104,11 @@ describe("parallel", () => {
     source.push(null);
 
     const start = Date.now();
-    let last;
+    let last: number;
     source
       .pipe(
         filterData(
-          (number) => {
+          (number: number) => {
             return delay(() => {
               last = Date.now();
               return number < 5;
@@ -120,7 +122,7 @@ describe("parallel", () => {
           return { number, timestamp: Date.now() };
         }),
       )
-      .pipe(writeData((data) => acc.push(data)))
+      .pipe(writeData((data: AccParallelData) => acc.push(data)))
       .on("error", () => {
         fail();
         done();
@@ -142,7 +144,7 @@ describe("parallel", () => {
   it("can writeData (parallel)", (done) => {
     const timeoutPerBatch = 10;
     const nbParallelTasks = 2;
-    const acc = [];
+    const acc: AccParallelData[] = [];
 
     const source = createStream();
     //first batch
@@ -161,7 +163,7 @@ describe("parallel", () => {
     source
       .pipe(
         writeData(
-          (number) => {
+          (number: number) => {
             return delay(() => acc.push({ number, timestamp: Date.now() }), timeoutPerBatch);
           },
           { parallel: nbParallelTasks },

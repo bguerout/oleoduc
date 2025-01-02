@@ -1,33 +1,33 @@
-import { oleoduc } from "./oleoduc";
-import { compose } from "./compose";
-import { transformData } from "./transformData";
-import { transformIntoJSON } from "./transformIntoJSON";
-import { transformIntoCSV } from "./transformIntoCSV";
-import { transformStream } from "./transformStream";
-import { filterData } from "./filterData";
 import { accumulateData } from "./accumulateData";
-import { groupData } from "./groupData";
-import { readLineByLine } from "./readLineByLine";
-import { flattenArray } from "./flattenArray";
-import { mergeStreams } from "./mergeStreams";
+import { compose } from "./compose";
 import { concatStreams } from "./concatStreams";
+import { filterData } from "./filterData";
+import { flattenArray } from "./flattenArray";
+import { groupData } from "./groupData";
+import { mergeStreams } from "./mergeStreams";
+import { oleoduc } from "./oleoduc";
+import { readLineByLine } from "./readLineByLine";
+import { transformData } from "./transformData";
+import { transformIntoCSV } from "./transformIntoCSV";
+import { transformIntoJSON } from "./transformIntoJSON";
+import { transformStream } from "./transformStream";
 import { writeData } from "./writeData";
 import { writeToStdout } from "./writeToStdout";
 
 export {
-  oleoduc,
-  compose,
-  transformData,
-  transformIntoJSON,
-  transformIntoCSV,
-  transformStream,
-  filterData,
   accumulateData,
-  groupData,
-  readLineByLine,
-  flattenArray,
-  mergeStreams,
+  compose,
   concatStreams,
+  filterData,
+  flattenArray,
+  groupData,
+  mergeStreams,
+  oleoduc,
+  readLineByLine,
+  transformData,
+  transformIntoCSV,
+  transformIntoJSON,
+  transformStream,
   writeData,
   writeToStdout,
 };

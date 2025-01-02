@@ -1,7 +1,6 @@
 import { deepStrictEqual } from "assert";
-import SlowStream from "slow-stream";
 import { accumulateData, flattenArray, writeData } from "../src";
-import { streamArray } from "./testUtils";
+import { createSlowStream, streamArray } from "./testUtils";
 
 describe("flattenArray", () => {
   it("can flat map an array", (done) => {
@@ -22,17 +21,24 @@ describe("flattenArray", () => {
   });
 
   it("can flat map an array inside a pipeline", (done) => {
-    let result = [];
+    let result = "";
     const source = streamArray();
     source.push("andré");
     source.push("bruno");
     source.push(null);
 
     source
-      .pipe(accumulateData((acc, data) => [...acc, data.substring(0, 1)], { accumulator: [] }))
+      .pipe(
+        accumulateData(
+          (acc, data: string) => {
+            return [...acc, data.substring(0, 1)];
+          },
+          { accumulator: [] as string[] },
+        ),
+      )
       .pipe(flattenArray())
       .pipe(
-        writeData((data) => {
+        writeData((data: string) => {
           result += data.toUpperCase();
         }),
       )
@@ -51,7 +57,7 @@ describe("flattenArray", () => {
 
     source
       .pipe(flattenArray({ objectMode: true, highWaterMark: 1 }))
-      .pipe(new SlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
+      .pipe(createSlowStream({ maxWriteInterval: 10 })) // Force up streams to be paused
       .pipe(
         writeData((data) => {
           result += "_" + data;

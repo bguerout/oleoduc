@@ -5,12 +5,13 @@
         "target": "esnext",
         "outDir": "./dist/mjs",
         "rootDirs": ["src"],
-        "types": ["node"],
+        "types": ["node", "mocha"],
         "lib": ["esnext"],
         "allowJs": true,
-        "strict": false,
+        "strict": true,
         "sourceMap": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "skipLibCheck": true
     },
     "exclude": ["node_modules", "dist"],
     "include": ["src"]

@@ -4,7 +4,7 @@ import { createStream } from "./testUtils";
 
 describe("accumulateData", () => {
   it("can accumulateData by grouping them (flush)", (done) => {
-    const result = [];
+    const result: string[] = [];
     const source = createStream();
     source.push("John");
     source.push("Doe");
@@ -15,7 +15,7 @@ describe("accumulateData", () => {
     source
       .pipe(
         accumulateData(
-          (acc, data, flush) => {
+          (acc, data: string, flush) => {
             acc = [...acc, data];
 
             if (acc.length < 2) {
@@ -25,10 +25,10 @@ describe("accumulateData", () => {
             flush(acc.join(" "));
             return []; // Reset accumulator
           },
-          { accumulator: [] },
+          { accumulator: [] as string[] },
         ),
       )
-      .pipe(writeData((data) => result.push(data)))
+      .pipe(writeData((data: string) => result.push(data)))
       .on("finish", () => {
         deepStrictEqual(result, ["John Doe", "Robert Hue"]);
         done();
@@ -36,7 +36,7 @@ describe("accumulateData", () => {
   });
 
   it("can accumulateData into a single chunk (no flush)", (done) => {
-    const result = [];
+    const result: string[] = [];
     const source = createStream();
     source.push("j");
     source.push("o");
@@ -46,7 +46,7 @@ describe("accumulateData", () => {
 
     source
       .pipe(accumulateData((acc, data) => acc + data, { accumulator: "" }))
-      .pipe(writeData((data) => result.push(data)))
+      .pipe(writeData((data: string) => result.push(data)))
       .on("finish", () => {
         deepStrictEqual(result, ["john"]);
         done();
@@ -69,7 +69,7 @@ describe("accumulateData", () => {
 
     source
       .pipe(accumulator)
-      .pipe(writeData((data) => result.push(data)))
+      .pipe(writeData((data: string) => result.push(data)))
       .on("finish", () => {
         fail();
         done();
