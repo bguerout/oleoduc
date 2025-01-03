@@ -1,9 +1,9 @@
-import { TransformDataCallback, transformData, TransformDataOptions } from "./transformData";
-import { Transform } from "node:stream";
+import {TransformDataCallback, transformData, TransformDataOptions} from "./transformData";
+import {Transform} from "node:stream";
 
 export function filterData<TInput>(
-  filter: TransformDataCallback<TInput, boolean | null>,
-  options: TransformDataOptions<TInput> = {},
+    filter: TransformDataCallback<TInput, boolean | null>,
+    options: TransformDataOptions<TInput> = {},
 ): Transform {
-  return transformData((data) => data, { ...options, filter });
+    return transformData((data) => data, {...options, filter});
 }

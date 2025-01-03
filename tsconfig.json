@@ -1,18 +1,19 @@
 {
-    "compilerOptions": {
-        "moduleResolution": "NodeNext",
-        "module": "NodeNext",
-        "target": "esnext",
-        "outDir": "./dist/mjs",
-        "rootDirs": ["src"],
-        "types": ["node", "mocha"],
-        "lib": ["esnext"],
-        "allowJs": true,
-        "strict": true,
-        "sourceMap": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true
-    },
+    "include": ["src"],
     "exclude": ["node_modules", "dist"],
-    "include": ["src"]
+    "compilerOptions": {
+        "allowJs": true,
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "lib": ["esnext"],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "outDir": "./dist/mjs",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "esnext",
+        "types": ["node", "mocha"],
+    },
 }

@@ -1,7 +1,7 @@
-import { Readable } from "stream";
+import {Readable} from "stream";
 
 type ToAsyncIteratorOptions = {
-  chunkSize?: number;
+    chunkSize?: number;
 };
 
 /**
@@ -13,30 +13,30 @@ type ToAsyncIteratorOptions = {
  * @returns {AsyncGenerator<*, void, *>}
  */
 export async function* toAsyncIterator(stream: NodeJS.ReadableStream, options: ToAsyncIteratorOptions = {}) {
-  const chunkSize = options.chunkSize || 1;
+    const chunkSize = options.chunkSize || 1;
 
-  if (typeof stream.read !== "function") {
-    //FIXME seems not used
-    stream = new Readable().wrap(stream);
-  }
-
-  let ended = false;
-  const onEnded = new Promise<void>((res, rej) => {
-    stream.once("error", rej);
-    stream.once("end", () => {
-      ended = true;
-      res();
-    });
-  });
-
-  while (!ended) {
-    const chunk = stream.read(chunkSize);
-    if (chunk !== null) {
-      yield chunk;
-      continue;
+    if (typeof stream.read !== "function") {
+        //FIXME seems not used
+        stream = new Readable().wrap(stream);
     }
 
-    const onReadable = new Promise((res) => stream.once("readable", res));
-    await Promise.race([onEnded, onReadable]);
-  }
+    let ended = false;
+    const onEnded = new Promise<void>((res, rej) => {
+        stream.once("error", rej);
+        stream.once("end", () => {
+            ended = true;
+            res();
+        });
+    });
+
+    while (!ended) {
+        const chunk = stream.read(chunkSize);
+        if (chunk !== null) {
+            yield chunk;
+            continue;
+        }
+
+        const onReadable = new Promise((res) => stream.once("readable", res));
+        await Promise.race([onEnded, onReadable]);
+    }
 }

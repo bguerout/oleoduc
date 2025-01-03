@@ -1,47 +1,47 @@
-import { deepStrictEqual } from "assert";
-import { createStream } from "./testUtils";
-import { groupData, writeData } from "../src";
+import {deepStrictEqual} from "assert";
+import {createStream} from "./testUtils";
+import {groupData, writeData} from "../src";
 
 describe("groupData", () => {
-  it("can create group of data", (done) => {
-    const results: string[][] = [];
-    const source = createStream();
-    source.push("abc");
-    source.push("def");
-    source.push("ghi");
-    source.push(null);
+    it("can create group of data", (done) => {
+        const results: string[][] = [];
+        const source = createStream();
+        source.push("abc");
+        source.push("def");
+        source.push("ghi");
+        source.push(null);
 
-    source
-      .pipe(groupData())
-      .pipe(
-        writeData((group: string[]) => {
-          return results.push(group);
-        }),
-      )
-      .on("finish", () => {
-        deepStrictEqual(results, [["abc"], ["def"], ["ghi"]]);
-        done();
-      });
-  });
+        source
+            .pipe(groupData())
+            .pipe(
+                writeData((group: string[]) => {
+                    return results.push(group);
+                }),
+            )
+            .on("finish", () => {
+                deepStrictEqual(results, [["abc"], ["def"], ["ghi"]]);
+                done();
+            });
+    });
 
-  it("can create group of data with custom size", (done) => {
-    const results: string[][] = [];
-    const source = createStream();
-    source.push("abc");
-    source.push("def");
-    source.push("ghi");
-    source.push(null);
+    it("can create group of data with custom size", (done) => {
+        const results: string[][] = [];
+        const source = createStream();
+        source.push("abc");
+        source.push("def");
+        source.push("ghi");
+        source.push(null);
 
-    source
-      .pipe(groupData({ size: 2 }))
-      .pipe(
-        writeData((group: string[]) => {
-          return results.push(group);
-        }),
-      )
-      .on("finish", () => {
-        deepStrictEqual(results, [["abc", "def"], ["ghi"]]);
-        done();
-      });
-  });
+        source
+            .pipe(groupData({size: 2}))
+            .pipe(
+                writeData((group: string[]) => {
+                    return results.push(group);
+                }),
+            )
+            .on("finish", () => {
+                deepStrictEqual(results, [["abc", "def"], ["ghi"]]);
+                done();
+            });
+    });
 });
