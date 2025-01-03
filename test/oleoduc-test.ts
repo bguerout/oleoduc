@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail} from "assert";
 import {assertErrorMessage, createStream, delay} from "./testUtils.ts";
-import {compose, oleoduc, transformData, writeData} from "../src/index.ts";
+import {chainStreams, oleoduc, transformData, writeData} from "../src/index.ts";
 
 describe("oleoduc", () => {
     it("can create oleoduc", async () => {
@@ -35,7 +35,7 @@ describe("oleoduc", () => {
         try {
             await oleoduc(
                 source,
-                compose(
+                chainStreams(
                     transformData((data: string) => data.substring(0, 1)),
                     transformData((data: string) => "_" + data),
                 ),
@@ -47,10 +47,10 @@ describe("oleoduc", () => {
         }
     });
 
-    it("can use compose inside oleoduc", async () => {
+    it("can use chainStream inside oleoduc", async () => {
         const chunks: string[] = [];
         const source = createStream();
-        const composed = compose(
+        const chained = chainStreams(
             source,
             transformData((d: string) => d.substring(0, 1)),
         );
@@ -59,7 +59,7 @@ describe("oleoduc", () => {
         source.push(null);
 
         await oleoduc(
-            composed,
+            chained,
             writeData((data: string) => chunks.push(data)),
         )
             .then(() => {

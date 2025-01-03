@@ -1,5 +1,5 @@
 import {accumulateData} from "./accumulateData.ts";
-import {compose} from "./compose.ts";
+import {chainStreams} from "./chainStreams.ts";
 import {concatStreams} from "./concatStreams.ts";
 import {filterData} from "./filterData.ts";
 import {flattenArray} from "./flattenArray.ts";
@@ -14,8 +14,12 @@ import {transformStream} from "./transformStream.ts";
 import {writeData} from "./writeData.ts";
 import {writeToStdout} from "./writeToStdout.ts";
 
+//Legacy from 0.8.x
+const compose = chainStreams;
+
 export {
     accumulateData,
+    chainStreams,
     compose,
     concatStreams,
     filterData,

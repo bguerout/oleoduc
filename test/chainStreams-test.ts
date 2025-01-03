@@ -1,15 +1,15 @@
 import {deepStrictEqual, fail} from "assert";
 import {createSlowStream, createStream} from "./testUtils.ts";
-import {compose, flattenArray, transformData, writeData} from "../src/index.ts";
+import {chainStreams, flattenArray, transformData, writeData} from "../src/index.ts";
 
-describe("compose", () => {
-    it("can compose streams", (done) => {
+describe("chainStreams", () => {
+    it("can chain streams", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("first");
         source.push(null);
 
-        compose(
+        chainStreams(
             source,
             transformData((data: string) => data.substring(0, 1)),
             writeData((data: string) => {
@@ -26,7 +26,7 @@ describe("compose", () => {
             });
     });
 
-    it("can iterate over a composed stream", async () => {
+    it("can iterate over a chained stream", async () => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -34,7 +34,7 @@ describe("compose", () => {
         source.push("robert");
         source.push(null);
 
-        const stream = compose(
+        const stream = chainStreams(
             source,
             transformData((data: string) => data.substring(0, 1)),
         );
@@ -46,7 +46,7 @@ describe("compose", () => {
         deepStrictEqual(chunks, ["a", "b", "r"]);
     });
 
-    it("can pipe a compose stream", (done) => {
+    it("can pipe a chain stream", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -54,7 +54,7 @@ describe("compose", () => {
         source.push("robert");
         source.push(null);
 
-        compose(source)
+        chainStreams(source)
             .pipe(transformData((data: string) => data.substring(0, 1)))
             .pipe(
                 writeData((data: string) => {
@@ -67,7 +67,7 @@ describe("compose", () => {
             });
     });
 
-    it("can build compose with first writeable and last readable (duplex)", (done) => {
+    it("can build chain with first writeable and last readable (duplex)", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -77,7 +77,7 @@ describe("compose", () => {
 
         source
             .pipe(
-                compose(
+                chainStreams(
                     transformData((data: string) => data.substring(0, 1)),
                     transformData((data) => "_" + data),
                 ),
@@ -93,10 +93,10 @@ describe("compose", () => {
             });
     });
 
-    it("can compose inside compose", (done) => {
+    it("can chain inside a chain", (done) => {
         const chunks: string[] = [];
         const source = createStream();
-        const nested = compose(
+        const nested = chainStreams(
             source,
             transformData((d: string) => d.substring(0, 1)),
         );
@@ -104,7 +104,7 @@ describe("compose", () => {
         source.push("first");
         source.push(null);
 
-        compose(
+        chainStreams(
             nested,
             writeData((data: string) => {
                 chunks.push(data);
@@ -126,7 +126,7 @@ describe("compose", () => {
         source.push(["andré", "bruno", "robert"]);
         source.push(null);
 
-        compose(
+        chainStreams(
             source,
             flattenArray({highWaterMark: 1}),
             createSlowStream({maxWriteInterval: 10}),
@@ -139,15 +139,15 @@ describe("compose", () => {
         });
     });
 
-    it("can handle back pressure with nested compose", (done) => {
+    it("can handle back pressure with nested chain", (done) => {
         let result = "";
         const source = createStream();
         source.push(["andré", "bruno", "robert"]);
         source.push(null);
 
-        compose(
+        chainStreams(
             source,
-            compose(flattenArray({highWaterMark: 1}), createSlowStream({maxWriteInterval: 10})),
+            chainStreams(flattenArray({highWaterMark: 1}), createSlowStream({maxWriteInterval: 10})),
             writeData((data: string) => {
                 result += data;
             }),
@@ -160,7 +160,7 @@ describe("compose", () => {
     it("should propagate emitted error", (done) => {
         const source = createStream();
 
-        compose(
+        chainStreams(
             source,
             writeData(() => {}),
         )
@@ -182,7 +182,7 @@ describe("compose", () => {
         source.push("first");
         source.push(null);
 
-        compose(
+        chainStreams(
             source,
             writeData(() => {
                 throw new Error("write error");

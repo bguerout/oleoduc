@@ -6,17 +6,17 @@ import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator.ts";
 import {pipeStreamsTogether} from "./utils/pipeStreamsTogether.ts";
 import {AnyStream, PipeableStreams} from "./types.ts";
 
-export type ComposeOptions = TransformOptions;
+export type ChainStreamsOptions = TransformOptions;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ComposeReturn<TLast extends AnyStream> = TLast extends Readable
+type ChainStreamsReturn<TLast extends AnyStream> = TLast extends Readable
     ? NodeJS.ReadWriteStream & Readable
     : NodeJS.ReadWriteStream;
 
-export function compose<TLast extends NodeJS.ReadWriteStream | NodeJS.WritableStream>(
-    ...args: PipeableStreams<NodeJS.ReadableStream | NodeJS.ReadWriteStream, TLast, ComposeOptions>
-): ComposeReturn<TLast> {
-    const {params: streams, options} = parseArgs<AnyStream, ComposeOptions>(args);
+export function chainStreams<TLast extends NodeJS.ReadWriteStream | NodeJS.WritableStream>(
+    ...args: PipeableStreams<NodeJS.ReadableStream | NodeJS.ReadWriteStream, TLast, ChainStreamsOptions>
+): ChainStreamsReturn<TLast> {
+    const {params: streams, options} = parseArgs<AnyStream, ChainStreamsOptions>(args);
 
     const {first, last, wrapper} = wrapStreams(streams, options);
 
@@ -31,5 +31,5 @@ export function compose<TLast extends NodeJS.ReadWriteStream | NodeJS.WritableSt
 
     pipeStreamsTogether(streams, wrapper);
 
-    return wrapper as ComposeReturn<TLast>;
+    return wrapper as ChainStreamsReturn<TLast>;
 }
