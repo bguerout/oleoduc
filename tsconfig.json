@@ -1,0 +1,17 @@
+{
+    "include": ["src"],
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "esnext",
+        "types": ["node", "mocha"],
+        "outDir": "./dist/esm",
+        "allowImportingTsExtensions": true,
+        "allowSyntheticDefaultImports": true,
+        "declaration": true,
+        "declarationMap": true,
+        "rewriteRelativeImportExtensions": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+    },
+}
