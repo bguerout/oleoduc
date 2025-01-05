@@ -84,13 +84,13 @@ for await (const data of csvStream) {
 # API
 
 * [accumulateData](#accumulatedatacallback-options)
-* [pipeStreams](#pipestreamstreams-options)
 * [concatStreams](#concatstreamsstreams-options)
 * [filterData](#filterdatacallback-options)
 * [flattenArray](#flattenarrayoptions)
 * [groupData](#groupdataoptions)
 * [mergeStreams](#mergestreamsstreams-options)
 * [oleoduc](#oleoducstreams-options)
+* [pipeStreams](#pipestreamsstreams-options)
 * [readLineByLine](#readlinebyline)
 * [transformData](#transformdatacallback-options)
 * [transformIntoCSV](#transformintocsvoptions)
@@ -165,68 +165,6 @@ oleoduc(
   "John Doe",
   "Robert Hue"
 ]
-```
-
-## pipeStreams(...streams, [options])
-
-Same as oleoduc but without promise stuff and stream composition capability
-
-#### Parameters
-
-- `streams`: A list of streams to pipe together
-- `options`:
-    - `*`: The rest of the options is passed
-      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
-
-Pipe streams
-
-```js
-const { pipeStreams, transformData, writeData } = require("oleoduc");
-
-async function getCursor() {
-  const cursor = await getDataFromDB();
-  return pipeStreams(
-    cursor,
-    transformData((data) => data.value * 10),
-  )
-};
-
-const cursor = await getCursor();
-await oleoduc(
-  cursor,
-  writeData((data) => console.log(data))
-);
-```
-
-Iterate over a chained readable stream
-
-```js
-const { pipeStreams, transformData } = require("oleoduc");
-
-const stream = pipeStreams(
-  source,
-  transformData((data) => data.trim()),
-);
-
-for await (const data of stream) {
-  console.log(data)
-}
-
-```
-
-Handle errors in single event listener
-
-```js
-const { oleoduc, writeData } = require("oleoduc");
-
-const stream = pipeStreams(
-  source,
-  writeData((obj) => throw new Error())
-);
-
-stream.on("error", (e) => {
-  //Handle error
-});
 ```
 
 ## concatStreams(...streams, [options])
@@ -316,7 +254,6 @@ oleoduc(
 // --> Output:
 1
 ```
-
 ## flattenArray([options])
 
 Allows chunks of an array to be streamed as if each was part of the source
@@ -406,35 +343,13 @@ await oleoduc(
 ;
 ```
 
-## readLineByLine
-
-Allows data to be read line by line
-
-#### Examples
-
-Read a [ndsjon](http://ndjson.org/) file line by line
-
-```js
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const { createReadStream } = require("stream");
-
-await oleoduc(
-  createReadStream("/path/to/file.ndjson"),
-  readLineByLine(),
-  transformData(line => JSON.parse(line)),
-  writeData((json) => console.log(json))
-);
-```
-
 ## oleoduc(...streams, [options])
 
-Pipe streams together, forwards errors and returns a promisified stream.
+Pipe streams together and returns a promisified stream.
 
 It is same as nodejs
 core [pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) 
 but with better error handling.
-
-If the last stream is readable, the returned stream will be iterable
 
 #### Parameters
 
@@ -469,6 +384,90 @@ try {
 } catch (e) {
   //Handle error
 }
+```
+
+## pipeStreams(...streams, [options])
+
+Pipe streams together and forwards errors
+
+If the last stream is readable, the returned stream will be iterable
+
+#### Parameters
+
+- `streams`: A list of streams to pipe together
+- `options`:
+    - `*`: The rest of the options is passed
+      to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
+
+Pipe streams
+
+```js
+const { pipeStreams, transformData, writeData } = require("oleoduc");
+
+async function getCursor() {
+  const cursor = await getDataFromDB();
+  return pipeStreams(
+    cursor,
+    transformData((data) => data.value * 10),
+  )
+};
+
+const cursor = await getCursor();
+await oleoduc(
+  cursor,
+  writeData((data) => console.log(data))
+);
+```
+
+Iterate over a chained readable stream
+
+```js
+const { pipeStreams, transformData } = require("oleoduc");
+
+const stream = pipeStreams(
+  source,
+  transformData((data) => data.trim()),
+);
+
+for await (const data of stream) {
+  console.log(data)
+}
+
+```
+
+Handle errors in single event listener
+
+```js
+const { oleoduc, writeData } = require("oleoduc");
+
+const stream = pipeStreams(
+  source,
+  writeData((obj) => throw new Error())
+);
+
+stream.on("error", (e) => {
+  //Handle error
+});
+```
+
+## readLineByLine
+
+Allows data to be read line by line
+
+#### Examples
+
+Read a [ndsjon](http://ndjson.org/) file line by line
+
+```js
+const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
+const { createReadStream } = require("stream");
+
+await oleoduc(
+  createReadStream("/path/to/file.ndjson"),
+  readLineByLine(),
+  transformData(line => JSON.parse(line)),
+  writeData((json) => console.log(json))
+);
 ```
 
 ## transformData(callback, [options])
