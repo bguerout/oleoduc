@@ -4,8 +4,6 @@ oleoduc (french synonym of pipeline) provides tools to easily stream data.
 
 ```sh
 npm install oleoduc
-# or
-yarn add oleoduc
 ```
 
 It can be used with both CommonJS and ESM
@@ -51,12 +49,12 @@ Stream JSON to client through an express server
 
 ```js
 const express = require("express");
-const { oleoduc, transformIntoJSON } = require("oleoduc");
+const { pipeStreams, transformIntoJSON } = require("oleoduc");
 
 // Consume for example a MongoDB cursor and send documents as it flows
 const app = express();
 app.get("/documents", async (req, res) => {
-  oleoduc(
+  pipeStreams(
     db.collection("documents").find().stream(),
     transformIntoJSON(),// Stream the documents as a json array
     res
@@ -121,7 +119,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from(["j", "o", "h", "n"]);
 
-oleoduc(
+await oleoduc(
   source,
   accumulateData((acc, value) => {
     return { ...acc, value };
@@ -141,7 +139,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from(["John", "Doe", "Robert", "Hue"]);
 
-oleoduc(
+await oleoduc(
   source,
   accumulateData((acc, data, flush) => {
     //Group firstname and lastname
@@ -245,7 +243,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from([1, 2]);
 
-oleoduc(
+await oleoduc(
   source,
   filterData((data) => data === 1),
   writeData((obj) => console.log(obj))
@@ -274,7 +272,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from([["John Doe"], ["Robert Hue"]]);
 
-oleoduc(
+await oleoduc(
   source,
   flattenArray(),
   writeData((fullname) => console.log(fullname))
@@ -302,7 +300,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from(["John", "Doe", "Robert", "Hue"]);
 
-oleoduc(
+await oleoduc(
   source,
   groupData({ size: 2 }),
   writeData((array) => console.log(array))
@@ -499,7 +497,7 @@ const { Readable } = require("stream");
 
 const source = Readable.from([1, 2]);
 
-oleoduc(
+await oleoduc(
   source,
   transformData((data) => {
     return ({ value: data });
@@ -691,7 +689,7 @@ Writing data to stdout
 ```js
 const { oleoduc, writeData } = require("oleoduc");
 
-oleoduc(
+await oleoduc(
   source,
   writeData((data) => console.log("New chunk", data))
 );
