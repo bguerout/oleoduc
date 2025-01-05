@@ -1,4 +1,4 @@
-import {PassThrough, Transform, StreamOptions} from "node:stream";
+import {PassThrough, Transform, StreamOptions} from "stream";
 import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator.ts";
 import {parseArgs} from "./utils/parseArgs.ts";
 

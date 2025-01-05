@@ -1,4 +1,4 @@
-import {Writable} from "node:stream";
+import {Writable} from "stream";
 
 type WriteToStdoutCallback = (error: Error | null | undefined) => void;
 

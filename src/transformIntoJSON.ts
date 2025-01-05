@@ -1,4 +1,4 @@
-import {Transform, TransformOptions} from "node:stream";
+import {Transform, TransformOptions} from "stream";
 
 export type TransformIntoJSONOptions = TransformOptions & {
     arrayPropertyName?: string;

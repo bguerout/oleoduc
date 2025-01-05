@@ -1,4 +1,4 @@
-import {PassThrough, TransformOptions} from "node:stream";
+import {PassThrough, TransformOptions} from "stream";
 import {parseArgs} from "./utils/parseArgs.ts";
 
 type NextStreamCallback = () => Promise<NodeJS.ReadableStream | null> | NodeJS.ReadableStream | null;

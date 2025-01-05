@@ -1,4 +1,4 @@
-import {Transform} from "node:stream";
+import {Transform} from "stream";
 import {TransformDataCallback, transformData, TransformDataOptions} from "./transformData.ts";
 
 export function filterData<TInput>(

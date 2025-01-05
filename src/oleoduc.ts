@@ -1,4 +1,4 @@
-import {TransformOptions} from "node:stream";
+import {TransformOptions} from "stream";
 import {parseArgs} from "./utils/parseArgs.ts";
 import {AnyStream, PipeableStreams} from "./types.ts";
 import {wrapStreams} from "./utils/wrapStreams.ts";

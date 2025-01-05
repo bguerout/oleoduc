@@ -1,4 +1,4 @@
-import {WritableOptions, Writable} from "node:stream";
+import {WritableOptions, Writable} from "stream";
 // @ts-expect-error TS2792
 import cyclist, {Cyclist} from "cyclist";
 

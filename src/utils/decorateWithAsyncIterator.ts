@@ -1,4 +1,4 @@
-import {Readable} from "node:stream";
+import {Readable} from "stream";
 import {toAsyncIterator} from "./toAsyncIterator.ts";
 
 export function decorateWithAsyncIterator(stream: Readable) {

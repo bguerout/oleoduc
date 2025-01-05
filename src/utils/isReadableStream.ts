@@ -1,4 +1,4 @@
-import {Readable} from "node:stream";
+import {Readable} from "stream";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isReadableStream(stream: any): stream is Readable {

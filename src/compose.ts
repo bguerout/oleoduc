@@ -1,4 +1,4 @@
-import {Readable, TransformOptions} from "node:stream";
+import {Readable, TransformOptions} from "stream";
 import {parseArgs} from "./utils/parseArgs.ts";
 import {wrapStreams} from "./utils/wrapStreams.ts";
 import {isReadableStream} from "./utils/isReadableStream.ts";

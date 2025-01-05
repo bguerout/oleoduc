@@ -1,4 +1,4 @@
-import {Duplex, DuplexOptions, Readable, Writable} from "node:stream";
+import {Duplex, DuplexOptions, Readable, Writable} from "stream";
 
 type DuplexerCallback = (error?: Error | null) => void;
 

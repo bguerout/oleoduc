@@ -1,4 +1,4 @@
-import {PassThrough, TransformOptions} from "node:stream";
+import {PassThrough, TransformOptions} from "stream";
 import {Duplexer} from "./Duplexer.ts";
 import {isReadableStream} from "./isReadableStream.ts";
 import {isWritableStream} from "./isWriteableStream.ts";

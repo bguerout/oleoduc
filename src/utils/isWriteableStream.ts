@@ -1,4 +1,4 @@
-import {Writable} from "node:stream";
+import {Writable} from "stream";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isWritableStream(stream: any): stream is Writable {
