@@ -1,7 +1,7 @@
 import {deepStrictEqual, fail} from "assert";
 import {assertErrorMessage, createStream} from "./testUtils.ts";
 import {toAsyncIterator} from "../src/utils/toAsyncIterator.ts";
-import {chainStreams, transformData} from "../src/index.ts";
+import {pipeStreams, transformData} from "../src/index.ts";
 
 describe("toAsyncIterator", () => {
     it("can convert a readable stream into an iterator", async () => {
@@ -21,7 +21,7 @@ describe("toAsyncIterator", () => {
 
     it("iterator should honor error", async () => {
         const readable = createStream();
-        const failingStream = chainStreams(
+        const failingStream = pipeStreams(
             readable,
             transformData(() => {
                 throw new Error("This is a stream error");

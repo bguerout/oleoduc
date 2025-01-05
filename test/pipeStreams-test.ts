@@ -1,15 +1,15 @@
 import {deepStrictEqual, fail} from "assert";
 import {createSlowStream, createStream} from "./testUtils.ts";
-import {chainStreams, flattenArray, transformData, writeData} from "../src/index.ts";
+import {pipeStreams, flattenArray, transformData, writeData} from "../src/index.ts";
 
-describe("chainStreams", () => {
-    it("can chain streams", (done) => {
+describe("pipeStreams", () => {
+    it("can pipe streams", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("first");
         source.push(null);
 
-        chainStreams(
+        pipeStreams(
             source,
             transformData((data: string) => data.substring(0, 1)),
             writeData((data: string) => {
@@ -26,7 +26,7 @@ describe("chainStreams", () => {
             });
     });
 
-    it("can iterate over a chained stream", async () => {
+    it("can iterate over a piped stream", async () => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -34,7 +34,7 @@ describe("chainStreams", () => {
         source.push("robert");
         source.push(null);
 
-        const stream = chainStreams(
+        const stream = pipeStreams(
             source,
             transformData((data: string) => data.substring(0, 1)),
         );
@@ -46,7 +46,7 @@ describe("chainStreams", () => {
         deepStrictEqual(chunks, ["a", "b", "r"]);
     });
 
-    it("can pipe a chain stream", (done) => {
+    it("can pipe a pipe stream", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -54,7 +54,7 @@ describe("chainStreams", () => {
         source.push("robert");
         source.push(null);
 
-        chainStreams(source)
+        pipeStreams(source)
             .pipe(transformData((data: string) => data.substring(0, 1)))
             .pipe(
                 writeData((data: string) => {
@@ -67,7 +67,7 @@ describe("chainStreams", () => {
             });
     });
 
-    it("can build chain with first writeable and last readable (duplex)", (done) => {
+    it("can build pipe with first writeable and last readable (duplex)", (done) => {
         const chunks: string[] = [];
         const source = createStream();
         source.push("andré");
@@ -77,7 +77,7 @@ describe("chainStreams", () => {
 
         source
             .pipe(
-                chainStreams(
+                pipeStreams(
                     transformData((data: string) => data.substring(0, 1)),
                     transformData((data) => "_" + data),
                 ),
@@ -93,10 +93,10 @@ describe("chainStreams", () => {
             });
     });
 
-    it("can chain inside a chain", (done) => {
+    it("can pipe inside a pipe", (done) => {
         const chunks: string[] = [];
         const source = createStream();
-        const nested = chainStreams(
+        const nested = pipeStreams(
             source,
             transformData((d: string) => d.substring(0, 1)),
         );
@@ -104,7 +104,7 @@ describe("chainStreams", () => {
         source.push("first");
         source.push(null);
 
-        chainStreams(
+        pipeStreams(
             nested,
             writeData((data: string) => {
                 chunks.push(data);
@@ -126,7 +126,7 @@ describe("chainStreams", () => {
         source.push(["andré", "bruno", "robert"]);
         source.push(null);
 
-        chainStreams(
+        pipeStreams(
             source,
             flattenArray({highWaterMark: 1}),
             createSlowStream({maxWriteInterval: 10}),
@@ -139,15 +139,15 @@ describe("chainStreams", () => {
         });
     });
 
-    it("can handle back pressure with nested chain", (done) => {
+    it("can handle back pressure with nested pipe", (done) => {
         let result = "";
         const source = createStream();
         source.push(["andré", "bruno", "robert"]);
         source.push(null);
 
-        chainStreams(
+        pipeStreams(
             source,
-            chainStreams(flattenArray({highWaterMark: 1}), createSlowStream({maxWriteInterval: 10})),
+            pipeStreams(flattenArray({highWaterMark: 1}), createSlowStream({maxWriteInterval: 10})),
             writeData((data: string) => {
                 result += data;
             }),
@@ -160,7 +160,7 @@ describe("chainStreams", () => {
     it("should propagate emitted error", (done) => {
         const source = createStream();
 
-        chainStreams(
+        pipeStreams(
             source,
             writeData(() => {}),
         )
@@ -182,7 +182,7 @@ describe("chainStreams", () => {
         source.push("first");
         source.push(null);
 
-        chainStreams(
+        pipeStreams(
             source,
             writeData(() => {
                 throw new Error("write error");

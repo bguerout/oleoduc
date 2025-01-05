@@ -1,9 +1,9 @@
 import {accumulateData} from "./accumulateData.ts";
 import {flattenArray} from "./flattenArray.ts";
-import {chainStreams} from "./chainStreams.ts";
+import {pipeStreams} from "./pipeStreams.ts";
 
 export function readLineByLine() {
-    return chainStreams(
+    return pipeStreams(
         accumulateData<string, string[]>(
             (acc, data: string, flush) => {
                 const lines = data.toString().split(/\r?\n/);

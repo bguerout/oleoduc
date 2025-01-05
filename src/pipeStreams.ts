@@ -6,17 +6,17 @@ import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator.ts";
 import {pipeStreamsTogether} from "./utils/pipeStreamsTogether.ts";
 import {AnyStream, PipeableStreams} from "./types.ts";
 
-export type ChainStreamsOptions = TransformOptions;
+export type PipeStreamsOptions = TransformOptions;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ChainStreamsReturn<TLast extends AnyStream> = TLast extends Readable
+type PipeStreamsReturn<TLast extends AnyStream> = TLast extends Readable
     ? NodeJS.ReadWriteStream & Readable
     : NodeJS.ReadWriteStream;
 
-export function chainStreams<TLast extends NodeJS.ReadWriteStream | NodeJS.WritableStream>(
-    ...args: PipeableStreams<NodeJS.ReadableStream | NodeJS.ReadWriteStream, TLast, ChainStreamsOptions>
-): ChainStreamsReturn<TLast> {
-    const {params: streams, options} = parseArgs<AnyStream, ChainStreamsOptions>(args);
+export function pipeStreams<TLast extends NodeJS.ReadWriteStream | NodeJS.WritableStream>(
+    ...args: PipeableStreams<NodeJS.ReadableStream | NodeJS.ReadWriteStream, TLast, PipeStreamsOptions>
+): PipeStreamsReturn<TLast> {
+    const {params: streams, options} = parseArgs<AnyStream, PipeStreamsOptions>(args);
 
     const {first, last, wrapper} = wrapStreams(streams, options);
 
@@ -31,5 +31,5 @@ export function chainStreams<TLast extends NodeJS.ReadWriteStream | NodeJS.Writa
 
     pipeStreamsTogether(streams, wrapper);
 
-    return wrapper as ChainStreamsReturn<TLast>;
+    return wrapper as PipeStreamsReturn<TLast>;
 }
