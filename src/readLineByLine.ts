@@ -1,6 +1,6 @@
-import {accumulateData} from "./accumulateData";
-import {flattenArray} from "./flattenArray";
-import {compose} from "./compose";
+import {accumulateData} from "./accumulateData.ts";
+import {flattenArray} from "./flattenArray.ts";
+import {compose} from "./compose.ts";
 
 export function readLineByLine() {
     return compose(

@@ -1,5 +1,5 @@
-import {createStream} from "./testUtils";
-import {writeToStdout} from "../src";
+import {createStream} from "./testUtils.ts";
+import {writeToStdout} from "../src/index.ts";
 
 describe("writeToStdout", () => {
     it("should write to stdout", (done) => {

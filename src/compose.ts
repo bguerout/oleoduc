@@ -1,10 +1,10 @@
-import {parseArgs} from "./utils/parseArgs";
-import {wrapStreams} from "./utils/wrapStreams";
-import {isReadableStream} from "./utils/isReadableStream";
-import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator";
-import {pipeStreamsTogether} from "./utils/pipeStreamsTogether";
-import {AnyStream, PipeableStreams} from "./types";
-import {Readable, TransformOptions} from "stream";
+import {Readable, TransformOptions} from "node:stream";
+import {parseArgs} from "./utils/parseArgs.ts";
+import {wrapStreams} from "./utils/wrapStreams.ts";
+import {isReadableStream} from "./utils/isReadableStream.ts";
+import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator.ts";
+import {pipeStreamsTogether} from "./utils/pipeStreamsTogether.ts";
+import {AnyStream, PipeableStreams} from "./types.ts";
 
 export type ComposeOptions = TransformOptions;
 

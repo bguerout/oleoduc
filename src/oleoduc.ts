@@ -1,8 +1,8 @@
-import {parseArgs} from "./utils/parseArgs";
-import {AnyStream, PipeableStreams} from "./types";
-import {wrapStreams} from "./utils/wrapStreams";
-import {pipeStreamsTogether} from "./utils/pipeStreamsTogether";
-import {TransformOptions} from "stream";
+import {TransformOptions} from "node:stream";
+import {parseArgs} from "./utils/parseArgs.ts";
+import {AnyStream, PipeableStreams} from "./types.ts";
+import {wrapStreams} from "./utils/wrapStreams.ts";
+import {pipeStreamsTogether} from "./utils/pipeStreamsTogether.ts";
 
 export type OleoducOptions = TransformOptions;
 

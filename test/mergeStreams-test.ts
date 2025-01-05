@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {mergeStreams, writeData} from "../src";
-import {streamArray} from "./testUtils";
+import {mergeStreams, writeData} from "../src/index.ts";
+import {streamArray} from "./testUtils.ts";
 
 describe("mergeStreams", () => {
     it("can merge streams", (done) => {

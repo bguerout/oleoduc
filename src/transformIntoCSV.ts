@@ -1,4 +1,4 @@
-import {Transform, TransformOptions} from "stream";
+import {Transform, TransformOptions} from "node:stream";
 
 export type TransformIntoCSVOptions<TInput> = TransformOptions & {
     columns?: Record<string, (data: TInput) => Promise<AllowedCSVType> | AllowedCSVType>;

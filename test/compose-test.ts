@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail} from "assert";
-import {createSlowStream, createStream} from "./testUtils";
-import {compose, flattenArray, transformData, writeData} from "../src";
+import {createSlowStream, createStream} from "./testUtils.ts";
+import {compose, flattenArray, transformData, writeData} from "../src/index.ts";
 
 describe("compose", () => {
     it("can compose streams", (done) => {

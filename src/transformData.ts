@@ -1,6 +1,5 @@
 import transform from "parallel-transform";
-import {Transform, TransformOptions} from "node:stream";
-import {TransformCallback} from "stream";
+import {Transform, TransformOptions, TransformCallback} from "node:stream";
 
 export type TransformDataCallback<TInput, TOutput> = (data: TInput) => Promise<TOutput> | TOutput;
 export type TransformDataOptions<TInput> = {

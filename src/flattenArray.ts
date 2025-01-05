@@ -1,4 +1,4 @@
-import {Transform, TransformCallback, TransformOptions} from "stream";
+import {Transform, TransformCallback, TransformOptions} from "node:stream";
 
 /**
  * Inspired by https://stackoverflow.com/a/43811543/122975

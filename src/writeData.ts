@@ -1,6 +1,5 @@
-import {Writable} from "stream";
+import {WritableOptions, Writable} from "node:stream";
 import cyclist, {Cyclist} from "cyclist";
-import {WritableOptions} from "node:stream";
 
 export type WriteDataOptions = {parallel?: number};
 export type WriteDataCallback<TInput> = (data: TInput) => void | unknown;

@@ -1,4 +1,4 @@
-import {accumulateData, AccumulateDataOptions} from "./accumulateData";
+import {accumulateData, AccumulateDataOptions} from "./accumulateData.ts";
 
 export type GroupDataOptions<TInput> = {size?: number} & AccumulateDataOptions<Array<TInput>>;
 

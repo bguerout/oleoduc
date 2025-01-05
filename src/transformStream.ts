@@ -1,5 +1,4 @@
-import {Transform, TransformCallback} from "stream";
-import {TransformOptions} from "node:stream";
+import {Transform, TransformOptions, TransformCallback} from "node:stream";
 
 export type TransformStreamCallback<TInput, TOutput extends NodeJS.ReadableStream> = (
     data: TInput,

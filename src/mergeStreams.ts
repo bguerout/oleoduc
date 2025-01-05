@@ -1,7 +1,6 @@
-import {PassThrough, Transform} from "stream";
-import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator";
-import {parseArgs} from "./utils/parseArgs";
-import {StreamOptions} from "node:stream";
+import {PassThrough, Transform, StreamOptions} from "node:stream";
+import {decorateWithAsyncIterator} from "./utils/decorateWithAsyncIterator.ts";
+import {parseArgs} from "./utils/parseArgs.ts";
 
 export function mergeStreams(
     ...args:

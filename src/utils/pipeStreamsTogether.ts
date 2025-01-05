@@ -1,5 +1,5 @@
-import {AnyStream} from "../types";
-import {Readable, Writable} from "stream";
+import {Readable, Writable} from "node:stream";
+import {AnyStream} from "../types.ts";
 
 export function pipeStreamsTogether(streams: AnyStream[], wrapper: AnyStream) {
     for (const [i, stream] of streams.entries()) {

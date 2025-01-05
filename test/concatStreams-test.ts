@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {concatStreams, writeData} from "../src/index";
-import {delay, streamArray} from "./testUtils";
+import {concatStreams, writeData} from "../src/index.ts";
+import {delay, streamArray} from "./testUtils.ts";
 import {Readable} from "stream";
 
 describe("concatStreams", () => {

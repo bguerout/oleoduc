@@ -1,6 +1,6 @@
 import {deepStrictEqual, strictEqual, fail} from "assert";
-import {createStream} from "./testUtils";
-import {transformData, writeData} from "../src";
+import {createStream} from "./testUtils.ts";
+import {transformData, writeData} from "../src/index.ts";
 
 describe("transformData", () => {
     it("should transformData", (done) => {

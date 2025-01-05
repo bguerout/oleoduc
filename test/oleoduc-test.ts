@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail} from "assert";
-import {assertErrorMessage, createStream, delay} from "./testUtils";
-import {compose, oleoduc, transformData, writeData} from "../src";
+import {assertErrorMessage, createStream, delay} from "./testUtils.ts";
+import {compose, oleoduc, transformData, writeData} from "../src/index.ts";
 
 describe("oleoduc", () => {
     it("can create oleoduc", async () => {

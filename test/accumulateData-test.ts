@@ -1,6 +1,6 @@
 import {deepStrictEqual, strictEqual, fail} from "assert";
-import {accumulateData, writeData} from "../src/index";
-import {createStream} from "./testUtils";
+import {accumulateData, writeData} from "../src/index.ts";
+import {createStream} from "./testUtils.ts";
 
 describe("accumulateData", () => {
     it("can accumulateData by grouping them (flush)", (done) => {

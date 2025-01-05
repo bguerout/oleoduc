@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {createSlowStream, createStream, delay, streamArray} from "./testUtils";
-import {transformStream, writeData} from "../src";
+import {createSlowStream, createStream, delay, streamArray} from "./testUtils.ts";
+import {transformStream, writeData} from "../src/index.ts";
 
 describe("transformStream", () => {
     it("should transform data into a stream", (done) => {

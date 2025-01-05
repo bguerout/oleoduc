@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {accumulateData, flattenArray, writeData} from "../src";
-import {createSlowStream, streamArray} from "./testUtils";
+import {accumulateData, flattenArray, writeData} from "../src/index.ts";
+import {createSlowStream, streamArray} from "./testUtils.ts";
 
 describe("flattenArray", () => {
     it("can flat map an array", (done) => {

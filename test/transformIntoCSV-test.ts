@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail, strictEqual, ok} from "assert";
-import {createStream, delay} from "./testUtils";
-import {transformIntoCSV, writeData} from "../src";
+import {createStream, delay} from "./testUtils.ts";
+import {transformIntoCSV, writeData} from "../src/index.ts";
 
 type FullNameParams = {firstName: string; lastName: string};
 

@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {createStream} from "./testUtils";
-import {groupData, writeData} from "../src";
+import {createStream} from "./testUtils.ts";
+import {groupData, writeData} from "../src/index.ts";
 
 describe("groupData", () => {
     it("can create group of data", (done) => {

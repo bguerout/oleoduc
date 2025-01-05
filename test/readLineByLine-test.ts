@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {createStream} from "./testUtils";
-import {oleoduc, readLineByLine, writeData} from "../src";
+import {createStream} from "./testUtils.ts";
+import {oleoduc, readLineByLine, writeData} from "../src/index.ts";
 
 describe("readLineByLine", () => {
     it("can read a stream line by line", (done) => {

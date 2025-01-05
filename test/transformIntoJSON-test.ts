@@ -1,6 +1,6 @@
 import {deepStrictEqual} from "assert";
-import {createStream} from "./testUtils";
-import {transformIntoJSON} from "../src";
+import {createStream} from "./testUtils.ts";
+import {transformIntoJSON} from "../src/index.ts";
 
 describe("transformIntoJSON", () => {
     it("can stream a json array", (done) => {

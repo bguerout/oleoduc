@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail, strictEqual} from "assert";
-import {createStream} from "./testUtils";
-import {writeData} from "../src";
+import {createStream} from "./testUtils.ts";
+import {writeData} from "../src/index.ts";
 
 describe("writeData", () => {
     it("should writeData", (done) => {

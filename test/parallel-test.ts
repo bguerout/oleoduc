@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail, ok} from "assert";
-import {createStream, delay} from "./testUtils";
-import {filterData, transformData, writeData} from "../src";
+import {createStream, delay} from "./testUtils.ts";
+import {filterData, transformData, writeData} from "../src/index.ts";
 
 type AccParallelData = {number: number; timestamp: number};
 

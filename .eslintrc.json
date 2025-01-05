@@ -44,11 +44,6 @@
       "error", {
         "allowModules": ["slow-stream"]
       }
-    ],
-    "node/no-missing-import": [
-      "error", {
-        "tryExtensions": [".js", ".ts"]
-      }
     ]
   }
 }

@@ -1,8 +1,8 @@
-import {Duplexer} from "./Duplexer";
-import {PassThrough, TransformOptions} from "stream";
-import {isReadableStream} from "./isReadableStream";
-import {isWritableStream} from "./isWriteableStream";
-import {AnyStream} from "../types";
+import {PassThrough, TransformOptions} from "node:stream";
+import {Duplexer} from "./Duplexer.ts";
+import {isReadableStream} from "./isReadableStream.ts";
+import {isWritableStream} from "./isWriteableStream.ts";
+import {AnyStream} from "../types.ts";
 
 export function wrapStreams(streams: AnyStream[], options: TransformOptions = {}) {
     if (streams.length === 0) {

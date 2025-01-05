@@ -1,7 +1,7 @@
 import {deepStrictEqual, fail} from "assert";
-import {assertErrorMessage, createStream} from "./testUtils";
-import {toAsyncIterator} from "../src/utils/toAsyncIterator";
-import {compose, transformData} from "../src";
+import {assertErrorMessage, createStream} from "./testUtils.ts";
+import {toAsyncIterator} from "../src/utils/toAsyncIterator.ts";
+import {compose, transformData} from "../src/index.ts";
 
 describe("toAsyncIterator", () => {
     it("can convert a readable stream into an iterator", async () => {

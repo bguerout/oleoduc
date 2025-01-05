@@ -1,4 +1,4 @@
-import {Transform, TransformOptions} from "stream";
+import {Transform, TransformOptions} from "node:stream";
 
 export type AccumulateDataOptions<TAcc> = TransformOptions & {accumulator?: TAcc};
 export type AccumulateDataCallback<TInput, TOutput, TAcc> = (

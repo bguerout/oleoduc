@@ -1,8 +1,8 @@
 import {deepStrictEqual, fail} from "assert";
 import {pipeline} from "stream";
 import {promisify} from "util";
-import {createStream, delay} from "./testUtils";
-import {transformData, writeData} from "../src";
+import {createStream, delay} from "./testUtils.ts";
+import {transformData, writeData} from "../src/index.ts";
 
 describe("pipeline", () => {
     it("can create pipeline from stream", (done) => {

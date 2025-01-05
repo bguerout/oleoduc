@@ -1,6 +1,6 @@
 import {deepStrictEqual, fail, strictEqual} from "assert";
-import {createStream} from "./testUtils";
-import {filterData} from "../src";
+import {createStream} from "./testUtils.ts";
+import {filterData} from "../src/index.ts";
 
 describe("filterData", () => {
     it("should filter (ignore empty)", (done) => {
