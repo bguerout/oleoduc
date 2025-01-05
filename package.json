@@ -1,6 +1,6 @@
 {
   "name": "oleoduc",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Stream with ease",
   "engines": {
     "node": ">= 10"
