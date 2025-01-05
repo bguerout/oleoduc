@@ -1,4 +1,5 @@
 import {WritableOptions, Writable} from "node:stream";
+// @ts-expect-error TS2792
 import cyclist, {Cyclist} from "cyclist";
 
 export type WriteDataOptions = {parallel?: number};

@@ -10,6 +10,8 @@ mkdir -p "${DIST_DIR}" "${BUILD_DIR}"
 
 cd "${PROJECT_DIR}"
 
+npm run lint
+
 echo "Compiling oleoduc (esm version)..."
 npm run tsc -- -p tsconfig.json
 cat >"${DIST_DIR}/esm/package.json" <<!EOF
