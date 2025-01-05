@@ -1,5 +1,14 @@
-.nyc_output/
+.DS_Store
 .coverage/
-.tools/
-.idea/
+.eslintrc.json
+.git/
 .github/
+.gitignore
+.idea/
+.mocharc.json
+.nyc_output/
+.prettierignore
+.prettierrc
+.tools/
+build/
+test/

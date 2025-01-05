@@ -10,8 +10,6 @@ mkdir -p "${DIST_DIR}" "${BUILD_DIR}"
 
 cd "${PROJECT_DIR}"
 
-npm run lint
-
 echo "Compiling oleoduc (esm version)..."
 npm run tsc -- -p tsconfig.json
 cat >"${DIST_DIR}/esm/package.json" <<!EOF
@@ -27,9 +25,6 @@ cat >"${DIST_DIR}/cjs/package.json" <<!EOF
     "type": "commonjs"
 }
 !EOF
-
-echo "Compiling oleoduc (types)..."
-npm run tsc -- -p tsconfig.types.json
 
 echo "Building oleoduc for test..."
 npm run tsc -- -p tsconfig.test.json

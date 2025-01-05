@@ -1,7 +1,7 @@
-node_modules/
-.nyc_output/
+.DS_Store
 .coverage/
 .idea/
+.nyc_output/
 build/
 dist/
-.DS_Store
+node_modules/
