@@ -26,7 +26,7 @@ import { ... } from "oleoduc";
 
 - Easily transform, filter and write data flowing through the stream
 - Catch stream errors
-- Compose and merge streams together
+- Pipe and merge streams together
 - Read a stream as if it were a promise
 
 ### Quick tour
@@ -67,11 +67,11 @@ app.get("/documents", async (req, res) => {
 Create a stream to parse CSV and iterate over it
 
 ```js
-const { compose, transformData } = require("oleoduc");
+const { pipeStreams, transformData } = require("oleoduc");
 const { createReadStream } = require("fs");
 const { parse } = require("csv-parse");
 
-const csvStream = compose(
+const csvStream = pipeStreams(
   createReadStream("/path/to/file.csv"),
   parse(),
 )
@@ -84,7 +84,7 @@ for await (const data of csvStream) {
 # API
 
 * [accumulateData](#accumulatedatacallback-options)
-* [compose](#composestreams-options)
+* [pipeStreams](#pipestreamstreams-options)
 * [concatStreams](#concatstreamsstreams-options)
 * [filterData](#filterdatacallback-options)
 * [flattenArray](#flattenarrayoptions)
@@ -167,7 +167,7 @@ oleoduc(
 ]
 ```
 
-## compose(...streams, [options])
+## pipeStreams(...streams, [options])
 
 Same as oleoduc but without promise stuff and stream composition capability
 
@@ -178,14 +178,14 @@ Same as oleoduc but without promise stuff and stream composition capability
     - `*`: The rest of the options is passed
       to [stream.Transform](https://nodejs.org/api/stream.html#stream_class_stream_transform)
 
-Compose streams
+Pipe streams
 
 ```js
-const { compose, transformData, writeData } = require("oleoduc");
+const { pipeStreams, transformData, writeData } = require("oleoduc");
 
 async function getCursor() {
   const cursor = await getDataFromDB();
-  return compose(
+  return pipeStreams(
     cursor,
     transformData((data) => data.value * 10),
   )
@@ -198,13 +198,12 @@ await oleoduc(
 );
 ```
 
-Iterate over a composed readable stream
+Iterate over a chained readable stream
 
 ```js
-const { compose, transformData } = require("oleoduc");
+const { pipeStreams, transformData } = require("oleoduc");
 
-const stream
-compose(
+const stream = pipeStreams(
   source,
   transformData((data) => data.trim()),
 );
@@ -220,7 +219,7 @@ Handle errors in single event listener
 ```js
 const { oleoduc, writeData } = require("oleoduc");
 
-const stream = compose(
+const stream = pipeStreams(
   source,
   writeData((obj) => throw new Error())
 );
