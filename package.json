@@ -14,16 +14,15 @@
     "parallel"
   ],
   "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
       },
       "default": {
         "types": "./dist/esm/index.d.ts",
@@ -38,8 +37,7 @@
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint src/ test/",
     "release": "bash .tools/release.sh master",
-    "tsc": "tsc",
-    "doc": "npx typedoc --out docs --plugin typedoc-plugin-markdown src/accumulateData.ts"
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -74,8 +72,6 @@
     "prettier": "3.4.2",
     "slow-stream": "0.0.4",
     "tsx": "4.19.2",
-    "typedoc": "0.27.6",
-    "typedoc-plugin-markdown": "4.4.1",
     "typescript": "5.7.2"
   }
 }
