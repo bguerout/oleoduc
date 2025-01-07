@@ -13,17 +13,17 @@
     "transform",
     "parallel"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/cjs/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
       },
       "default": {
         "types": "./dist/esm/index.d.ts",
@@ -38,8 +38,7 @@
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html npm test",
     "lint": "eslint src/ test/",
     "release": "bash .tools/release.sh master",
-    "tsc": "tsc",
-    "doc": "npx typedoc --out docs --plugin typedoc-plugin-markdown src/accumulateData.ts"
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -53,12 +52,12 @@
   "homepage": "https://github.com/bguerout/oleoduc#readme",
   "dependencies": {
     "cyclist": "1.0.2",
-    "parallel-transform": "1.2.0"
+    "parallel-transform": "1.2.0",
+    "@types/parallel-transform": "1.1.4"
   },
   "devDependencies": {
     "@types/mocha": "10.0.10",
     "@types/node": "20.10.4",
-    "@types/parallel-transform": "1.1.4",
     "@typescript-eslint/eslint-plugin": "8.19.0",
     "@typescript-eslint/parser": "8.19.0",
     "assert": "2.1.0",
@@ -74,8 +73,6 @@
     "prettier": "3.4.2",
     "slow-stream": "0.0.4",
     "tsx": "4.19.2",
-    "typedoc": "0.27.6",
-    "typedoc-plugin-markdown": "4.4.1",
     "typescript": "5.7.2"
   }
 }
